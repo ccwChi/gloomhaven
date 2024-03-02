@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/gloomhaven/static/css/main.db469099.css",
+    "main.js": "/gloomhaven/static/js/main.c21b07b3.js",
+    "static/js/453.c1eb191a.chunk.js": "/gloomhaven/static/js/453.c1eb191a.chunk.js",
+    "index.html": "/gloomhaven/index.html",
+    "main.db469099.css.map": "/gloomhaven/static/css/main.db469099.css.map",
+    "main.c21b07b3.js.map": "/gloomhaven/static/js/main.c21b07b3.js.map",
+    "453.c1eb191a.chunk.js.map": "/gloomhaven/static/js/453.c1eb191a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.db469099.css",
+    "static/js/main.c21b07b3.js"
+  ]
+}
