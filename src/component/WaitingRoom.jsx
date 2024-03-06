@@ -1,32 +1,28 @@
-import React from "react";
-import { useState } from "react";
+import React, { useEffect } from "react";
+import { characters } from "../asset/data";
 
-const WaitingRoom = ({ joinChatRoom }) => {
-  const [username, setUsername] = useState(null);
-  const [chatroom, setChatroom] = useState(null);
+const WaitingRoom = ({ roomMember }) => {
+  useEffect(() => {}, [roomMember]);
+
   return (
-    <>
-      <div>
-        <h1>username</h1>
-        <input
-          className="border-solid border-2 border-black rounded-md"
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </div>
-      <div>
-        <h1>chatroom</h1>
-        <input
-          className="border-solid border-2 border-black rounded-md"
-          onChange={(e) => setChatroom(e.target.value)}
-        />
-      </div>
+    <div
+      className="w-full h-screen flex flex-col justify-center items-center gap-8 
+     bg-fit bg-center bg-blend-screen bg-no-repeat "
+    >
+      {roomMember.map((role, i) => (
+        <div key={i}>
+          <button className="">{role.username}</button>
+        </div>
+      ))}
+
       <button
-        className="h-8 w-20 bg-green-600 shadow-md rounded-md mt-4"
-        onClick={() => {joinChatRoom(username, chatroom); console.log(username, chatroom)}}
+        onClick={() => {
+          console.log(roomMember);
+        }}
       >
-        submit
+        Console.log用
       </button>
-    </>
+    </div>
   );
 };
 

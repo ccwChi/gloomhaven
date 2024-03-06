@@ -38,6 +38,16 @@ const ChatRoom = ({ messages, sendMessage }) => {
       >
         log
       </button>
+      {/* <p className="text-5xl font-extrabold bg-gradient-to-b from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text stroke-2 ">
+        火焰守衛
+      </p>
+      <div className="relative">
+        <img
+          class="w-10 h-10 rounded object-none object-top"
+          src={acc}
+          alt="Default avatar"
+        />
+      </div> */}
     </div>
   );
 };
