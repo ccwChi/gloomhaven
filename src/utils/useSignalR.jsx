@@ -2,7 +2,14 @@ import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { connStore } from "./connnectStore";
 
 const useSignalR = () => {
-  const { conn, setConn, roomPlayers, setRoomMember } = connStore();
+  const {
+    conn,
+    setConn,
+    roomPlayers,
+    setRoomPlayers,
+    playerState,
+    setPlayerState,
+  } = connStore();
 
   const joinRoom = async (userName, gameRoom) => {
     try {
@@ -12,7 +19,24 @@ const useSignalR = () => {
         .configureLogging(LogLevel.Information)
         .build();
 
-      // 其他的 signalR 相關設定和事件處理器...
+      /**
+       *  JoinRoom 應該要回傳房間內有那些人
+       *  格式為[username:"可拉", gameRoom:"recordId"]
+       */
+      newConn.on("JoinRoom", (connectedPlayers) => {
+        console.log("JoinRoom msg: ", connectedPlayers);
+        setRoomPlayers(Object.values(connectedPlayers));
+      });
+
+      newConn.on("LeaveRoom", (msg, connectedPlayers) => {
+        console.log("someone leave", msg);
+        setRoomPlayers(Object.values(connectedPlayers));
+      });
+
+      newConn.on("SelectRole", (username, select) => {
+        console.log(username, select);
+        setPlayerState({ player: username, role: select });
+      });
 
       await newConn.start();
       await newConn.invoke("JoinRoom", { userName, gameRoom });
@@ -23,14 +47,23 @@ const useSignalR = () => {
           newConn.invoke("LeaveRoom", { userName, gameRoom });
         }
       });
-      console.log(newConn)
+      console.log(newConn);
       setConn(newConn);
     } catch (e) {
       console.log(e);
     }
   };
 
-  return { joinRoom };
+  const selectRole = async (select) => {
+    try {
+      await conn.invoke("SelectRole", select);
+      console.log("invokeSelectRole", select)
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { joinRoom, selectRole };
 };
 
-export {useSignalR};
+export { useSignalR };

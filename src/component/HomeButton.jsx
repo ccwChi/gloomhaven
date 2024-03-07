@@ -1,23 +1,23 @@
 import React from "react";
 
 const HomeButton = ({
+  charData,
   username,
   roleName,
   style,
   joinChatRoom,
+  selectRole,
   disabled = false,
 }) => {
   return (
     <button
       disabled={disabled}
-      type="button"
-      className={`${style} font-bold text-4xl w-80`}
+      className={`${charData.style} font-bold text-4xl w-80`}
       onClick={() => {
-        joinChatRoom(roleName, "kickMoush");
-        console.log(roleName, "kickMoush");
+        selectRole(charData.name)
       }}
     >
-      {roleName}
+      {charData.name}
     </button>
   );
 };
