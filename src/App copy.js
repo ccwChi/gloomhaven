@@ -7,7 +7,7 @@ import { characters } from "./asset/data";
 import WaitingRoomA from "./component/WaitingRoomA";
 
 const App = () => {
-  const [conn, setConn] = useState();
+  const [conn, updateConn] = useState();
   const [messages, setMessages] = useState([]);
   const [roomMember, setRoomMember] = useState([]);
 
@@ -54,7 +54,7 @@ const App = () => {
         }
       });
 
-      setConn(newConn);
+      updateConn(newConn);
     } catch (e) {
       console.log(e);
     }

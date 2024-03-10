@@ -1,42 +1,78 @@
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import React, { useEffect, useState } from "react";
-import WaitingRoom from "./component/WaitingRoom";
-import ChatRoom from "./component/ChatRoom";
 import HomeButton from "./component/HomeButton";
 import { characters } from "./asset/data";
-import WaitingRoomA from "./component/WaitingRoomA";
-import { useSignalR } from "./utils/useSignalR";
-import { connStore } from "./utils/connnectStore";
+import {
+  connStore,
+  gameStore,
+  myStateStore,
+  playerStore,
+  roomStore,
+} from "./utils/useStore";
+import { mylocalStore } from "./utils/usePersistStore";
 
 const App = () => {
-  const [messages, setMessages] = useState([]);
-  const { conn, setConn, roomPlayers, setRoomMember } = connStore();
+  const { conn, updateConn } = connStore();
+  const { myState, updateMyState } = myStateStore();
+  const { roomState, updateRoomState } = roomStore();
+  const { gameState, updateGameState } = gameStore();
+  const { playerState, updatePlayerState } = playerStore();
+  const mylocalsotre = myStateStore((store) => store.myState);
+  const updatemylocalsotre = mylocalStore((store) => store.updatemyState);
 
-  // const conn = "a";
-
-  // // 在页面加载时尝试重新连接
-  // useEffect(() => {
-  //   joinRoom(); // 或者传递用户名和游戏房间参数
-  // }, []);
-
-  const sendMessage = async (message) => {
+  const joinRoom = async (playerName, recordNum) => {
     try {
-      await conn.invoke("SendMessage", message);
-      console.log("sendmessage");
+      const newConn = new HubConnectionBuilder()
+        .withUrl("https://localhost:7169/room")
+        .withAutomaticReconnect()
+        .configureLogging(LogLevel.Information)
+        .build();
+
+      newConn.on("LeaveRoom", (connectedPlayers) => {
+        updatePlayerState(connectedPlayers);
+      });
+
+      newConn.on("JoinRoom", (connectedPlayers) => {
+        updatePlayerState(connectedPlayers);
+        console.log("joinroom myState", myState);
+      });
+
+      newConn.on("SelectRole", (connectedPlayers) => {
+        updatePlayerState(connectedPlayers);
+        console.log("SelectRole myState", myState);
+      });
+
+      await newConn.start();
+      await newConn.invoke("JoinRoom", { playerName, recordNum });
+
+      // 在用戶離開頁面時發送通知給伺服器
+      window.addEventListener("beforeunload", function () {
+        if (newConn) {
+          newConn.invoke("LeaveRoom", { playerName, recordNum });
+        }
+      });
+      updateConn(newConn);
     } catch (e) {
       console.log(e);
     }
   };
 
-  return <>{!conn ? <HomePage /> : <RoleSelectPage />} </>;
+  return <>{!conn ? <HomePage joinRoom={joinRoom} /> : <RoleSelectPage />} </>;
 };
 
 export default App;
 
-const HomePage = () => {
-  const [logingData, setLoginData] = useState({ username: "", record: "" });
-  const { joinRoom } = useSignalR();
-  const { conn, setConn, roomPlayers, setRoomMember } = connStore();
+const HomePage = ({ joinRoom }) => {
+  const [logingData, setLoginData] = useState({
+    username: "可拉",
+    record: "record01",
+  });
+  const { conn, updateConn } = connStore();
+  const { myState, updateMyState } = myStateStore();
+  const { roomState, updateRoomState } = roomStore();
+  const { playerState, updatePlayerState } = playerStore();
+  const { gameState, updateGameState } = gameStore();
+
   return (
     <section
       className="w-full h-screen flex flex-col  items-center gap-8
@@ -68,7 +104,50 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-      <form className="w-full max-w-md px-6 mb-12 ">
+      <form className="w-full max-w-md px-6 mb-12 flex flex-col gap-2">
+        <div className="flex gap-2">
+          <p
+            className="inline-flex justify-center items-center py-3 px-5 text-base font-medium
+         text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4
+          focus:ring-blue-300 dark:focus:ring-blue-900"
+            onClick={() => {
+              setLoginData((prev) => ({ ...prev, username: "可拉" }));
+            }}
+          >
+            可拉
+          </p>
+          <p
+            className="inline-flex justify-center items-center py-3 px-5 text-base font-medium
+         text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4
+          focus:ring-blue-300 dark:focus:ring-blue-900"
+            onClick={() => {
+              setLoginData((prev) => ({ ...prev, username: "大蔥" }));
+            }}
+          >
+            大蔥
+          </p>
+          <p
+            className="inline-flex justify-center items-center py-3 px-5 text-base font-medium
+         text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4
+          focus:ring-blue-300 dark:focus:ring-blue-900"
+            onClick={() => {
+              setLoginData((prev) => ({ ...prev, username: "阿修" }));
+            }}
+          >
+            阿修
+          </p>
+          <p
+            className="inline-flex justify-center items-center py-3 px-5 text-base font-medium
+         text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4
+          focus:ring-blue-300 dark:focus:ring-blue-900"
+            onClick={() => {
+              setLoginData((prev) => ({ ...prev, username: "祐祐" }));
+            }}
+          >
+            祐祐
+          </p>
+        </div>
+
         <div className="relative">
           <div className="absolute inset-y-0 rtl:inset-x-0 start-0 flex items-center ps-3.5 pointer-events-none"></div>
           <input
@@ -85,6 +164,7 @@ const HomePage = () => {
             className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             onClick={() => {
               joinRoom(logingData.username, logingData.record);
+              updateMyState(logingData.username);
             }}
           >
             加入房間
@@ -96,11 +176,20 @@ const HomePage = () => {
 };
 
 const RoleSelectPage = () => {
-  const { conn, setConn, roomPlayers, playerState } = connStore();
-  const { selectRole } = useSignalR();
+  const { conn, updateConn } = connStore();
+  const { myState, updateMyState } = myStateStore();
+  const { roomState, updateRoomState } = roomStore();
+  const { playerState, updatePlayerState } = playerStore();
+  const { gameState, updateGgameState } = gameStore();
+
   useEffect(() => {
-    console.log(roomPlayers);
-  }, [roomPlayers]);
+    console.log("myState", myState);
+  }, [myState]);
+
+  const selectRole = (selectRole) => {
+    conn.invoke("selectRole", selectRole);
+  };
+
   return (
     <section
       className="w-full h-screen flex flex-col items-center p-6
@@ -111,28 +200,50 @@ const RoleSelectPage = () => {
         <div
           className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
           onClick={() => {
-            console.log("roomPlayers", roomPlayers, "playerState",playerState );
+            console.log("conn", conn);
+            console.log("myState", myState);
+            console.log("gameState", gameState);
+            console.log("playerState", playerState);
           }}
         >
           請選擇你要操作的角色
         </div>
-        {characters.map((char, i) => (
-          <React.Fragment key={i}>
-            <HomeButton
-              disabled={playerState.some(
-                (player) => player.role === char.name
-              )}
-              charData={char}
-              selectRole={selectRole}
-              // joinChatRoom={joinRoom}
-            />
-          </React.Fragment>
-        ))}
+        {characters.map((char, i) => {
+          const isSelected = Object.values(playerState).some(
+            (player) => player.selectRole === char.name
+          );
+          return (
+            <React.Fragment key={i}>
+              <HomeButton
+                isSelected={isSelected}
+                charData={char}
+                selectRole={selectRole}
+                // joinChatRoom={joinRoom}
+              />
+            </React.Fragment>
+          );
+        })}
       </div>
-      <div className="flex flex-1 flex-col bg-black bg-opacity-70 m-6 w-full rounded-lg text-center relative">
+      <div className="flex flex-1 flex-col bg-black bg-opacity-70 px-6 w-full rounded-lg text-center relative gap-y-2">
         <p className="text-white mt-2">已選擇角色</p>
-        <div className=" absolute bottom-2 flex flex-col gap-2 w-full justify-center items-center">
-          <div className="w-60 text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        {characters.map((char, i) => {
+          const isSelected = Object.values(playerState).some(
+            (player) => player.selectRole === char.name
+          );
+          return (
+            <React.Fragment key={i}>
+              <HomeButton
+                isSelected={!isSelected}
+                charData={char}
+                selectRole={selectRole}
+                // joinChatRoom={joinRoom}
+              />
+            </React.Fragment>
+          );
+        })}
+
+        <div className=" absolute bottom-2 flex  flex-1 gap-2  justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
+          <div className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             確認
             <svg
               className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
@@ -150,7 +261,7 @@ const RoleSelectPage = () => {
               />
             </svg>
           </div>
-          <div className="w-60 text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <div className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             確認並輸入怪物資料
             <svg
               className="rtl:rotate-180 w-3.5 h-3.5 ms-2"

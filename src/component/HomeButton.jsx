@@ -7,14 +7,18 @@ const HomeButton = ({
   style,
   joinChatRoom,
   selectRole,
+  isSelected,
   disabled = false,
 }) => {
+  // console.log(charData.name, isSelected);
   return (
     <button
-      disabled={disabled}
-      className={`${charData.style} font-bold text-4xl w-80`}
+      disabled={isSelected}
+      className={`${
+        !isSelected ? charData.style : charData.disableStyle
+      } font-bold text-4xl w-full  ${isSelected && "hidden"}`}
       onClick={() => {
-        selectRole(charData.name)
+        selectRole(charData.name);
       }}
     >
       {charData.name}
