@@ -8,6 +8,7 @@ import {
   myStateStore,
   playerStore,
   roomStore,
+  sceneStore,
 } from "./utils/useStore";
 import { mylocalStore } from "./utils/usePersistStore";
 
@@ -16,9 +17,16 @@ const App = () => {
   const { myState, updateMyState } = myStateStore();
   const { roomState, updateRoomState } = roomStore();
   const { gameState, updateGameState } = gameStore();
+  const { gameScene, updateGameScene } = sceneStore();
   const { playerState, updatePlayerState } = playerStore();
   const mylocalsotre = myStateStore((store) => store.myState);
   const updatemylocalsotre = mylocalStore((store) => store.updatemyState);
+
+  useEffect(() => {
+    if (!!conn) {
+      updateGameScene("scene1");
+    }
+  }, [conn]);
 
   const joinRoom = async (playerName, recordNum) => {
     try {
@@ -42,6 +50,12 @@ const App = () => {
         console.log("SelectRole myState", myState);
       });
 
+      newConn.on("ReadyChangeScene", (connectedPlayers) => {
+        updatePlayerState(connectedPlayers);
+        updateGameState(connectedPlayers);
+        console.log("SelectRole myState", myState);
+      });
+
       await newConn.start();
       await newConn.invoke("JoinRoom", { playerName, recordNum });
 
@@ -57,7 +71,13 @@ const App = () => {
     }
   };
 
-  return <>{!conn ? <HomePage joinRoom={joinRoom} /> : <RoleSelectPage />} </>;
+  return (
+    <>
+      {!conn && <HomePage joinRoom={joinRoom} />}
+      {conn && gameScene === "scene1" && <RoleSelectPage />}
+      {conn && gameScene === "scene2" && <EnemySelect />}
+    </>
+  );
 };
 
 export default App;
@@ -107,7 +127,7 @@ const HomePage = ({ joinRoom }) => {
       <form className="w-full max-w-md px-6 mb-12 flex flex-col gap-2">
         <div className="flex gap-2">
           <p
-            className="inline-flex justify-center items-center py-3 px-5 text-base font-medium
+            className="w-full inline-flex justify-center items-center py-3 px-5 text-base font-medium
          text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4
           focus:ring-blue-300 dark:focus:ring-blue-900"
             onClick={() => {
@@ -117,7 +137,7 @@ const HomePage = ({ joinRoom }) => {
             可拉
           </p>
           <p
-            className="inline-flex justify-center items-center py-3 px-5 text-base font-medium
+            className="w-full inline-flex justify-center items-center py-3 px-5 text-base font-medium
          text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4
           focus:ring-blue-300 dark:focus:ring-blue-900"
             onClick={() => {
@@ -127,7 +147,7 @@ const HomePage = ({ joinRoom }) => {
             大蔥
           </p>
           <p
-            className="inline-flex justify-center items-center py-3 px-5 text-base font-medium
+            className="w-full inline-flex justify-center items-center py-3 px-5 text-base font-medium
          text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4
           focus:ring-blue-300 dark:focus:ring-blue-900"
             onClick={() => {
@@ -137,7 +157,7 @@ const HomePage = ({ joinRoom }) => {
             阿修
           </p>
           <p
-            className="inline-flex justify-center items-center py-3 px-5 text-base font-medium
+            className="w-full inline-flex justify-center items-center py-3 px-5 text-base font-medium
          text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4
           focus:ring-blue-300 dark:focus:ring-blue-900"
             onClick={() => {
@@ -180,14 +200,28 @@ const RoleSelectPage = () => {
   const { myState, updateMyState } = myStateStore();
   const { roomState, updateRoomState } = roomStore();
   const { playerState, updatePlayerState } = playerStore();
-  const { gameState, updateGgameState } = gameStore();
+  const { gameState, updateGameState } = gameStore();
+  const { gameScene, updateGameScene } = sceneStore();
 
   useEffect(() => {
     console.log("myState", myState);
-  }, [myState]);
+
+    const checkedNum = Object.values(gameState).filter(
+      (i) => i.changeScene === true
+    ).length;
+    if (checkedNum > 0 && checkedNum === Object.values(gameState).length) {
+      console.log(checkedNum);
+      updateGameScene("scene2");
+    }
+  }, [gameState]);
 
   const selectRole = (selectRole) => {
-    conn.invoke("selectRole", selectRole);
+    conn.invoke("SelectRole", selectRole);
+  };
+
+  const readyChangeScene = (prepare) => {
+    conn.invoke("ReadyChangeScene", prepare);
+    // 這邊的prepare用true跟false
   };
 
   return (
@@ -196,7 +230,6 @@ const RoleSelectPage = () => {
   bg-[url('/src/asset/BG/bg-03.webp')] bg-cover sm:bg-center  bg-blend-screen bg-no-repeat bg-black"
     >
       <div className="flex flex-1 flex-col gap-y-2 items-center">
-        {" "}
         <div
           className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
           onClick={() => {
@@ -204,46 +237,87 @@ const RoleSelectPage = () => {
             console.log("myState", myState);
             console.log("gameState", gameState);
             console.log("playerState", playerState);
+            console.log("gameScene", gameScene);
           }}
         >
           請選擇你要操作的角色
         </div>
-        {characters.map((char, i) => {
-          const isSelected = Object.values(playerState).some(
-            (player) => player.selectRole === char.name
-          );
-          return (
-            <React.Fragment key={i}>
-              <HomeButton
-                isSelected={isSelected}
-                charData={char}
-                selectRole={selectRole}
-                // joinChatRoom={joinRoom}
-              />
-            </React.Fragment>
-          );
-        })}
+        <div className="w-full bg-black">
+          {characters.map((char, i) => {
+            const isSelected = Object.values(playerState).some(
+              (player) => player.selectRole === char.name
+            );
+            const isSelectable = Object.values(playerState)
+              .filter((i) => i.playerName === myState)
+              .some((i) => i.selectRole === "");
+            const thisButt = Object.values(playerState).filter(
+              (i) => i.selectRole === char.name
+            );
+            const buttonDisplay =
+              thisButt.length > 0
+                ? char.name + " - " + thisButt[0].playerName
+                : char.name;
+            return (
+              <React.Fragment key={i}>
+                <HomeButton
+                  isSelectable={isSelectable}
+                  isSelected={isSelected}
+                  charData={char}
+                  selectRole={selectRole}
+                  buttonDisplay={buttonDisplay}
+                  // joinChatRoom={joinRoom}
+                />
+              </React.Fragment>
+            );
+          })}
+        </div>
       </div>
       <div className="flex flex-1 flex-col bg-black bg-opacity-70 px-6 w-full rounded-lg text-center relative gap-y-2">
         <p className="text-white mt-2">已選擇角色</p>
-        {characters.map((char, i) => {
-          const isSelected = Object.values(playerState).some(
-            (player) => player.selectRole === char.name
-          );
-          return (
-            <React.Fragment key={i}>
-              <HomeButton
-                isSelected={!isSelected}
-                charData={char}
-                selectRole={selectRole}
-                // joinChatRoom={joinRoom}
-              />
-            </React.Fragment>
-          );
-        })}
-
-        <div className=" absolute bottom-2 flex  flex-1 gap-2  justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
-          <div className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        <div className="flex flex-col flex-1w-full h-full gap-2 ">
+          {characters.map((char, i) => {
+            const isSelected = Object.values(playerState).some(
+              (player) => player.selectRole === char.name
+            );
+            const thisButt = Object.values(playerState).filter(
+              (i) => i.selectRole === char.name
+            );
+            const buttonDisplay =
+              thisButt.length > 0
+                ? char.name + " - " + thisButt[0].playerName
+                : char.name;
+            const isSelectable = Object.values(playerState)
+              .filter((i) => i.playerName === myState)
+              .some((i) => i.selectRole === char.name);
+            // console.log(
+            //   "Object.values(playerState)",
+            //   Object.values(playerState)
+            // );
+            // console.log("isSelectable", isSelectable, "char", char.name);
+            return (
+              <React.Fragment key={i}>
+                <HomeButton
+                  isSelected={!isSelected}
+                  buttonDisplay={buttonDisplay}
+                  isSelectable={isSelectable}
+                  charData={char}
+                  selectRole={selectRole}
+                  inSelectArea={true}
+                  playerName={myState}
+                  // joinChatRoom={joinRoom}
+                />
+              </React.Fragment>
+            );
+          })}
+        </div>
+        <div className=" pb-3 flex  flex-1 gap-2  justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
+          <button
+            disabled={Object.values(playerState)
+              .filter((i) => i.playerName === myState)
+              .some((i) => i.selectRole === "")}
+            className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            onClick={() => readyChangeScene(true)}
+          >
             確認
             <svg
               className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
@@ -260,8 +334,8 @@ const RoleSelectPage = () => {
                 d="M1 5h12m0 0L9 1m4 4L9 9"
               />
             </svg>
-          </div>
-          <div className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          </button>
+          {/* <div className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             確認並輸入怪物資料
             <svg
               className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
@@ -278,9 +352,160 @@ const RoleSelectPage = () => {
                 d="M1 5h12m0 0L9 1m4 4L9 9"
               />
             </svg>
-          </div>
+          </div> */}
         </div>
       </div>
+    </section>
+  );
+};
+
+const EnemySelect = () => {
+  return (
+    <section
+      className="w-full h-screen flex flex-col gap-y-2 items-center py-6
+bg-[url('/src/asset/BG/bg-03.webp')] bg-cover sm:bg-center  bg-blend-screen bg-no-repeat bg-black"
+    >
+      <div className="w-full overflow-y-auto flex flex-col gap-y-2 items-center">
+        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+          onClick={() => {
+            // console.log("conn", conn);
+            // console.log("myState", myState);
+            // console.log("gameState", gameState);
+            // console.log("playerState", playerState);
+            // console.log("gameScene", gameScene);
+          }}
+        >
+          請一位玩家選擇怪物資訊
+        </div>
+        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇難度
+        </div>
+        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>
+        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>        <div
+          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        >
+          選擇門的數量
+        </div>
+        </div>
+        <div className=" py-3 flex w-2/3 flex-1 gap-2  justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
+          <button
+            // disabled={Object.values(playerState)
+            //   .filter((i) => i.playerName === myState)
+            //   .some((i) => i.selectRole === "")}
+            className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            // onClick={() => readyChangeScene(true)}
+          >
+            確認
+            <svg
+              className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </button>
+          {/* <div className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            確認並輸入怪物資料
+            <svg
+              className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </div> */}
+        </div>
     </section>
   );
 };

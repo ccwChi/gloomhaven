@@ -27,7 +27,19 @@ const playerStore = create((set) => ({
 
 const gameStore = create((set) => ({
   gameState: [],
-  updateGgameState: (newState) => set({ gameState: newState }),
+  updateGameState: (newState) => set({ gameState: newState }),
 }));
 
-export { connStore, myStateStore, roomStore, gameStore, playerStore };
+const sceneStore = create((set) => ({
+  gameScene: "",
+  updateGameScene: (newState) => set({ gameScene: newState }),
+}));
+
+export {
+  connStore,
+  myStateStore,
+  roomStore,
+  gameStore,
+  playerStore,
+  sceneStore,
+};
