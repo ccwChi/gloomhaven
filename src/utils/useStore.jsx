@@ -31,7 +31,7 @@ const gameStore = create((set) => ({
 }));
 
 const sceneStore = create((set) => ({
-  gameScene: "",
+  gameScene: "scene2",
   updateGameScene: (newState) => set({ gameScene: newState }),
 }));
 

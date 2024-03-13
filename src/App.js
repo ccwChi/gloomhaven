@@ -73,7 +73,8 @@ const App = () => {
 
   return (
     <>
-      {!conn && <HomePage joinRoom={joinRoom} />}
+      {/* {!conn && <HomePage joinRoom={joinRoom} />} */}
+      <EnemySelect />
       {conn && gameScene === "scene1" && <RoleSelectPage />}
       {conn && gameScene === "scene2" && <EnemySelect />}
     </>
@@ -365,7 +366,7 @@ const EnemySelect = () => {
       className="w-full h-screen flex flex-col gap-y-2 items-center py-6
 bg-[url('/src/asset/BG/bg-03.webp')] bg-cover sm:bg-center  bg-blend-screen bg-no-repeat bg-black"
     >
-      <div className="w-full overflow-y-auto flex flex-col gap-y-2 items-center">
+      <div className="w-full overflow-y-auto flex-1 flex flex-col gap-y-2 items-center">
         <div
           className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
           onClick={() => {
@@ -376,118 +377,52 @@ bg-[url('/src/asset/BG/bg-03.webp')] bg-cover sm:bg-center  bg-blend-screen bg-n
             // console.log("gameScene", gameScene);
           }}
         >
-          請一位玩家選擇怪物資訊
+          怪物資訊
         </div>
-        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
+        <div className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white">
           選擇難度
         </div>
-        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
+        <div className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white">
           選擇門的數量
         </div>
-        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+        <select
+          id="countries"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
+          <option>Choose a country</option>
+          <option className="min-h-3"
+          value="US">United States</option>
+          <option value="CA">Canada</option>
+          <option value="FR">France</option>
+          <option value="DE">Germany</option>
+        </select>
+      </div>
+      <div className=" py-3 flex w-2/3  gap-2  justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
+        <button
+          // disabled={Object.values(playerState)
+          //   .filter((i) => i.playerName === myState)
+          //   .some((i) => i.selectRole === "")}
+          className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          // onClick={() => readyChangeScene(true)}
         >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>        <div
-          className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white"
-        >
-          選擇門的數量
-        </div>
-        </div>
-        <div className=" py-3 flex w-2/3 flex-1 gap-2  justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
-          <button
-            // disabled={Object.values(playerState)
-            //   .filter((i) => i.playerName === myState)
-            //   .some((i) => i.selectRole === "")}
-            className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            // onClick={() => readyChangeScene(true)}
+          確認
+          <svg
+            className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 14 10"
           >
-            確認
-            <svg
-              className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 14 10"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M1 5h12m0 0L9 1m4 4L9 9"
-              />
-            </svg>
-          </button>
-          {/* <div className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M1 5h12m0 0L9 1m4 4L9 9"
+            />
+          </svg>
+        </button>
+        {/* <div className="w-full text-white justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             確認並輸入怪物資料
             <svg
               className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
@@ -505,7 +440,7 @@ bg-[url('/src/asset/BG/bg-03.webp')] bg-cover sm:bg-center  bg-blend-screen bg-n
               />
             </svg>
           </div> */}
-        </div>
+      </div>
     </section>
   );
 };
