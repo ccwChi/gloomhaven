@@ -3,11 +3,18 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
+import "primereact/resources/themes/lara-light-cyan/theme.css";
+import Tailwind from 'primereact/passthrough/tailwind';
+import { twMerge } from 'tailwind-merge';
+import 'primeicons/primeicons.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+       <PrimeReactProvider value={{ unstyled: false, pt: {} , ptOptions: { mergeSections: true, mergeProps: true, classNameMergeFunction: twMerge } }}>
+        <App />
+    </PrimeReactProvider>
   </React.StrictMode>
 );
 

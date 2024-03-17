@@ -1,38 +1,92 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-const mylocalStore = create(
+const connLocalStore = create(
   persist(
     (set) => ({
-      myState: [],
-      updatemyState: (newState) => set({ myState: newState }),
+      connLocal: {},
+      updateConnLocal: (newState) => set({ connLocal: newState }),
     }),
-    { name: "myState" }
+    { name: "connLocalStore" }
   )
 );
 
-const playerPersistStore = create(
+const myStateLocalStore = create(
   persist(
     (set) => ({
-      playerPersistState: [],
-      updatePlayerPersistState: (newState) => {
-        set({ playerPersistState: newState });
+      myStateLocal: [],
+      updateMyStateLocal: (newState) => set({ myStateLocal: newState }),
+    }),
+    { name: "myStateLocalStore" }
+  )
+);
+
+const roomLocalStore = create(
+  persist(
+    (set) => ({
+      roomStateLocal: [],
+      updateRoomStateLocal: (newState) => {
+        set({ roomStateLocal: newState });
       },
     }),
-    { name: "playerPersistStore" }
+    { name: "roomLocalStore" }
   )
 );
 
-const gamePersistStore = create(
+const playerLocalStore = create(
   persist(
     (set) => ({
-      gamePersistState: [],
-      updateGamePersistState: (newState) => {
-        set({ gamePersistState: newState });
+      playerStateLocal: [],
+      updatePlayerStateLocal: (newState) => {
+        set({ playerStateLocal: newState });
       },
     }),
-    { name: "gamePersistStore" }
+    { name: "playerLocalStore" }
   )
 );
 
-export { mylocalStore, playerPersistStore, gamePersistStore };
+const gameLocalStore = create(
+  persist(
+    (set) => ({
+      gameStateLocal: [],
+      updateGameStateLocal: (newState) => {
+        set({ gameStateLocal: newState });
+      },
+    }),
+    { name: "gameLocalStore" }
+  )
+);
+
+const sceneLocalStore = create(
+  persist(
+    (set) => ({
+      gameSceneLocal: "",
+      updateGameSceneLocal: (newState) => {
+        set({ gameSceneLocal: newState });
+      },
+    }),
+    { name: "sceneLocalStore" }
+  )
+);
+
+const monsterLocalStore = create(
+  persist(
+    (set) => ({
+      monsterListLocal: [],
+      updateMonsterListLocal: (newState) => {
+        set({ monsterListLocal: newState });
+      },
+    }),
+    { name: "playerLocalStore" }
+  )
+);
+
+export {
+  connLocalStore,
+  myStateLocalStore,
+  roomLocalStore,
+  playerLocalStore,
+  gameLocalStore,
+  sceneLocalStore,
+  monsterLocalStore,
+};

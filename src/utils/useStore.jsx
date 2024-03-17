@@ -8,8 +8,7 @@ const connStore = create((set) => ({
 }));
 
 const myStateStore = create((set) => ({
-  //myState = {name:playername, role: role, ... }
-  myState: null,
+  myState: [],
   updateMyState: (newState) => set({ myState: newState }),
 }));
 
@@ -31,8 +30,18 @@ const gameStore = create((set) => ({
 }));
 
 const sceneStore = create((set) => ({
-  gameScene: "scene2",
+  gameScene: "",
   updateGameScene: (newState) => set({ gameScene: newState }),
+}));
+
+const sidebarStore = create((set) => ({
+  sidebarVisible: false,
+  updateSidebarVisible: (newState) => set({ sidebarVisible: newState }),
+}));
+
+const monsterStore = create((set) => ({
+  monsterList: false,
+  updateMonsterList: (newState) => set({ monsterList: newState }),
 }));
 
 export {
@@ -42,4 +51,6 @@ export {
   gameStore,
   playerStore,
   sceneStore,
+  sidebarStore,
+  monsterStore,
 };

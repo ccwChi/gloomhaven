@@ -1,94 +1,72 @@
-const characters = [
+const record = [
   {
-    name: "赤色守衛",
-    style:
-      "text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800  shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80",
-  },
-  {
-    name: "石晶爆破手",
-    style:
-      "text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 ",
-  },
-  {
-    name: "虛空守望者",
-    style:
-      "text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800  shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 ",
-  },
-  {
-    name: "鋼角飛斧手",
-    style:
-      "text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80  ",
-  },
-];
-
-const record = {
-  record01: {
-    roleData: {
-      RG: {
-        name: "赤色守衛",
-        player: "可拉",
+    recordName: "紀錄01",
+    roleData: [
+      {
+        role: "赤色守衛",
+        player:"",
         gold: "21",
         exp: "73",
-        level: "",
+        level: 2,
         hp: "",
-        cardMount: "",
+        cardMount: 10,
         perk: "",
-        object: {},
+        object: ["手套","鞋子","竹蜻蜓"],
         record: "",
         style:
           "text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2",
       },
-      DE: {
-        name: "石晶爆破手",
-        player: "祐祐",
+      {
+        role: "石晶爆破手",
+        player:"",
         gold: "36",
         exp: "78",
-        level: "",
+        level: 2,
         hp: "",
-        cardMount: "",
+        cardMount: 9,
         perk: "",
-        object: {},
+        object: ["手套","鞋子","竹蜻蜓"],
         record: "",
         style:
           "text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2",
       },
-      VW: {
-        name: "虛空守望者",
-        player: "阿修",
+      {
+        role: "虛空守望者",
+        player:"",
         gold: "32",
         exp: "78",
-        level: "",
+        level: 2,
         hp: "",
-        cardMount: "",
+        cardMount: 11,
         perk: "",
-        object: {},
+        object: ["手套","鞋子","竹蜻蜓"],
         record: "",
         style:
           "text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2",
       },
-      HA: {
-        name: "鋼角飛斧手",
-        player: "大蔥",
+      {
+        role: "鋼角飛斧手",
+        player:"",
         gold: "67",
         exp: "75",
-        level: "",
+        level: 2,
         hp: "",
-        cardMount: "",
+        cardMount: 10,
         perk: "",
-        object: {},
+        object: ["手套","鞋子","竹蜻蜓"],
         record: "",
         style:
           "text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ",
       },
-    },
+    ],
     RoundState: [],
-    ChapterRecord: {
-      map1: "發生什麼事1",
-      map2: "發生什麼事2",
-      map3: "發生什麼事3",
-    },
+    ChapterDescript: [
+      { map: "酒館", describe: "發生什麼事1" },
+      { map: "地下水道", describe: "發生什麼事2" },
+      { map: "研究室", describe: "發生什麼事3" },
+    ],
   },
-};
+];
 
 const enenmyList = [
   {
@@ -217,7 +195,7 @@ const enenmyList = [
   },
   {
     name: "chaosDemonEX",
-    chineseName: "巨型蝰蛇-菁英",
+    chineseName: "渾沌惡魔-菁英",
     isElite: true,
     scriptLv0: { hp: 10, move: 4, att: 3, ability: ["迷茫"] },
     scriptLv1: { hp: 12, move: 4, att: 4, ability: ["迷茫"] },
@@ -233,10 +211,10 @@ const enemyAction = {
       name: "吞物進食",
       as: 66,
       move: +0,
-      att: +1,
-      attRange: 3,
+      loot: +1,
       healSelf: 2,
-      useElement: ["dark", { healSelf: +1 }],
+      useElement: "dark",
+      elementEffect: "治療自己1",
     },
     {
       name: "倉促攻擊",
@@ -259,12 +237,13 @@ const enemyAction = {
       attRange: 2,
       target: 2,
       effect: "中毒",
-      useElement: ["wind", { target: +1 }],
+      useElement: "leaf",
+      elementEffect: "目標+1",
     },
     {
       name: "電漿結界",
       as: 85,
-      action: ["推一格並中毒"],
+      firstAction: ["推一格並中毒"],
       target: "周圍一格",
       att: +1,
       attRange: 2,
@@ -274,19 +253,197 @@ const enemyAction = {
       as: 85,
       action: ["視線內最近敵人承受 1+L/2 向上取整傷害，無視距離"],
       healSelf: 1,
-      element: "dark",
+      createElement: ["dark"],
     },
     {
       name: "敗血巫術",
       as: 85,
       action: ["視線內最近敵人承受 1+L/2 向上取整傷害，無視距離"],
       healSelf: 1,
-      element: "wind",
+      createElement: ["wind"],
     },
   ],
   chaosDemon: [
-    { name: "精算打擊", as: 13, move: -1, att: +0, attRange: 1, target: 2, useElement:["ice", "本回合任何攻擊混沌惡魔的角色受到兩點傷害"] },
+    {
+      name: "冰凍吐息",
+      as: 13,
+      move: -1,
+      att: +0,
+      attRange: 1,
+      useElement: "ice",
+      elementEffect: "遭受攻擊時，攻擊方受到2點傷害",
+    },
+    {
+      name: "高溫爆彈",
+      as: 1,
+      move: +1,
+      att: -1,
+      attRange: 3,
+      useElement: "fire",
+      elementEffect: "負傷",
+    },
+    {
+      name: "震波拳擊",
+      as: 67,
+      move: -2,
+      att: +1,
+      afterAtt: "推2格",
+      useElement: "leaf",
+      elementEffect: "變成範圍攻擊",
+    },
+    {
+      name: "氣流旋風",
+      as: 20,
+      move: 0,
+      att: -1,
+      attRange: 2,
+      useElement: "wind",
+      elementEffect: "本回合護盾2",
+    },
+    {
+      name: "飢餓巨口",
+      as: 98,
+      move: -1,
+      att: -1,
+      useElement: "any",
+      elementEffect: "繳械",
+    },
+    {
+      name: "魔力爆破",
+      as: 76,
+      move: +0,
+      att: +0,
+      createElement: ["fire", "ice", "wind", "leaf", "light", "dark"],
+    },
+    {
+      name: "黑色觸鬚",
+      as: 52,
+      move: -1,
+      att: +1,
+      useElement: "dark",
+      elementEffect: "所有與目標相鄰的敵人承受1傷害",
+    },
+    {
+      name: "閃光利爪",
+      as: 41,
+      move: 0,
+      att: 0,
+      useElement: "light",
+      elementEffect: "自療自己4",
+    },
+  ],
+  giantViper: [
+    {
+      name: "迅捷尖牙",
+      as: 33,
+      move: +1,
+      att: +0,
+      target: 2,
+    },
+    {
+      name: "尋找掩護",
+      as: 18,
+      move: +1,
+      att: -1,
+      discript: "本輪以巨型蝰蛇為目標的攻擊獲得劣勢",
+    },
+    {
+      name: "精算打擊",
+      as: 58,
+      move: -1,
+      att: +1,
+    },
+    {
+      name: "劇毒狂亂",
+      as: 43,
+      move: +1,
+      att: -1,
+      discript: "目標為所有相鄰的敵人",
+    },
+    {
+      name: "包抄圍堵",
+      as: 32,
+      move: +0,
+      att: +0,
+      discript: "目標與任何蝰蛇的盟友相鄰，攻擊+2",
+    },
+    {
+      name: "包抄圍堵",
+      as: 32,
+      move: +0,
+      att: +0,
+      discript: "目標與任何蝰蛇的盟友相鄰，攻擊+2",
+    },
+    {
+      name: "防禦打擊",
+      as: 11,
+      move: +0,
+      att: +0,
+      shield: +1,
+    },
+    {
+      name: "纏身收束",
+      as: 23,
+      move: -1,
+      att: -2,
+      discript: "禁足",
+    },
+  ],
+  ratMonstrosity: [
+    {
+      name: "普通攻擊",
+      as: 39,
+      move: +0,
+      att: +0,
+    },
+    {
+      name: "精算打擊",
+      as: 60,
+      move: -1,
+      att: +1,
+    },
+    {
+      name: "不穩爪擊",
+      as: 52,
+      move: 0,
+      att: +1,
+      discript: "攻擊成功的話，自身遭受一點傷害",
+    },
+    {
+      name: "群體攻擊",
+      as: 21,
+      move: +1,
+      att: -1,
+      discript: "如果對象鄰近鼠類巨怪的盟友身邊，則攻擊+1",
+    },
+    {
+      name: "群體攻擊",
+      as: 21,
+      move: +1,
+      att: -1,
+      discript: "如果對象鄰近鼠類巨怪的盟友身邊，則攻擊+1",
+    },
+    {
+      name: "致虛啃咬",
+      as: 34,
+      move: +0,
+      att: +0,
+      discript: "導致混亂",
+    },
+    {
+      name: "爆裂氣泡",
+      as: 9,
+      move: +1,
+      discript: "本輪中如果遭受攻擊，攻擊方受到兩點傷害",
+    },
+    {
+      name: "不穩狂熱",
+      as: 74,
+      move: 0,
+      att: +1,
+      discript: "自身受到1點傷害，鄰近所有敵人皆為攻擊目標",
+    },
   ],
 };
 
-export { characters, record };
+export { record, enenmyList, enemyAction };
