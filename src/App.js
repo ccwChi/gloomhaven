@@ -213,7 +213,7 @@ const EnemySelect = () => {
   return (
     <section
       className="w-full h-screen flex flex-col gap-8 p-4 items-center
-        bg-[url('/src/asset/BG/bg-03.webp')] bg-cover bg-no-repeat bg-black ov"
+        bg-[url('/src/asset/bg_img/bg-03.webp')] bg-cover bg-no-repeat bg-black ov"
     >
       <Button
         className="absolute top-3 right-3 size-6"
@@ -459,7 +459,7 @@ const RoleSelectPage = ({ setDemoConn, setDemoScene, demoConn, demoScene }) => {
   return (
     <section
       className="w-full h-screen flex flex-col gap-8 p-4  items-center
-        bg-[url('/src/asset/BG/bg-03.webp')] bg-cover bg-no-repeat bg-black ov"
+        bg-[url('/src/asset/bg_img/bg-03.webp')] bg-cover bg-no-repeat bg-black ov"
     >
       <div className="flex flex-1 flex-col gap-y-2 items-center">
         <div

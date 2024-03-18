@@ -52,7 +52,7 @@ const HomePage = ({
   return (
     <section
       className="w-full h-screen flex flex-col gap-8 p-4 items-center
-        bg-[url('/src/asset/BG/bg-04.webp')] bg-cover bg-no-repeat bg-black ov"
+        bg-[url('/src/asset/bg_img/bg-04.webp')] bg-cover bg-no-repeat bg-black ov"
     >
       <div
         onClick={() => {

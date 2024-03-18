@@ -72,35 +72,22 @@ const HomePage = ({
       perk: "",
       object: ["手套", "鞋子", "竹蜻蜓"],
       record: "",
-      attackFix: [
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0",
-        "1",
-        "+1",
-        "+1",
-        "+1",
-        "+1",
-        "+2",
-        "-1",
-        "-1",
-        "-1",
-        "-1",
-        "-1",
-        "-2",
-        "x2",
-        "fail",
-      ],
+      attackFix: {
+        "+0": 6,
+        "+1": 5,
+        "+2": 1,
+        "-1": 5,
+        "-2": 1,
+        x2: 1,
+        x0: 1,
+      },
     });
   }, []);
 
   return (
     <section
       className="w-full h-screen flex flex-col gap-2 p-4 pt-6 items-center
-        bg-[url('/src/asset/BG/bg-03.webp')] bg-cover bg-no-repeat bg-black ov"
+        bg-[url('/src/asset/bg_img/bg-03.webp')] bg-cover bg-no-repeat bg-black ov"
     >
       <Button
         className="absolute top-3 right-3 size-6"
@@ -176,8 +163,8 @@ export default HomePage;
 
 const PlayerStateTab = () => {
   const { myState } = myStateStore();
-  const [attackMod, setAttackMod] = useState([]);
-  const attackModType = ["+0", "+1", "-1", "+2", "-2", "x2", "fail"];
+  const [attackMod, setAttackMod] = useState({});
+  const attackModType = ["+0", "+1", "-1", "+2", "-2", "x2", "x0"];
   const [data, setData] = useState([
     {
       id: "082",
@@ -267,6 +254,7 @@ const PlayerStateTab = () => {
   const lv3Items = data.filter((item) => item.lv === "3");
   const lvXItems = data.filter((item) => item.lv === "X");
 
+  /** 選擇技能卡的邏輯 開始 */
   const onItemChange = (e, item) => {
     let updatedSelectedItems = [...selectedItems];
 
@@ -283,7 +271,6 @@ const PlayerStateTab = () => {
 
     setSelectedItems(updatedSelectedItems);
   };
-
   const productTemplate = (product) => {
     return (
       <div className="mx-8">
@@ -295,6 +282,16 @@ const PlayerStateTab = () => {
       </div>
     );
   };
+  /** 選擇技能卡的邏輯 結束*/
+
+  /** 選擇攻擊補正卡的邏輯 開始 */
+  useEffect(() => {
+    if (myState) {
+      setAttackMod(myState.attackFix);
+    }
+  }, [myState]);
+
+  /** 選擇攻擊補正卡的邏輯 結束 */
 
   return (
     <div className="w-full flex flex-col gap-2 items-center flex-1">
@@ -420,86 +417,43 @@ const PlayerStateTab = () => {
               選擇優劣勢卡片
             </h3>
             {attackModType.map((type, i) => (
-              <>
-                {" "}
-                <div className="inline-flex gap-4">
-                  <div className="flex justify-center items-center w-6">{type}</div>
-                  <InputNumber
-                    inputId="horizontal-buttons"
-                    value={attackMod}
-                    onValueChange={(e) => setAttackMod(e.value)}
-                    showButtons
-                    buttonLayout="horizontal"
-                    min={0}
-                    step={1}
-                    incrementButtonIcon="pi pi-plus"
-                    decrementButtonIcon="pi pi-minus"
-                    size={8}
-                    pt={{
-                      input: {
-                        root: {
-                          className:
-                            "border-none focus:ring-none focus:border:none",
-                        },
-                      },
-                      incrementButton: {
-                        className: " border-none",
-                      },
-                      decrementButton: {
-                        className: " border-none ",
-                      },
-                    }}
-                  />
+              <div key={i} className="inline-flex gap-4">
+                <div className="flex justify-center items-center w-6">
+                  {type}
                 </div>
-              </>
+                <InputNumber
+                  inputId={`horizontal-buttons-${type}`}
+                  value={attackMod[type] || 0}
+                  onValueChange={(e) =>
+                    setAttackMod((prev) => ({
+                      ...prev,
+                      [type]: e.value,
+                    }))
+                  }
+                  showButtons
+                  buttonLayout="horizontal"
+                  min={0}
+                  step={1}
+                  incrementButtonIcon="pi pi-plus"
+                  decrementButtonIcon="pi pi-minus"
+                  size={8}
+                  pt={{
+                    input: {
+                      root: {
+                        className:
+                          "border-none focus:ring-none focus:border:none",
+                      },
+                    },
+                    incrementButton: {
+                      className: "border-none",
+                    },
+                    decrementButton: {
+                      className: "border-none",
+                    },
+                  }}
+                />
+              </div>
             ))}
-
-            <div className="inline-flex gap-4">
-              <div className="flex justify-center items-center">+0</div>
-              <InputNumber
-                inputId="horizontal-buttons"
-                value={attackMod}
-                onValueChange={(e) => setAttackMod(e.value)}
-                showButtons
-                buttonLayout="horizontal"
-                min={0}
-                step={1}
-                incrementButtonIcon="pi pi-plus"
-                decrementButtonIcon="pi pi-minus"
-                pt={{
-                  input: { root: { className: "w-12 h-fit border-none" } },
-                  incrementButton: {
-                    className: " border-none p-button-danger",
-                  },
-                  decrementButton: {
-                    className: " border-none p-button-success",
-                  },
-                }}
-              />
-            </div>
-            <div className="inline-flex gap-4">
-              <div className="flex justify-center items-center">+0</div>
-              <InputNumber
-                inputId="horizontal-buttons"
-                value={attackMod}
-                onValueChange={(e) => setAttackMod(e.value)}
-                showButtons
-                buttonLayout="horizontal"
-                min={0}
-                step={1}
-                incrementButtonIcon="pi pi-plus"
-                decrementButtonIcon="pi pi-minus"
-                pt={{
-                  input: { root: { className: "w-24 h-fit border-none" } },
-                  incrementButton: {
-                    className: " border-none p-button-danger",
-                  },
-                  decrementButton: {
-                    className: " border-none p-button-success",
-                  },
-                }}
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -525,7 +479,12 @@ const MonstSelectTab = () => {
   const { monsterList, updateMonsterList } = monsterStore();
   const [targetPointHP, setTargetPointHP] = useState(0);
   const [selectMon, setSelectMon] = useState("");
-  const [selectMonList, setSelectMonList] = useState([]);
+  const [selectMonList, setSelectMonList] = useState([
+    {
+      name: "區域",
+      area: 1,
+    },
+  ]);
   const monsterSelectList = [
     { name: "目標點", code: "targetPoint", gate: 0 },
     { name: "黑色汙泥", code: "blackSludge", gate: 0 },
@@ -553,10 +512,40 @@ const MonstSelectTab = () => {
     // 在這裡處理錯誤，例如顯示錯誤訊息給使用者或執行其他適當的操作
     // }
   };
+  useEffect(() => {
+    console.log(
+      "selectMonList",
+      selectMonList,
+      "updatedMonsterData",
+      updatedMonsterData
+    );
+  }, [selectMonList]);
+  // 建立新的陣列，追蹤門的數量
+
+  // 計算門的數量
+  // 計算區域的數量
+  let areaCount = 0;
+  const updatedMonsterData = selectMonList.map((mon, index) => {
+    if (mon.name === "區域") {
+      areaCount++;
+      return { name: mon.name, area: areaCount };
+    } else {
+      return {
+        name: mon.name,
+        area: areaCount,
+      };
+    }
+  });
+  // useEffect(() => {
+  //   console.log("areaCount", areaCount);
+  // }, [areaCount]);
   return (
     <div className="w-full flex flex-col gap-2 items-center flex-1">
       <div className="w-full  flex flex-col flex-1 gap-y-2 items-center overflow-hidden">
         {/* 怪物增加按鈕行 */}
+        <div className="text-white">
+          每個區域被門所分隔，當踩入該區域時，該區域的怪才會在下一輪開始行動
+        </div>
         <div className="inline-flex w-full gap-x-2 px-1">
           <div
             className="bg-gray-600 px-4 bg-opacity-60 p-3 rounded-md w-fit text-center font-bold text-white"
@@ -593,47 +582,83 @@ const MonstSelectTab = () => {
         {/* 門增加按鈕行 */}
         <div className="inline-flex w-full gap-x-2 px-1 ">
           <div className="bg-gray-600 bg-opacity-60 flex-1 p-3 rounded-md w-full text-center font-bold text-white ">
-            添加一道門
+            添加一個區域
           </div>
           <Button
             icon="pi pi-plus"
             className=""
             onClick={() => {
-              setSelectMonList((prev) => [...prev, { name: "門", code: "" }]);
+              setSelectMonList((prev) => [...prev, { name: "區域", code: "" }]);
             }}
           />
         </div>
         {/* 從這邊開始設置overflow */}
         <div
-          className={`w-full flex flex-col bg-slate-600 gap-y-3 flex-1 overflow-y-auto ${
-            selectMonList.length > 0 && "p-3"
+          className={`w-full flex flex-col bg-slate-600 gap-y-3 flex-1 overflow-y-auto p-5 ${
+            selectMonList.length > 0 && ""
           } bg-opacity-60 rounded-lg`}
         >
-          {selectMonList.map((mon, index) => (
+          {/* <div className="text-white ">區域 1</div> */}
+          {/* // 渲染怪物資訊 */}
+          {updatedMonsterData.map((mon, index) => (
             <div
-              className="inline-flex gap-x-2 w-full"
+              className={`inline-flex gap-x-2 w-full ${
+                mon.name.startsWith("區域") && "h-8"
+              }`}
               key={"monsterList" + index}
             >
               <div
-                className={`w-full bg-gray-300 text-black font-black font-mono text-xl rounded-lg flex justify-center items-center ${
-                  mon.name === "門" && "!bg-amber-600 bg-opacity-85"
-                } `}
+                className={`w-full bg-gray-300 text-black font-black font-mono text-lg rounded-lg flex items-center ${
+                  mon.name.startsWith("區域") &&
+                  "bg-transparent text-white !text-lg !justify-start !items-start bg-black"
+                } ${!mon.name.startsWith("區域") && " justify-center"}`}
               >
-                {mon.name !== "門" ? mon.name + "-" + (index + 1) : mon.name}
+                {mon.name.startsWith("區域")
+                  ? mon.name + mon.area
+                  : mon.name + index}
               </div>
-              <Button
-                icon="pi pi-minus"
-                className=""
-                onClick={() => {
-                  const newList = [...selectMonList];
-                  const tempList = newList.splice(index, 1);
-                  console.log("tempList", tempList);
-                  console.log("selectMonList", newList);
-                  setSelectMonList(newList);
-                }}
-              />
+              {mon.name !== "區域" && (
+                <Button
+                  icon="pi pi-minus"
+                  className=""
+                  onClick={() => {
+                    const newList = updatedMonsterData.filter(
+                      (_, i) => i !== index
+                    );
+                    setSelectMonList(newList);
+                  }}
+                />
+              )}
             </div>
           ))}
+          {/* {selectMonList.map((mon, index) => {
+            const monsterDataObject = updatedMonsterData[index];
+            return (
+              <div
+                className="inline-flex gap-x-2 w-full"
+                key={"monsterList" + index}
+              >
+                <div
+                  className={`w-full bg-gray-300 text-black font-black font-mono text-xl rounded-lg flex justify-center items-center ${
+                    mon.name === "門" && "bg-transparent text-white !text-lg"
+                  } `}
+                >
+                  {mon.name !== "門" ? mon.name + "-" + (index + 1) : "區域"}
+                </div>
+                <Button
+                  icon="pi pi-minus"
+                  className=""
+                  onClick={() => {
+                    const newList = [...selectMonList];
+                    const tempList = newList.splice(index, 1);
+                    console.log("tempList", tempList);
+                    console.log("selectMonList", newList);
+                    setSelectMonList(newList);
+                  }}
+                />
+              </div>
+            );
+          })} */}
         </div>
       </div>
       <div className=" py-3 flex w-full gap-2 flex-col  justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
