@@ -486,15 +486,15 @@ const MonstSelectTab = () => {
     },
   ]);
   const monsterSelectList = [
-    { name: "目標點", code: "targetPoint", gate: 0 },
-    { name: "黑色汙泥", code: "blackSludge", gate: 0 },
-    { name: "黑色汙泥-菁英", code: "blackSludgeEX", gate: 0 },
-    { name: "鼠類巨怪", code: "ratMonstrosity", gate: 0 },
-    { name: "鼠類巨怪-菁英", code: "ratMonstrosityEX", gate: 0 },
-    { name: "巨型蝰蛇", code: "giantViper", gate: 0 },
-    { name: "巨型蝰蛇-菁英", code: "giantViperEX", gate: 0 },
-    { name: "渾沌惡魔", code: "chaosDemon", gate: 0 },
-    { name: "渾沌惡魔-菁英", code: "chaosDemonEX", gate: 0 },
+    { name: "目標點", code: "targetPoint", area: 0 },
+    { name: "黑色汙泥", code: "blackSludge", area: 0 },
+    { name: "黑色汙泥-菁英", code: "blackSludgeEX", area: 0 },
+    { name: "鼠類巨怪", code: "ratMonstrosity", area: 0 },
+    { name: "鼠類巨怪-菁英", code: "ratMonstrosityEX", area: 0 },
+    { name: "巨型蝰蛇", code: "giantViper", area: 0 },
+    { name: "巨型蝰蛇-菁英", code: "giantViperEX", area: 0 },
+    { name: "渾沌惡魔", code: "chaosDemon", area: 0 },
+    { name: "渾沌惡魔-菁英", code: "chaosDemonEX", area: 0 },
   ];
 
   useEffect(() => {
@@ -533,6 +533,7 @@ const MonstSelectTab = () => {
       return {
         name: mon.name,
         area: areaCount,
+        code: mon.code
       };
     }
   });
@@ -680,14 +681,7 @@ const MonstSelectTab = () => {
           iconPos="right"
           raised
           onClick={() => {
-            let gateCount = 0; // 門計數從 -1 開始
-            const newData = selectMonList.map((item) => {
-              if (item.name === "門") {
-                gateCount++; // 遇到門時，門計數加一
-              }
-              return { ...item, gate: gateCount };
-            });
-            SendMonData(newData);
+            SendMonData(updateMonsterList);
           }}
         />
       </div>
