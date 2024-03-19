@@ -11,17 +11,17 @@ import {
   playerStore,
   roomStore,
   sceneStore,
+  scriptLevelStore,
   sidebarStore,
 } from "../utils/useStore";
-import { record } from "../asset/data";
+import { enenmyList as enemyList, record } from "../asset/data";
 import { TabPanel, TabView } from "primereact/tabview";
 import { myStateLocalStore, sceneLocalStore } from "../utils/usePersistStore";
 import CustomizeSidebar from "../component/CustomizeSidebar";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { Carousel } from "primereact/carousel";
-import { Tag } from "primereact/tag";
-import image224 from "../asset/RG/224.png"; // 导入图片
+
 const HomePage = ({
   joinRoom,
   setDemoConn,
@@ -37,6 +37,7 @@ const HomePage = ({
   const { roomState, updateRoomState } = roomStore();
   const { playerState, updatePlayerState } = playerStore();
   const { gameState, updateGameState } = gameStore();
+  const { scriptLevel, updateScriptLevel } = scriptLevelStore();
   const { gameScene, updateGameScene } = sceneStore();
   const { sidebarVisible, updateSidebarVisible } = sidebarStore();
   const { monsterList, updateMonsterList } = monsterStore();
@@ -59,7 +60,17 @@ const HomePage = ({
     // conn.invoke("ReadyChangeScene", prepare);
     // 這邊的prepare用true跟false
   };
-
+  useEffect(() => {
+    calculateStageLevel(record);
+    function calculateStageLevel(record) {
+      const totalLevel = record[0].roleData.reduce(
+        (acc, role) => acc + role.level,
+        0
+      );
+      const averageLevel = Math.ceil(totalLevel / record[0].roleData.length);
+      updateScriptLevel(averageLevel);
+    }
+  }, []);
   useEffect(() => {
     updateMyState({
       role: "石晶爆破手",
@@ -130,7 +141,7 @@ const HomePage = ({
             headertitle: { className: "text-xl" },
           }}
         >
-          <div>畫面二'</div>
+          <MonDetailList />
         </TabPanel>
         <TabPanel
           header="角色技能卡"
@@ -160,6 +171,27 @@ const HomePage = ({
 };
 
 export default HomePage;
+
+const MonDetailList = () => {
+  const { conn, updateConn } = connStore();
+  const { myState, updateMyState } = myStateStore();
+  const { roomState, updateRoomState } = roomStore();
+  const { playerState, updatePlayerState } = playerStore();
+  const { gameState, updateGameState } = gameStore();
+  const { gameScene, updateGameScene } = sceneStore();
+  const { sidebarVisible, updateSidebarVisible } = sidebarStore();
+  const { monsterList, updateMonsterList } = monsterStore();
+  useEffect(() => {
+    console.log();
+  });
+  return (
+    <div className="w-full flex flex-col gap-2 items-center flex-1">
+      <div className="w-full  flex flex-col text-white items-center bg-slate-600 gap-y-3 flex-1 overflow-y-auto bg-opacity-60 rounded-lg">
+        <div className="w-full overflow-y-auto flex flex-col "></div>
+      </div>
+    </div>
+  );
+};
 
 const PlayerStateTab = () => {
   const { myState } = myStateStore();
@@ -470,12 +502,14 @@ const PlayerStateTab = () => {
 };
 
 const MonstSelectTab = () => {
+  const { conn, updateConn } = connStore();
   const { myState, updateMyState } = myStateStore();
   const { roomState, updateRoomState } = roomStore();
   const { playerState, updatePlayerState } = playerStore();
   const { gameState, updateGameState } = gameStore();
   const { gameScene, updateGameScene } = sceneStore();
   const { sidebarVisible, updateSidebarVisible } = sidebarStore();
+  const { scriptLevel, updateScriptLevel } = scriptLevelStore();
   const { monsterList, updateMonsterList } = monsterStore();
   const [targetPointHP, setTargetPointHP] = useState(0);
   const [selectMon, setSelectMon] = useState("");
@@ -498,20 +532,27 @@ const MonstSelectTab = () => {
   ];
 
   useEffect(() => {
+    console.log("monsterList",monsterList)
     if (monsterList.length > 0) {
       setSelectMonList(monsterList);
     }
   }, [monsterList]);
 
-  const SendMonData = async (monData) => {
-    // try {
-    //   await conn.invoke("SendMonData", monData);
-    //   console.log("SendMonData");
-    // } catch (error) {
-    //   console.error("Error invoking SendMonData:", error);
-    // 在這裡處理錯誤，例如顯示錯誤訊息給使用者或執行其他適當的操作
-    // }
+  // const SendMonData = async (monData) => {
+  //   try {
+  //     await conn.invoke("SendMonData", monData);
+  //     console.log("SendMonData");
+  //   } catch (error) {
+  //     console.error("Error invoking SendMonData:", error);
+  //   // 在這裡處理錯誤，例如顯示錯誤訊息給使用者或執行其他適當的操作
+  //   }
+  // };
+
+  const LocalupdateMonList = (monData) => {
+    console.log(monData);
+    // updateMonsterList(monData);
   };
+
   useEffect(() => {
     console.log(
       "selectMonList",
@@ -533,13 +574,83 @@ const MonstSelectTab = () => {
       return {
         name: mon.name,
         area: areaCount,
-        code: mon.code
+        code: mon.code,
       };
     }
   });
   // useEffect(() => {
   //   console.log("areaCount", areaCount);
   // }, [areaCount]);
+
+  // const monDetail = () => {
+  //   const selectedEnemies = enemyList.find((enemy) =>
+  //     enemy.hasOwnProperty(scriptLevel)
+  //   )[scriptLevel];
+  //   console.log("selectedEnemies",selectedEnemies)
+  //   // Group monsters by area
+  //   const groupedMonsters = updatedMonsterData.reduce((acc, monster) => {
+  //     if (!acc[monster.area]) {
+  //       acc[monster.area] = [];
+  //     }
+  //     acc[monster.area].push(monster);
+  //     return acc;
+  //   }, {});
+  //   console.log("groupedMonsters",groupedMonsters)
+  //   console.log("Object.keys(groupedMonsters)",Object.keys(groupedMonsters))
+  //   // Map through each area and filter/select monsters
+  //   const selectedMonsters = Object.keys(groupedMonsters).map((area) => {
+  //     const selectedMonstersInArea = groupedMonsters[area]
+  //       .map((monster) => {
+  //         const matchingEnemy = selectedEnemies.find(
+  //           (enemy) => {
+  //           console.log("enemy.name",enemy,"monster.chineseName",monster);
+  //           return enemy.name === monster.code
+  //         }
+  //         );
+  //         console.log("matchingEnemy",matchingEnemy)
+  //         if (matchingEnemy) {
+  //           const modifiedMonster = { ...matchingEnemy };
+  //           if (matchingEnemy.name === "targetPoint") {
+  //             modifiedMonster.hp = targetPointHP;
+  //           }
+  //           console.log("monster.name",monster.name,"modifiedMonster",modifiedMonster)
+  //           return modifiedMonster;
+  //         }
+  //         return null; // Return null if no matching enemy found
+  //       })
+  //       .filter(Boolean); // Filter out null values
+  //     return selectedMonstersInArea;
+  //   });
+
+  //   console.log(selectedMonsters);
+  // };
+  const monDetail = () => {
+    const selectedEnemies = enemyList.find(enemy => enemy.hasOwnProperty(scriptLevel))[scriptLevel];
+    console.log()
+    // 建立以區域為 key 的物件
+    const selectedMonstersByArea = updatedMonsterData.reduce((acc, monster) => {
+        if (monster.name === "區域") {
+            acc[monster.area] = [];
+        } else {
+            if (!acc[monster.area]) {
+                acc[monster.area] = [];
+            }
+            const matchingEnemy = selectedEnemies.find(enemy => {console.log("enemy",enemy,"monster",monster); return(enemy.name  === monster.code)});
+            console.log("matchingEnemy",matchingEnemy)
+            if (matchingEnemy) {
+                const modifiedMonster = { ...matchingEnemy };
+                if (matchingEnemy.name === "targetPoint") {
+                    modifiedMonster.hp = targetPointHP;
+                }
+                acc[monster.area].push(modifiedMonster);
+            }
+        }
+        return acc;
+    }, {});
+    
+    console.log(selectedMonstersByArea);
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 items-center flex-1">
       <div className="w-full  flex flex-col flex-1 gap-y-2 items-center overflow-hidden">
@@ -557,6 +668,7 @@ const MonstSelectTab = () => {
               console.log("selectMon", selectMon);
               console.log("selectMonList", selectMonList);
               console.log("monsterList", monsterList);
+              console.log("scriptLevel", scriptLevel);
             }}
           >
             怪物
@@ -681,7 +793,9 @@ const MonstSelectTab = () => {
           iconPos="right"
           raised
           onClick={() => {
-            SendMonData(updateMonsterList);
+            // LocalupdateMonList(selectMonList);
+            monDetail();
+            // SendMonData(selectMonList);
           }}
         />
       </div>

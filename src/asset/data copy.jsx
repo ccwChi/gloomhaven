@@ -74,7 +74,7 @@ const record = [
 
 const enemyList =[
   {
-      2: [
+      "scriptLv2": [
           {
               "name": "targetPoint",
               "chineseName": "目標點",
@@ -93,10 +93,88 @@ const enemyList =[
                   "中毒"
               ]
           },
+          {
+              "name": "blackSludgeEX",
+              "chineseName": "黑色汙泥-菁英",
+              "isElite": true,
+              "hp": 11,
+              "move": 1,
+              "att": 3,
+              "shield": 1,
+              "ability": [
+                  "中毒"
+              ]
+          },
+          {
+              "name": "ratMonstrosity",
+              "chineseName": "鼠類巨怪",
+              "isElite": false,
+              "hp": 5,
+              "move": 2,
+              "att": 2,
+              "ability": [
+                  "死亡時鄰近一格敵人受到1點傷害"
+              ]
+          },
+          {
+              "name": "ratMonstrosityEX",
+              "chineseName": "鼠類巨怪-菁英",
+              "isElite": true,
+              "hp": 8,
+              "move": 1,
+              "att": 3,
+              "ability": [
+                  "死亡時鄰近一格敵人受到2點傷害"
+              ]
+          },
+          {
+              "name": "giantViper",
+              "chineseName": "巨型蝰蛇",
+              "isElite": false,
+              "hp": 4,
+              "move": 3,
+              "att": 1,
+              "ability": [
+                  "中毒"
+              ]
+          },
+          {
+              "name": "giantViperEX",
+              "chineseName": "巨型蝰蛇-菁英",
+              "isElite": true,
+              "hp": 7,
+              "move": 3,
+              "att": 2,
+              "ability": [
+                  "中毒"
+              ]
+          },
+          {
+              "name": "chaosDemon",
+              "chineseName": "渾沌惡魔",
+              "isElite": false,
+              "hp": 11,
+              "move": 3,
+              "att": 3,
+              "ability": [
+                  "迷茫"
+              ]
+          },
+          {
+              "name": "chaosDemonEX",
+              "chineseName": "渾沌惡魔-菁英",
+              "isElite": true,
+              "hp": 14,
+              "move": 4,
+              "att": 5,
+              "ability": [
+                  "迷茫"
+              ]
+          }
       ]
   },
   {
-      3: [
+      "scriptLv3": [
           {
               "name": "targetPoint",
               "chineseName": "目標點",
@@ -113,6 +191,82 @@ const enemyList =[
               "shield": 1,
               "ability": [
                   "中毒"
+              ]
+          },
+          {
+              "name": "blackSludgeEX",
+              "chineseName": "黑色汙泥-菁英",
+              "isElite": true,
+              "hp": 11,
+              "move": 2,
+              "att": 3,
+              "shield": 1,
+              "ability": {}
+          },
+          {
+              "name": "ratMonstrosity",
+              "chineseName": "鼠類巨怪",
+              "isElite": false,
+              "hp": 6,
+              "move": 2,
+              "att": 3,
+              "ability": [
+                  "死亡時鄰近一格敵人受到2點傷害"
+              ]
+          },
+          {
+              "name": "ratMonstrosityEX",
+              "chineseName": "鼠類巨怪-菁英",
+              "isElite": true,
+              "hp": 10,
+              "move": 2,
+              "att": 3,
+              "ability": [
+                  "死亡時鄰近一格敵人受到2點傷害"
+              ]
+          },
+          {
+              "name": "giantViper",
+              "chineseName": "巨型蝰蛇",
+              "isElite": false,
+              "hp": 4,
+              "move": 3,
+              "att": 2,
+              "ability": [
+                  "中毒"
+              ]
+          },
+          {
+              "name": "giantViperEX",
+              "chineseName": "巨型蝰蛇-菁英",
+              "isElite": true,
+              "hp": 8,
+              "move": 3,
+              "att": 3,
+              "ability": [
+                  "中毒"
+              ]
+          },
+          {
+              "name": "chaosDemon",
+              "chineseName": "渾沌惡魔",
+              "isElite": false,
+              "hp": 12,
+              "move": 3,
+              "att": 4,
+              "ability": [
+                  "迷茫"
+              ]
+          },
+          {
+              "name": "chaosDemonEX",
+              "chineseName": "渾沌惡魔-菁英",
+              "isElite": true,
+              "hp": 18,
+              "move": 5,
+              "att": 5,
+              "ability": [
+                  "迷茫"
               ]
           }
       ]

@@ -40,8 +40,12 @@ const sidebarStore = create((set) => ({
 }));
 
 const monsterStore = create((set) => ({
-  monsterList: false,
+  monsterList: [],
   updateMonsterList: (newState) => set({ monsterList: newState }),
+}));
+const scriptLevelStore = create((set) => ({
+  scriptLevel: "",
+  updateScriptLevel: (newState) => set({ scriptLevel: newState }),
 }));
 
 export {
@@ -53,4 +57,5 @@ export {
   sceneStore,
   sidebarStore,
   monsterStore,
+  scriptLevelStore,
 };

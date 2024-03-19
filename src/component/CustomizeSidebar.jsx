@@ -1,25 +1,12 @@
 import React, { useEffect } from "react";
 import { record } from "../asset/data";
-import { myStateStore, sidebarStore } from "../utils/useStore";
+import { myStateStore, scriptLevelStore, sidebarStore } from "../utils/useStore";
 import { Sidebar } from "primereact/sidebar";
 
 const CustomizeSidebar = () => {
   const { sidebarVisible, updateSidebarVisible } = sidebarStore();
   const { myState, updateMyState } = myStateStore();
-
-  useEffect(() => {}, [myState]);
-  function calculateStageLevel(record) {
-    const totalLevel = record[0].roleData.reduce(
-      (acc, role) => acc + role.level,
-      0
-    );
-    // 計算平均等級
-    const averageLevel = Math.ceil(totalLevel / record[0].roleData.length);
-    // console.log(averageLevel);
-    // 使用 Math.ceil() 函數向上取整
-
-    return averageLevel;
-  }
+  const { scriptLevel, updateScriptLevel } = scriptLevelStore();
 
   return (
     <div className="card flex justify-content-center">
@@ -64,7 +51,7 @@ const CustomizeSidebar = () => {
             </div>
             <div className="inline-flex flex-1">
               <p className="w-fit">{"關卡等級: "}&nbsp;</p>
-              <p>{calculateStageLevel(record)}</p>
+              <p>{scriptLevel}</p>
             </div>
           </div>
           <div className="flex gap-2 w-full ">
