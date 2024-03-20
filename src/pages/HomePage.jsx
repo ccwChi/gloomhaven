@@ -44,7 +44,8 @@ const HomePage = ({
   const [targetPointHP, setTargetPointHP] = useState(0);
   const [selectMon, setSelectMon] = useState("");
   const [selectMonList, setSelectMonList] = useState([]);
-
+  const [checkMonster ,setCheckMonster] = useState(false)
+  const [checkPlayer ,setCheckPlayer] = useState(false)
   useEffect(() => {
     if (monsterList.length > 0) {
       setSelectMonList(monsterList);
@@ -74,6 +75,7 @@ const HomePage = ({
   useEffect(() => {
     updateMyState({
       role: "石晶爆破手",
+      order:1,
       player: "大雄",
       gold: "36",
       exp: "78",
@@ -129,7 +131,7 @@ const HomePage = ({
             headertitle: { className: "text-xl" },
           }}
         >
-          <MonstSelectTab />
+          <MonstSelectTab setCheckMonster={setCheckMonster} checkMonster={checkMonster}/>
         </TabPanel>
         <TabPanel
           header="怪物資訊"
@@ -141,7 +143,7 @@ const HomePage = ({
             headertitle: { className: "text-xl" },
           }}
         >
-          <MonDetailList />
+          <MonDetailList setCheckMonster={setCheckMonster} checkMonster={checkMonster}/>
         </TabPanel>
         <TabPanel
           header="角色技能卡"
@@ -153,7 +155,7 @@ const HomePage = ({
             headertitle: { className: "text-xl" },
           }}
         >
-          <PlayerStateTab />
+          <PlayerStateTab checkPlayer={checkPlayer} setCheckPlayer={setCheckPlayer}/>
         </TabPanel>
       </TabView>
       <div className="flex w-full justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
@@ -172,7 +174,7 @@ const HomePage = ({
 
 export default HomePage;
 
-const MonDetailList = () => {
+const MonDetailList = ({setCheckMonster, checkMonster}) => {
   const { conn, updateConn } = connStore();
   const { myState, updateMyState } = myStateStore();
   const { roomState, updateRoomState } = roomStore();
@@ -193,8 +195,16 @@ const MonDetailList = () => {
   );
 };
 
-const PlayerStateTab = () => {
-  const { myState } = myStateStore();
+const PlayerStateTab = ({setCheckPlayer, checkPlayer}) => {
+  const { conn, updateConn } = connStore();
+  const { myState, updateMyState } = myStateStore();
+  const { roomState, updateRoomState } = roomStore();
+  const { playerState, updatePlayerState } = playerStore();
+  const { gameState, updateGameState } = gameStore();
+  const { gameScene, updateGameScene } = sceneStore();
+  const { sidebarVisible, updateSidebarVisible } = sidebarStore();
+  const { scriptLevel, updateScriptLevel } = scriptLevelStore();
+  const { monsterList, updateMonsterList } = monsterStore();
   const [attackMod, setAttackMod] = useState({});
   const attackModType = ["+0", "+1", "-1", "+2", "-2", "x2", "x0"];
   const [data, setData] = useState([
@@ -305,11 +315,11 @@ const PlayerStateTab = () => {
   };
   const productTemplate = (product) => {
     return (
-      <div className="mx-8">
+      <div className="mx-8 flex justify-center">
         <img
           src={require(`../asset/charSkill/${product.id}.png`)} // 修改图片路径的构建方式
           alt={product.image}
-          className="w-fit shadow-2"
+          className="w-fit shadow-2 max-w-28"
         />
       </div>
     );
@@ -333,12 +343,12 @@ const PlayerStateTab = () => {
             value={data}
             numVisible={1}
             numScroll={1}
-            className="custom-carousel px-12 py-4 flex"
+            className="custom-carousel  py-4 flex"
             circular
             itemTemplate={productTemplate}
             pt={{
-              previousButton: { className: "w-4 m-0 p-0" },
-              nextButton: { className: " w-4 m-0 p-0" },
+              previousButton: { className: "w-4 m-2 p-0" },
+              nextButton: { className: " w-4 m-2 p-0" },
               indicators: { className: "flex gap-1" },
               indicator: { className: "w-2 m-0 p-0" },
               indicatorbutton: { className: "w-2 m-0 p-0" },
@@ -347,7 +357,11 @@ const PlayerStateTab = () => {
           <div className="flex flex-col flex-wrap justify-content-center gap-3 p-3">
             <h3
               onClick={() => {
-                console.log(selectedItems);
+                console.log("myState", myState);
+                console.log("playerState", playerState);
+                console.log("gameState", gameState);
+                console.log("monsterList", monsterList);
+                console.log("scriptLevel", scriptLevel);
               }}
             >
               角色 LV2 只能選擇 1 張 LV2 技能卡，LV 3總共可以選 2 張 LV2 及 LV3
@@ -501,7 +515,7 @@ const PlayerStateTab = () => {
   );
 };
 
-const MonstSelectTab = () => {
+const MonstSelectTab = ({setCheckMonster, checkMonster}) => {
   const { conn, updateConn } = connStore();
   const { myState, updateMyState } = myStateStore();
   const { roomState, updateRoomState } = roomStore();
@@ -532,7 +546,7 @@ const MonstSelectTab = () => {
   ];
 
   useEffect(() => {
-    console.log("monsterList",monsterList)
+    console.log("monsterList", monsterList);
     if (monsterList.length > 0) {
       setSelectMonList(monsterList);
     }
@@ -578,76 +592,36 @@ const MonstSelectTab = () => {
       };
     }
   });
-  // useEffect(() => {
-  //   console.log("areaCount", areaCount);
-  // }, [areaCount]);
 
-  // const monDetail = () => {
-  //   const selectedEnemies = enemyList.find((enemy) =>
-  //     enemy.hasOwnProperty(scriptLevel)
-  //   )[scriptLevel];
-  //   console.log("selectedEnemies",selectedEnemies)
-  //   // Group monsters by area
-  //   const groupedMonsters = updatedMonsterData.reduce((acc, monster) => {
-  //     if (!acc[monster.area]) {
-  //       acc[monster.area] = [];
-  //     }
-  //     acc[monster.area].push(monster);
-  //     return acc;
-  //   }, {});
-  //   console.log("groupedMonsters",groupedMonsters)
-  //   console.log("Object.keys(groupedMonsters)",Object.keys(groupedMonsters))
-  //   // Map through each area and filter/select monsters
-  //   const selectedMonsters = Object.keys(groupedMonsters).map((area) => {
-  //     const selectedMonstersInArea = groupedMonsters[area]
-  //       .map((monster) => {
-  //         const matchingEnemy = selectedEnemies.find(
-  //           (enemy) => {
-  //           console.log("enemy.name",enemy,"monster.chineseName",monster);
-  //           return enemy.name === monster.code
-  //         }
-  //         );
-  //         console.log("matchingEnemy",matchingEnemy)
-  //         if (matchingEnemy) {
-  //           const modifiedMonster = { ...matchingEnemy };
-  //           if (matchingEnemy.name === "targetPoint") {
-  //             modifiedMonster.hp = targetPointHP;
-  //           }
-  //           console.log("monster.name",monster.name,"modifiedMonster",modifiedMonster)
-  //           return modifiedMonster;
-  //         }
-  //         return null; // Return null if no matching enemy found
-  //       })
-  //       .filter(Boolean); // Filter out null values
-  //     return selectedMonstersInArea;
-  //   });
-
-  //   console.log(selectedMonsters);
-  // };
   const monDetail = () => {
-    const selectedEnemies = enemyList.find(enemy => enemy.hasOwnProperty(scriptLevel))[scriptLevel];
-    console.log()
+    const selectedEnemies = enemyList.find((enemy) =>
+      enemy.hasOwnProperty(scriptLevel)
+    )[scriptLevel];
+    console.log();
     // 建立以區域為 key 的物件
     const selectedMonstersByArea = updatedMonsterData.reduce((acc, monster) => {
-        if (monster.name === "區域") {
-            acc[monster.area] = [];
-        } else {
-            if (!acc[monster.area]) {
-                acc[monster.area] = [];
-            }
-            const matchingEnemy = selectedEnemies.find(enemy => {console.log("enemy",enemy,"monster",monster); return(enemy.name  === monster.code)});
-            console.log("matchingEnemy",matchingEnemy)
-            if (matchingEnemy) {
-                const modifiedMonster = { ...matchingEnemy };
-                if (matchingEnemy.name === "targetPoint") {
-                    modifiedMonster.hp = targetPointHP;
-                }
-                acc[monster.area].push(modifiedMonster);
-            }
+      if (monster.name === "區域") {
+        acc[monster.area] = [];
+      } else {
+        if (!acc[monster.area]) {
+          acc[monster.area] = [];
         }
-        return acc;
+        const matchingEnemy = selectedEnemies.find((enemy) => {
+          console.log("enemy", enemy, "monster", monster);
+          return enemy.name === monster.code;
+        });
+        console.log("matchingEnemy", matchingEnemy);
+        if (matchingEnemy) {
+          const modifiedMonster = { ...matchingEnemy };
+          if (matchingEnemy.name === "targetPoint") {
+            modifiedMonster.hp = targetPointHP;
+          }
+          acc[monster.area].push(modifiedMonster);
+        }
+      }
+      return acc;
     }, {});
-    
+
     console.log(selectedMonstersByArea);
   };
 
@@ -789,12 +763,13 @@ const MonstSelectTab = () => {
         </div>
         <Button
           label="確認怪物"
-          icon="pi pi-check"
+          icon={checkMonster && "pi pi-check"}
           iconPos="right"
           raised
           onClick={() => {
             // LocalupdateMonList(selectMonList);
             monDetail();
+            setCheckMonster(!checkMonster)
             // SendMonData(selectMonList);
           }}
         />
