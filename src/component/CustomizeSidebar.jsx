@@ -37,7 +37,7 @@ const CustomizeSidebar = () => {
             </div>
             <div className="inline-flex flex-1">
               <p className="w-fit">{"最大HP: "}&nbsp;</p>
-              <p>{myState.exp}</p>
+              <p>{myState.maxHp}</p>
             </div>
           </div>
           <div className="flex gap-2 w-full ">

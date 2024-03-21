@@ -33,6 +33,7 @@ import HomePage from "./pages/HomePage";
 import { Sidebar } from "primereact/sidebar";
 import CustomizeSidebar from "./component/CustomizeSidebar";
 import { TabView, TabPanel } from "primereact/tabview";
+import SelectMonAndSkill from "./pages/SelectMonAndSkill";
 const App = () => {
   const { conn, updateConn } = connStore();
   const connLocal = connLocalStore((store) => store.connLocal);
@@ -96,32 +97,32 @@ const App = () => {
 
       newConn.on("LeaveRoom", (connectedPlayers) => {
         updatePlayerState(connectedPlayers);
-        updatePlayerStateLocal(connectedPlayers);
+        // updatePlayerStateLocal(connectedPlayers);
       });
 
       newConn.on("JoinRoom", (connectedPlayers) => {
         updatePlayerState(connectedPlayers);
-        updatePlayerStateLocal(connectedPlayers);
+        // updatePlayerStateLocal(connectedPlayers);
         // console.log("joinroom myState", myState);
       });
 
       newConn.on("SelectRole", (connectedPlayers) => {
         updatePlayerState(connectedPlayers);
-        updatePlayerStateLocal(connectedPlayers);
-        console.log("SelectRole myState", myState);
+        // updatePlayerStateLocal(connectedPlayers);
+        // console.log("SelectRole myState", myState);
       });
 
       newConn.on("ReadyChangeScene", (connectedPlayers) => {
         updatePlayerState(connectedPlayers);
         updateGameState(connectedPlayers);
-        updatePlayerStateLocal(connectedPlayers);
-        updateGameStateLocal(connectedPlayers);
+        // updatePlayerStateLocal(connectedPlayers);
+        // updateGameStateLocal(connectedPlayers);
         // console.log("SelectRole myState", myState);
       });
 
       newConn.on("SendMonData", (monDataList) => {
         updateMonsterList(monDataList);
-        updateMonsterListLocal(monDataList);
+        // updateMonsterListLocal(monDataList);
         // console.log("monDataList", monDataList);
       });
 
@@ -142,13 +143,13 @@ const App = () => {
 
   return (
     <>
+      {/* {!conn && <SelectMonAndSkill joinRoom={joinRoom} />} */}
       {!conn && <HomePage joinRoom={joinRoom} />}
-      {/* {<HomePage joinRoom={joinRoom} />} */}
 
       {conn && gameScene === "scene1" && <RoleSelectPage />}
       {/* {connLocal && gameSceneLocal === "scene1" && <RoleSelectPage />} */}
 
-      {conn && gameScene === "scene2" && <EnemySelect />}
+      {conn && gameScene === "scene2" && <SelectMonAndSkill />}
       {/* {connLocal && gameSceneLocal === "scene2" && <EnemySelect />} */}
     </>
   );
