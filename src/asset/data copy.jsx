@@ -1,277 +1,359 @@
 const record = [
   {
-    recordName: "紀錄01",
-    roleData: [
-      {
-        role: "赤色守衛",
-        player: "",
-        gold: "21",
-        exp: "73",
+    name: "紀錄",
+    roleData: {
+      RG: {
+        name: "赤色守衛",
         level: 2,
-        averageLevel:"",
-        hp: "",
-        cardMount: 10,
-        perk: "",
-        object: ["手套", "鞋子", "竹蜻蜓"],
-        record: "",
-        style:
-          "text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2",
       },
-      {
-        role: "石晶爆破手",
-        player: "",
-        gold: "36",
-        exp: "78",
+      DE: {
+        name: "石晶爆破手",
         level: 2,
-        averageLevel:"",
-        hp: "",
-        cardMount: 9,
-        perk: "",
-        object: ["手套", "鞋子", "竹蜻蜓"],
-        record: "",
-        style:
-          "text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2",
       },
-      {
-        role: "虛空守望者",
-        player: "",
-        gold: "32",
-        exp: "78",
+      VW: {
+        name: "虛空守望者",
         level: 2,
-        averageLevel:"",
-        hp: "",
-        cardMount: 11,
-        perk: "",
-        object: ["手套", "鞋子", "竹蜻蜓"],
-        record: "",
-        style:
-          "text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2",
       },
-      {
-        role: "鋼角飛斧手",
-        player: "",
-        gold: "67",
-        exp: "75",
+      HA: {
+        name: "鋼角飛斧手",
         level: 2,
-        averageLevel:"",
-        hp: "",
-        cardMount: 10,
-        perk: "",
-        object: ["手套", "鞋子", "竹蜻蜓"],
-        record: "",
-        style:
-          "text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ",
       },
-    ],
-    RoundState: [],
-    ChapterDescript: [
-      { map: "酒館", describe: "發生什麼事1" },
-      { map: "地下水道", describe: "發生什麼事2" },
-      { map: "研究室", describe: "發生什麼事3" },
-    ],
+    }
   },
 ];
 
-const enemyList =[
+const enemyList = [
   {
-      "scriptLv2": [
-          {
-              "name": "targetPoint",
-              "chineseName": "目標點",
-              "isElite": false,
-              "hp": ""
-          },
-          {
-              "name": "blackSludge",
-              "chineseName": "黑色汙泥",
-              "isElite": false,
-              "hp": 7,
-              "move": 1,
-              "att": 2,
-              "shield": 1,
-              "ability": [
-                  "中毒"
-              ]
-          },
-          {
-              "name": "blackSludgeEX",
-              "chineseName": "黑色汙泥-菁英",
-              "isElite": true,
-              "hp": 11,
-              "move": 1,
-              "att": 3,
-              "shield": 1,
-              "ability": [
-                  "中毒"
-              ]
-          },
-          {
-              "name": "ratMonstrosity",
-              "chineseName": "鼠類巨怪",
-              "isElite": false,
-              "hp": 5,
-              "move": 2,
-              "att": 2,
-              "ability": [
-                  "死亡時鄰近一格敵人受到1點傷害"
-              ]
-          },
-          {
-              "name": "ratMonstrosityEX",
-              "chineseName": "鼠類巨怪-菁英",
-              "isElite": true,
-              "hp": 8,
-              "move": 1,
-              "att": 3,
-              "ability": [
-                  "死亡時鄰近一格敵人受到2點傷害"
-              ]
-          },
-          {
-              "name": "giantViper",
-              "chineseName": "巨型蝰蛇",
-              "isElite": false,
-              "hp": 4,
-              "move": 3,
-              "att": 1,
-              "ability": [
-                  "中毒"
-              ]
-          },
-          {
-              "name": "giantViperEX",
-              "chineseName": "巨型蝰蛇-菁英",
-              "isElite": true,
-              "hp": 7,
-              "move": 3,
-              "att": 2,
-              "ability": [
-                  "中毒"
-              ]
-          },
-          {
-              "name": "chaosDemon",
-              "chineseName": "渾沌惡魔",
-              "isElite": false,
-              "hp": 11,
-              "move": 3,
-              "att": 3,
-              "ability": [
-                  "迷茫"
-              ]
-          },
-          {
-              "name": "chaosDemonEX",
-              "chineseName": "渾沌惡魔-菁英",
-              "isElite": true,
-              "hp": 14,
-              "move": 4,
-              "att": 5,
-              "ability": [
-                  "迷茫"
-              ]
-          }
-      ]
+    scriptLv0: [
+      {
+        name: "targetPoint",
+        chineseName: "目標點",
+        isElite: false,
+        hp: "",
+      },
+      {
+        name: "blackSludge",
+        chineseName: "黑色汙泥",
+        isElite: false,
+        hp: 4,
+        move: 1,
+        att: 2,
+        ability: [],
+      },
+      {
+        name: "blackSludgeEX",
+        chineseName: "黑色汙泥-菁英",
+        isElite: true,
+        hp: 8,
+        move: 1,
+        ability: [],
+      },
+      {
+        name: "ratMonstrosity",
+        chineseName: "鼠類巨怪",
+        isElite: false,
+        hp: 4,
+        move: 1,
+        att: 1,
+        ability: ["死亡時鄰近一格敵人受到1點傷害"],
+      },
+      {
+        name: "ratMonstrosityEX",
+        chineseName: "鼠類巨怪-菁英",
+        isElite: true,
+        hp: 6,
+        move: 1,
+        att: 2,
+        ability: ["死亡時鄰近一格敵人受到1點傷害"],
+      },
+      {
+        name: "giantViper",
+        chineseName: "巨型蝰蛇",
+        isElite: false,
+        hp: 2,
+        move: 2,
+        att: 1,
+        debuff: ["中毒"],
+      },
+      {
+        name: "giantViperEX",
+        chineseName: "巨型蝰蛇-菁英",
+        isElite: true,
+        hp: 3,
+        move: 2,
+        att: 2,
+        debuff: ["中毒"],
+      },
+      {
+        name: "chaosDemon",
+        chineseName: "渾沌惡魔",
+        isElite: false,
+        hp: 7,
+        move: 3,
+        att: 2,
+        debuff: ["迷茫"],
+      },
+      {
+        name: "chaosDemonEX",
+        chineseName: "渾沌惡魔-菁英",
+        isElite: true,
+        hp: 10,
+        move: 4,
+        att: 3,
+        debuff: ["迷茫"],
+      },
+    ],
   },
   {
-      "scriptLv3": [
-          {
-              "name": "targetPoint",
-              "chineseName": "目標點",
-              "isElite": false,
-              "hp": ""
-          },
-          {
-              "name": "blackSludge",
-              "chineseName": "黑色汙泥",
-              "isElite": false,
-              "hp": 8,
-              "move": 1,
-              "att": 3,
-              "shield": 1,
-              "ability": [
-                  "中毒"
-              ]
-          },
-          {
-              "name": "blackSludgeEX",
-              "chineseName": "黑色汙泥-菁英",
-              "isElite": true,
-              "hp": 11,
-              "move": 2,
-              "att": 3,
-              "shield": 1,
-              "ability": {}
-          },
-          {
-              "name": "ratMonstrosity",
-              "chineseName": "鼠類巨怪",
-              "isElite": false,
-              "hp": 6,
-              "move": 2,
-              "att": 3,
-              "ability": [
-                  "死亡時鄰近一格敵人受到2點傷害"
-              ]
-          },
-          {
-              "name": "ratMonstrosityEX",
-              "chineseName": "鼠類巨怪-菁英",
-              "isElite": true,
-              "hp": 10,
-              "move": 2,
-              "att": 3,
-              "ability": [
-                  "死亡時鄰近一格敵人受到2點傷害"
-              ]
-          },
-          {
-              "name": "giantViper",
-              "chineseName": "巨型蝰蛇",
-              "isElite": false,
-              "hp": 4,
-              "move": 3,
-              "att": 2,
-              "ability": [
-                  "中毒"
-              ]
-          },
-          {
-              "name": "giantViperEX",
-              "chineseName": "巨型蝰蛇-菁英",
-              "isElite": true,
-              "hp": 8,
-              "move": 3,
-              "att": 3,
-              "ability": [
-                  "中毒"
-              ]
-          },
-          {
-              "name": "chaosDemon",
-              "chineseName": "渾沌惡魔",
-              "isElite": false,
-              "hp": 12,
-              "move": 3,
-              "att": 4,
-              "ability": [
-                  "迷茫"
-              ]
-          },
-          {
-              "name": "chaosDemonEX",
-              "chineseName": "渾沌惡魔-菁英",
-              "isElite": true,
-              "hp": 18,
-              "move": 5,
-              "att": 5,
-              "ability": [
-                  "迷茫"
-              ]
-          }
-      ]
-  }
-]
+    scriptLv1: [
+      {
+        name: "targetPoint",
+        chineseName: "目標點",
+        isElite: false,
+        hp: "",
+      },
+      {
+        name: "blackSludge",
+        chineseName: "黑色汙泥",
+        isElite: false,
+        hp: 5,
+        move: 1,
+        att: 2,
+        ability: [],
+      },
+      {
+        name: "blackSludgeEX",
+        chineseName: "黑色汙泥-菁英",
+        isElite: true,
+        hp: 9,
+        move: 1,
+        ability: [],
+      },
+      {
+        name: "ratMonstrosity",
+        chineseName: "鼠類巨怪",
+        isElite: false,
+        hp: 4,
+        move: 1,
+        att: 2,
+        ability: ["死亡時鄰近一格敵人受到1點傷害"],
+      },
+      {
+        name: "ratMonstrosityEX",
+        chineseName: "鼠類巨怪-菁英",
+        isElite: true,
+        hp: 7,
+        move: 1,
+        att: 2,
+        ability: ["死亡時鄰近一格敵人受到2點傷害"],
+      },
+      {
+        name: "giantViper",
+        chineseName: "巨型蝰蛇",
+        isElite: false,
+        hp: 3,
+        move: 2,
+        att: 1,
+        debuff: ["中毒"],
+      },
+      {
+        name: "giantViperEX",
+        chineseName: "巨型蝰蛇-菁英",
+        isElite: true,
+        hp: 5,
+        move: 2,
+        att: 2,
+        debuff: ["中毒"],
+      },
+      {
+        name: "chaosDemon",
+        chineseName: "渾沌惡魔",
+        isElite: false,
+        hp: 8,
+        move: 3,
+        att: 3,
+        debuff: ["迷茫"],
+      },
+      {
+        name: "chaosDemonEX",
+        chineseName: "渾沌惡魔-菁英",
+        isElite: true,
+        hp: 12,
+        move: 4,
+        att: 4,
+        debuff: ["迷茫"],
+      },
+    ],
+  },
+  {
+    scriptLv2: [
+      {
+        name: "targetPoint",
+        chineseName: "目標點",
+        isElite: false,
+        hp: "",
+      },
+      {
+        name: "blackSludge",
+        chineseName: "黑色汙泥",
+        isElite: false,
+        hp: 7,
+        move: 1,
+        att: 2,
+        ability: ["護盾1"],
+        debuff: ["中毒"],
+      },
+      {
+        name: "blackSludgeEX",
+        chineseName: "黑色汙泥-菁英",
+        isElite: true,
+        hp: 11,
+        move: 1,
+        att: 3,
+        ability: ["護盾1"],
+        debuff: ["中毒"],
+      },
+      {
+        name: "ratMonstrosity",
+        chineseName: "鼠類巨怪",
+        isElite: false,
+        hp: 5,
+        move: 2,
+        att: 2,
+        ability: ["死亡時鄰近一格敵人受到1點傷害"],
+      },
+      {
+        name: "ratMonstrosityEX",
+        chineseName: "鼠類巨怪-菁英",
+        isElite: true,
+        hp: 8,
+        move: 1,
+        att: 3,
+        ability: ["死亡時鄰近一格敵人受到2點傷害"],
+      },
+      {
+        name: "giantViper",
+        chineseName: "巨型蝰蛇",
+        isElite: false,
+        hp: 4,
+        move: 3,
+        att: 1,
+        debuff: ["中毒"],
+      },
+      {
+        name: "giantViperEX",
+        chineseName: "巨型蝰蛇-菁英",
+        isElite: true,
+        hp: 7,
+        move: 3,
+        att: 2,
+        debuff: ["中毒"],
+      },
+      {
+        name: "chaosDemon",
+        chineseName: "渾沌惡魔",
+        isElite: false,
+        hp: 11,
+        move: 3,
+        att: 3,
+        debuff: ["迷茫"],
+      },
+      {
+        name: "chaosDemonEX",
+        chineseName: "渾沌惡魔-菁英",
+        isElite: true,
+        hp: 14,
+        move: 4,
+        att: 5,
+        debuff: ["迷茫"],
+      },
+    ],
+  },
+  {
+    scriptLv3: [
+      {
+        name: "targetPoint",
+        chineseName: "目標點",
+        isElite: false,
+        hp: "",
+      },
+      {
+        name: "blackSludge",
+        chineseName: "黑色汙泥",
+        isElite: false,
+        hp: 8,
+        move: 1,
+        att: 3,
+        ability: ["護盾1"],
+        debuff: ["中毒"],
+      },
+      {
+        name: "blackSludgeEX",
+        chineseName: "黑色汙泥-菁英",
+        isElite: true,
+        hp: 11,
+        move: 2,
+        att: 3,
+        ability: ["護盾1"],
+        debuff: ["中毒"],
+      },
+      {
+        name: "ratMonstrosity",
+        chineseName: "鼠類巨怪",
+        isElite: false,
+        hp: 6,
+        move: 2,
+        att: 3,
+        ability: ["死亡時鄰近一格敵人受到2點傷害"],
+      },
+      {
+        name: "ratMonstrosityEX",
+        chineseName: "鼠類巨怪-菁英",
+        isElite: true,
+        hp: 10,
+        move: 2,
+        att: 3,
+        ability: ["死亡時鄰近一格敵人受到2點傷害"],
+      },
+      {
+        name: "giantViper",
+        chineseName: "巨型蝰蛇",
+        isElite: false,
+        hp: 4,
+        move: 3,
+        att: 2,
+        debuff: ["中毒"],
+      },
+      {
+        name: "giantViperEX",
+        chineseName: "巨型蝰蛇-菁英",
+        isElite: true,
+        hp: 8,
+        move: 3,
+        att: 3,
+        debuff: ["中毒"],
+      },
+      {
+        name: "chaosDemon",
+        chineseName: "渾沌惡魔",
+        isElite: false,
+        hp: 12,
+        move: 3,
+        att: 4,
+        debuff: ["迷茫"],
+      },
+      {
+        name: "chaosDemonEX",
+        chineseName: "渾沌惡魔-菁英",
+        isElite: true,
+        hp: 18,
+        move: 5,
+        att: 5,
+        debuff: ["迷茫"],
+      },
+    ],
+  },
+];
 
 const enemyAction = {
   blackSludge: [
@@ -515,392 +597,4 @@ const enemyAction = {
   ],
 };
 
-export { record, enemyList as enenmyList, enemyAction };
-
-
-// const enenmyList =[
-//   {
-//       "scriptLv0": [
-//           {
-//               "name": "targetPoint",
-//               "chineseName": "目標點",
-//               "isElite": false,
-//               "hp": ""
-//           },
-//           {
-//               "name": "blackSludge",
-//               "chineseName": "黑色汙泥",
-//               "isElite": false,
-//               "hp": 4,
-//               "move": 1,
-//               "att": 2,
-//               "ability": []
-//           },
-//           {
-//               "name": "blackSludgeEX",
-//               "chineseName": "黑色汙泥-菁英",
-//               "isElite": true,
-//               "hp": 8,
-//               "move": 1,
-//               "ability": []
-//           },
-//           {
-//               "name": "ratMonstrosity",
-//               "chineseName": "鼠類巨怪",
-//               "isElite": false,
-//               "hp": 4,
-//               "move": 1,
-//               "att": 1,
-//               "ability": [
-//                   "死亡時鄰近一格敵人受到1點傷害"
-//               ]
-//           },
-//           {
-//               "name": "ratMonstrosityEX",
-//               "chineseName": "鼠類巨怪-菁英",
-//               "isElite": true,
-//               "hp": 6,
-//               "move": 1,
-//               "att": 2,
-//               "ability": [
-//                   "死亡時鄰近一格敵人受到1點傷害"
-//               ]
-//           },
-//           {
-//               "name": "giantViper",
-//               "chineseName": "巨型蝰蛇",
-//               "isElite": false,
-//               "hp": 2,
-//               "move": 2,
-//               "att": 1,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "giantViperEX",
-//               "chineseName": "巨型蝰蛇-菁英",
-//               "isElite": true,
-//               "hp": 3,
-//               "move": 2,
-//               "att": 2,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "chaosDemon",
-//               "chineseName": "渾沌惡魔",
-//               "isElite": false,
-//               "hp": 7,
-//               "move": 3,
-//               "att": 2,
-//               "ability": [
-//                   "迷茫"
-//               ]
-//           },
-//           {
-//               "name": "chaosDemonEX",
-//               "chineseName": "渾沌惡魔-菁英",
-//               "isElite": true,
-//               "hp": 10,
-//               "move": 4,
-//               "att": 3,
-//               "ability": [
-//                   "迷茫"
-//               ]
-//           }
-//       ]
-//   },
-//   {
-//       "scriptLv1": [
-//           {
-//               "name": "targetPoint",
-//               "chineseName": "目標點",
-//               "isElite": false,
-//               "hp": ""
-//           },
-//           {
-//               "name": "blackSludge",
-//               "chineseName": "黑色汙泥",
-//               "isElite": false,
-//               "hp": 5,
-//               "move": 1,
-//               "att": 2,
-//               "ability": []
-//           },
-//           {
-//               "name": "blackSludgeEX",
-//               "chineseName": "黑色汙泥-菁英",
-//               "isElite": true,
-//               "hp": 9,
-//               "move": 1,
-//               "ability": []
-//           },
-//           {
-//               "name": "ratMonstrosity",
-//               "chineseName": "鼠類巨怪",
-//               "isElite": false,
-//               "hp": 4,
-//               "move": 1,
-//               "att": 2,
-//               "ability": [
-//                   "死亡時鄰近一格敵人受到1點傷害"
-//               ]
-//           },
-//           {
-//               "name": "ratMonstrosityEX",
-//               "chineseName": "鼠類巨怪-菁英",
-//               "isElite": true,
-//               "hp": 7,
-//               "move": 1,
-//               "att": 2,
-//               "ability": [
-//                   "死亡時鄰近一格敵人受到2點傷害"
-//               ]
-//           },
-//           {
-//               "name": "giantViper",
-//               "chineseName": "巨型蝰蛇",
-//               "isElite": false,
-//               "hp": 3,
-//               "move": 2,
-//               "att": 1,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "giantViperEX",
-//               "chineseName": "巨型蝰蛇-菁英",
-//               "isElite": true,
-//               "hp": 5,
-//               "move": 2,
-//               "att": 2,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "chaosDemon",
-//               "chineseName": "渾沌惡魔",
-//               "isElite": false,
-//               "hp": 8,
-//               "move": 3,
-//               "att": 3,
-//               "ability": [
-//                   "迷茫"
-//               ]
-//           },
-//           {
-//               "name": "chaosDemonEX",
-//               "chineseName": "渾沌惡魔-菁英",
-//               "isElite": true,
-//               "hp": 12,
-//               "move": 4,
-//               "att": 4,
-//               "ability": [
-//                   "迷茫"
-//               ]
-//           }
-//       ]
-//   },
-//   {
-//       "scriptLv2": [
-//           {
-//               "name": "targetPoint",
-//               "chineseName": "目標點",
-//               "isElite": false,
-//               "hp": ""
-//           },
-//           {
-//               "name": "blackSludge",
-//               "chineseName": "黑色汙泥",
-//               "isElite": false,
-//               "hp": 7,
-//               "move": 1,
-//               "att": 2,
-//               "shield": 1,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "blackSludgeEX",
-//               "chineseName": "黑色汙泥-菁英",
-//               "isElite": true,
-//               "hp": 11,
-//               "move": 1,
-//               "att": 3,
-//               "shield": 1,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "ratMonstrosity",
-//               "chineseName": "鼠類巨怪",
-//               "isElite": false,
-//               "hp": 5,
-//               "move": 2,
-//               "att": 2,
-//               "ability": [
-//                   "死亡時鄰近一格敵人受到1點傷害"
-//               ]
-//           },
-//           {
-//               "name": "ratMonstrosityEX",
-//               "chineseName": "鼠類巨怪-菁英",
-//               "isElite": true,
-//               "hp": 8,
-//               "move": 1,
-//               "att": 3,
-//               "ability": [
-//                   "死亡時鄰近一格敵人受到2點傷害"
-//               ]
-//           },
-//           {
-//               "name": "giantViper",
-//               "chineseName": "巨型蝰蛇",
-//               "isElite": false,
-//               "hp": 4,
-//               "move": 3,
-//               "att": 1,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "giantViperEX",
-//               "chineseName": "巨型蝰蛇-菁英",
-//               "isElite": true,
-//               "hp": 7,
-//               "move": 3,
-//               "att": 2,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "chaosDemon",
-//               "chineseName": "渾沌惡魔",
-//               "isElite": false,
-//               "hp": 11,
-//               "move": 3,
-//               "att": 3,
-//               "ability": [
-//                   "迷茫"
-//               ]
-//           },
-//           {
-//               "name": "chaosDemonEX",
-//               "chineseName": "渾沌惡魔-菁英",
-//               "isElite": true,
-//               "hp": 14,
-//               "move": 4,
-//               "att": 5,
-//               "ability": [
-//                   "迷茫"
-//               ]
-//           }
-//       ]
-//   },
-//   {
-//       "scriptLv3": [
-//           {
-//               "name": "targetPoint",
-//               "chineseName": "目標點",
-//               "isElite": false,
-//               "hp": ""
-//           },
-//           {
-//               "name": "blackSludge",
-//               "chineseName": "黑色汙泥",
-//               "isElite": false,
-//               "hp": 8,
-//               "move": 1,
-//               "att": 3,
-//               "shield": 1,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "blackSludgeEX",
-//               "chineseName": "黑色汙泥-菁英",
-//               "isElite": true,
-//               "hp": 11,
-//               "move": 2,
-//               "att": 3,
-//               "shield": 1,
-//               "ability": {}
-//           },
-//           {
-//               "name": "ratMonstrosity",
-//               "chineseName": "鼠類巨怪",
-//               "isElite": false,
-//               "hp": 6,
-//               "move": 2,
-//               "att": 3,
-//               "ability": [
-//                   "死亡時鄰近一格敵人受到2點傷害"
-//               ]
-//           },
-//           {
-//               "name": "ratMonstrosityEX",
-//               "chineseName": "鼠類巨怪-菁英",
-//               "isElite": true,
-//               "hp": 10,
-//               "move": 2,
-//               "att": 3,
-//               "ability": [
-//                   "死亡時鄰近一格敵人受到2點傷害"
-//               ]
-//           },
-//           {
-//               "name": "giantViper",
-//               "chineseName": "巨型蝰蛇",
-//               "isElite": false,
-//               "hp": 4,
-//               "move": 3,
-//               "att": 2,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "giantViperEX",
-//               "chineseName": "巨型蝰蛇-菁英",
-//               "isElite": true,
-//               "hp": 8,
-//               "move": 3,
-//               "att": 3,
-//               "ability": [
-//                   "中毒"
-//               ]
-//           },
-//           {
-//               "name": "chaosDemon",
-//               "chineseName": "渾沌惡魔",
-//               "isElite": false,
-//               "hp": 12,
-//               "move": 3,
-//               "att": 4,
-//               "ability": [
-//                   "迷茫"
-//               ]
-//           },
-//           {
-//               "name": "chaosDemonEX",
-//               "chineseName": "渾沌惡魔-菁英",
-//               "isElite": true,
-//               "hp": 18,
-//               "move": 5,
-//               "att": 5,
-//               "ability": [
-//                   "迷茫"
-//               ]
-//           }
-//       ]
-//   }
-// ]
+export { record, enemyList, enemyAction };

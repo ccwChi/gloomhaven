@@ -1,10 +1,11 @@
 const record = [
   {
-    recordName: "紀錄01",
-    roleData: [
-      {
-        role: "赤色守衛",
-        order:1,
+    name: "紀錄",
+    roleData: {
+      RG: {
+        name: "赤色守衛",
+        color: "danger",
+        order: 1,
         player: "",
         gold: "21",
         exp: "73",
@@ -24,12 +25,98 @@ const record = [
           x2: 1,
           x0: 1,
         },
-        style:
-          "text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2",
+        skillLib: [
+          {
+            id: "224",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "225",
+            value: 77,
+            lv: "1",
+          },
+          {
+            id: "226",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "227",
+            value: 20,
+            lv: "1",
+          },
+          {
+            id: "228",
+            value: 28,
+            lv: "1",
+          },
+          {
+            id: "229",
+            value: 88,
+            lv: "1",
+          },
+          {
+            id: "230",
+            value: 42,
+            lv: "1",
+          },
+          {
+            id: "231",
+            value: 19,
+            lv: "1",
+          },
+          {
+            id: "232",
+            value: 37,
+            lv: "1",
+          },
+          {
+            id: "233",
+            value: 66,
+            lv: "1",
+          },
+          {
+            id: "234",
+            value: 55,
+            lv: "X",
+          },
+          {
+            id: "235",
+            value: 61,
+            lv: "X",
+          },
+          {
+            id: "236",
+            value: 52,
+            lv: "X",
+          },
+          {
+            id: "237",
+            value: 33,
+            lv: "2",
+          },
+          {
+            id: "238",
+            value: 74,
+            lv: "2",
+          },
+          {
+            id: "239",
+            value: 24,
+            lv: "3",
+          },
+          {
+            id: "240",
+            value: 39,
+            lv: "3",
+          },
+        ],
       },
-      {
-        role: "石晶爆破手",
-        order:2,
+      DE: {
+        name: "石晶爆破手",
+        color: "warning",
+        order: 2,
         player: "",
         gold: "36",
         exp: "78",
@@ -49,12 +136,103 @@ const record = [
           x2: 1,
           x0: 1,
         },
-        style:
-          "text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2",
+        skillLib: [
+          {
+            id: "083",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "083",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "082",
+            value: 77,
+            lv: "1",
+          },
+          {
+            id: "083",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "084",
+            value: 20,
+            lv: "1",
+          },
+          {
+            id: "085",
+            value: 28,
+            lv: "1",
+          },
+          {
+            id: "086",
+            value: 88,
+            lv: "1",
+          },
+          {
+            id: "087",
+            value: 42,
+            lv: "1",
+          },
+          {
+            id: "088",
+            value: 19,
+            lv: "1",
+          },
+          {
+            id: "089",
+            value: 37,
+            lv: "1",
+          },
+          {
+            id: "090",
+            value: 66,
+            lv: "1",
+          },
+          {
+            id: "091",
+            value: 55,
+            lv: "X",
+          },
+          {
+            id: "092",
+            value: 61,
+            lv: "X",
+          },
+          {
+            id: "093",
+            value: 52,
+            lv: "X",
+          },
+          {
+            id: "094",
+            value: 33,
+            lv: "2",
+          },
+          {
+            id: "095",
+            value: 74,
+            lv: "2",
+          },
+          {
+            id: "096",
+            value: 24,
+            lv: "3",
+          },
+          {
+            id: "097",
+            value: 39,
+            lv: "3",
+          },
+        ],
       },
-      {
-        role: "虛空守望者",
-        order:3,
+      VW: {
+        name: "虛空守望者",
+        color: "secondary",
+        order: 3,
         player: "",
         gold: "32",
         exp: "78",
@@ -74,12 +252,103 @@ const record = [
           x2: 1,
           x0: 1,
         },
-        style:
-          "text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2",
+        skillLib: [
+          {
+            id: "151",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "152",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "153",
+            value: 77,
+            lv: "1",
+          },
+          {
+            id: "154",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "155",
+            value: 20,
+            lv: "1",
+          },
+          {
+            id: "156",
+            value: 28,
+            lv: "1",
+          },
+          {
+            id: "157",
+            value: 88,
+            lv: "1",
+          },
+          {
+            id: "158",
+            value: 42,
+            lv: "1",
+          },
+          {
+            id: "159",
+            value: 19,
+            lv: "1",
+          },
+          {
+            id: "160",
+            value: 37,
+            lv: "1",
+          },
+          {
+            id: "161",
+            value: 66,
+            lv: "1",
+          },
+          {
+            id: "162",
+            value: 55,
+            lv: "X",
+          },
+          {
+            id: "163",
+            value: 61,
+            lv: "X",
+          },
+          {
+            id: "164",
+            value: 52,
+            lv: "X",
+          },
+          {
+            id: "165",
+            value: 33,
+            lv: "2",
+          },
+          {
+            id: "166",
+            value: 74,
+            lv: "2",
+          },
+          {
+            id: "167",
+            value: 24,
+            lv: "3",
+          },
+          {
+            id: "168",
+            value: 39,
+            lv: "3",
+          },
+        ],
       },
-      {
-        role: "鋼角飛斧手",
-        order:4,
+      HA: {
+        name: "鋼角飛斧手",
+        color: "info",
+        order: 4,
         player: "",
         gold: "67",
         exp: "75",
@@ -99,10 +368,95 @@ const record = [
           x2: 1,
           x0: 1,
         },
-        style:
-          "text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 ",
+        skillLib: [
+          {
+            id: "010",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "011",
+            value: 77,
+            lv: "1",
+          },
+          {
+            id: "012",
+            value: 22,
+            lv: "1",
+          },
+          {
+            id: "013",
+            value: 20,
+            lv: "1",
+          },
+          {
+            id: "014",
+            value: 28,
+            lv: "1",
+          },
+          {
+            id: "015",
+            value: 88,
+            lv: "1",
+          },
+          {
+            id: "016",
+            value: 42,
+            lv: "1",
+          },
+          {
+            id: "017",
+            value: 19,
+            lv: "1",
+          },
+          {
+            id: "018",
+            value: 37,
+            lv: "1",
+          },
+          {
+            id: "019",
+            value: 66,
+            lv: "1",
+          },
+          {
+            id: "020",
+            value: 55,
+            lv: "X",
+          },
+          {
+            id: "021",
+            value: 61,
+            lv: "X",
+          },
+          {
+            id: "022",
+            value: 52,
+            lv: "X",
+          },
+          {
+            id: "023",
+            value: 33,
+            lv: "2",
+          },
+          {
+            id: "024",
+            value: 74,
+            lv: "2",
+          },
+          {
+            id: "025",
+            value: 24,
+            lv: "3",
+          },
+          {
+            id: "026",
+            value: 39,
+            lv: "3",
+          },
+        ],
       },
-    ],
+    },
     RoundState: [],
     ChapterDescript: [
       { map: "酒館", describe: "發生什麼事1" },
@@ -119,7 +473,6 @@ const enemyList = [
         name: "targetPoint",
         chineseName: "目標點",
         isElite: false,
-        hp: "",
       },
       {
         name: "blackSludge",
@@ -200,7 +553,6 @@ const enemyList = [
         name: "targetPoint",
         chineseName: "目標點",
         isElite: false,
-        hp: "",
       },
       {
         name: "blackSludge",
@@ -281,7 +633,6 @@ const enemyList = [
         name: "targetPoint",
         chineseName: "目標點",
         isElite: false,
-        hp: "",
       },
       {
         name: "blackSludge",
@@ -365,7 +716,6 @@ const enemyList = [
         name: "targetPoint",
         chineseName: "目標點",
         isElite: false,
-        hp: "",
       },
       {
         name: "blackSludge",
@@ -444,6 +794,7 @@ const enemyList = [
     ],
   },
 ];
+
 const enemyAction = {
   blackSludge: [
     { name: "精算打擊", as: 66, move: -1, att: +1, attRange: 3 },
