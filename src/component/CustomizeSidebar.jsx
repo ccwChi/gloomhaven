@@ -72,7 +72,7 @@ const CustomizeSidebar = () => {
         </div>
         <div className="p-2">
           <div className="flex gap-2 w-full ">
-            <p className=" flex-1">{myState.name || `角色: ---`}</p>
+            <p className=" flex-1">{myState.name || `角色:`}&nbsp;&nbsp;{myState.name ? "" : "-"}</p>
             <div className="inline-flex flex-1">
               <p className="w-fit">{"經驗值: "}&nbsp;</p>
               <p>{myState.exp || "-"}</p>

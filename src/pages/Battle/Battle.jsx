@@ -32,37 +32,106 @@ const Battle = () => {
   useEffect(() => {
     conn.invoke("ReadyChangeScene", false);
   }, []);
-  // console.log(battleRecord);
 
-  // 用來處理每個input欄位的輸入讀取 //
-  const [inputValues, setInputValues] = useState(
+  useEffect(() => {
+    const tempRecrod = { ...battleRecord };
+    updateBattleRecord({
+      ...tempRecrod,
+      currentTurnState: {
+        ...tempRecrod["currentTurnState"],
+        monsterState: tempRecrod.battleInitState.monsterState,
+        playersState: tempRecrod.battleInitState.playersState,
+      },
+    });
+  }, []);
+
+  // --------------------------------------------------------用來處理每個玩家血量欄位的輸入讀取 //
+  const [inputPlayerHp, setInputPlayerHp] = useState(
     Array.from(
       { length: battleRecord.battleInitState.playersState.length },
       () => 0
     )
   );
   // 當InputNumber的值發生變化時觸發的函數
-  const handleChange = (index, value) => {
+  const handlePlayerHpChange = (index, value) => {
     // 先複製一份原本的inputValues陣列
-    const newInputValues = [...inputValues];
+    const newInputValues = [...inputPlayerHp];
     // 更新特定索引處的值
     newInputValues[index] = value;
     // 將新的值設置為狀態值
-    setInputValues(newInputValues);
+    setInputPlayerHp(newInputValues);
   };
-  const inputRefs = useRef([]);
-  const handleClick = (index) => {
-    console.log(inputRefs.current[index])
-    if (inputRefs.current[index]) {
+  const inputPlayerHpRefs = useRef([]);
+  const handlePlayerHp = (index) => {
+    console.log(inputPlayerHpRefs.current[index]);
+    if (inputPlayerHpRefs.current[index]) {
       // 使用getInput方法獲取輸入元素的引用
-      const inputElement = inputRefs.current[index].getInput();
+      const inputElement = inputPlayerHpRefs.current[index].getInput();
       // 獲取輸入元素的值
       const value = inputElement.value;
       // 對獲取的值進行操作，這裡只是簡單地在console中輸出
-      console.log(`Input ${index + 1} value:`, value);
+      console.log(
+        `Input ${inputPlayerHpRefs.current[index].props.id} value:`,
+        value
+      );
     }
   };
-  // 用來處理每個input欄位的輸入讀取 //
+  // --------------------------------------------------------用來處理每個怪物血量欄位的輸入讀取 //
+
+  const [inputMonHp, setInputMonHp] = useState(
+    // Array.from({ maxIndex }, () => 0)
+    []
+  );
+  useEffect(() => {
+    if (battleRecord?.battleInitState?.monsterState) {
+      // 初始化最大索引值为0
+      let maxIndex = 0;
+      const data = battleRecord.battleInitState.monsterState;
+      // 遍历对象数组
+      Object.keys(data).forEach((key) => {
+        const objects = data[key];
+        objects.forEach((obj) => {
+          updateMaxIndex(obj.index);
+        });
+      });
+      function updateMaxIndex(index) {
+        if (index > maxIndex) {
+          maxIndex = index;
+        }
+      }
+      setInputMonHp(Array.from({ length: maxIndex + 1 }, () => 0));
+    }
+  }, []);
+  // 當InputNumber的值發生變化時觸發的函數
+  const handleMonHpChange = (index, value) => {
+    // 先複製一份原本的inputValues陣列
+    const newInputValues = [...inputMonHp];
+    // 更新特定索引處的值
+    newInputValues[index] = value;
+    // 將新的值設置為狀態值
+    setInputMonHp(newInputValues);
+  };
+  const inputMonHpRefs = useRef([]);
+  const handleMonHp = (index) => {
+    // console.log(inputPlayerHpRefs.current[index]);
+    console.log(
+      "index",
+      index,
+      "inputMonHpRefs.current[index]",
+      inputMonHpRefs.current[index]
+    );
+    if (inputMonHpRefs.current[index]) {
+      // 使用getInput方法獲取輸入元素的引用
+      const inputElement = inputMonHpRefs.current[index].getInput();
+      // 獲取輸入元素的值
+      const value = inputElement.value;
+      // 對獲取的值進行操作，這裡只是簡單地在console中輸出
+      console.log(`index ${index} value:`, value);
+    }
+  };
+
+  const [expDelta, setExpDelta] = useState(0);
+  const handlePlayerExp = () => {};
 
   const renderMonsterListObj = (list) => {
     return Object.keys(list).map((area, i) => {
@@ -71,30 +140,79 @@ const Battle = () => {
         <Card
           key={i}
           title={"區域" + area}
-          className=" bg-gray-300 bg-opacity-80 mb-2"
+          className=" bg-transparent border mb-2"
           pt={{
-            content: { className: "flex flex-col gap-y-2 text-md p-0" },
+            content: { className: "flex flex-col gap-y-2 p-0" },
+            title: { className: "text-white" },
           }}
         >
-          {value.map((mon, j) => (
+          {value.map((mon) => (
             <div
-              key={j}
-              className="bg-amber-800 text-gray-300 font-bold rounded-md py-2 flex flex-col justify-center items-center "
+              key={mon.index}
+              onClick={() => {
+                console.log(inputMonHp);
+              }}
+              className="bg-transparent text-gray-300 font-bold rounded-md flex flex-col justify-center items-center"
             >
-              <div className="border w-fit p-2 rounded-md">
-                {mon.chineseName + "-" + mon.index}
-              </div>
-              <div className="flex flex-1 w-full px-2">
-                <div className="h-fit w-full p-2  rounded-lg text-start">
-                  {"HP: " + (mon?.hp ? mon.hp : "0")}
+              <div className="flex flex-1 w-full justify-center items-center bg-green-80 p-2">
+                <div className="h-fit w-full rounded-lg text-start text-lg bg-rose-80">
+                  {/* 目標點1 */}
+                  {mon.chineseName + mon.index}
                 </div>
-                <div className="h-fit  w-full p-2 rounded-lg text-start">
-                  {"攻擊: " + (mon?.att ? mon.att : "0")}
+                <div className="h-fit w-40  rounded-lg text-star bg-blue-90">
+                  {"攻擊: " + (mon?.att ? mon.att : "20")}
                 </div>
-                <div className="h-fit w-full p-2 rounded-lg text-start">
-                  {"移動: " + (mon?.move ? mon.move : "0")}
+                <div className="h-fit w-40 rounded-lg text-center bg-yellow-90">
+                  {"移動: " + (mon?.move ? mon.move : "-")}
                 </div>
               </div>
+              <div className="flex gap-2 justify-center px-">
+                <div className="flex items-center text-lg w-24 bg-amber-95 ">
+                  HP:&nbsp;
+                  {battleRecord.currentTurnState?.monsterState
+                    ? Object.values(battleRecord.currentTurnState.monsterState)
+                        .flat()
+                        .find((mo) => mo.index === mon.index)?.hp
+                    : "-"}
+                  {` / ` + (mon?.hp ? mon.hp : "0")}
+                  {/* {mon.chineseName + "-" + mon.index} */}
+                </div>
+                <InputNumber
+                  // inputId={`horizontal-buttons-${player.name}`}
+                  ref={(el) => (inputMonHpRefs.current[mon.index] = el)}
+                  // ref={el => inputRefs.current[index] = el}
+                  value={inputMonHp[mon.index]}
+                  onChange={(e) => handleMonHpChange(mon.index, e.value)}
+                  showButtons
+                  buttonLayout="horizontal"
+                  step={1}
+                  incrementButtonIcon="pi pi-plus"
+                  decrementButtonIcon="pi pi-minus"
+                  size={1}
+                  pt={{
+                    input: {
+                      root: {
+                        className:
+                          "border-none focus:ring-none focus:border:none w-12 h-8",
+                      },
+                    },
+                    incrementButton: {
+                      className: "border-none h-8",
+                    },
+                    decrementButton: {
+                      className: "border-none h-8",
+                    },
+                  }}
+                />
+                <Button
+                  icon={"pi pi-check"}
+                  className="ms-8 w-8 h-8"
+                  iconPos="right"
+                  raised
+                  onClick={() => handleMonHp(mon.index)}
+                />
+              </div>
+
               <div className="h-fit w-full px-2 rounded-lg flex">
                 <div className="w-12">異常: </div>
                 <div className="text-left">
@@ -152,17 +270,18 @@ const Battle = () => {
               {player.name}
               <div className="flex gap-4 justify-center">
                 <div className="flex items-center text-xl w-28">
-                  HP:&nbsp; {player.maxHp} / {player.maxHp}
+                  HP:&nbsp;{" "}
+                  {battleRecord.currentTurnState.playersState &&
+                    Object.values(
+                      battleRecord.currentTurnState.playersState
+                    ).find((role) => role.name === player.name)?.maxHp}{" "}
+                  / {player.maxHp}
                 </div>
                 <InputNumber
-                  inputId={`horizontal-buttons-${player.name}`}
-                  ref={(el) => (inputRefs.current[index] = el)}
-                  // ref={el => inputRefs.current[index] = el}
-                  value={inputValues[index]}
-                  onChange={(e) => handleChange(index, e.value)}
-                  // onValueChange={""
-
-                  // }
+                  ref={(el) => (inputPlayerHpRefs.current[index] = el)}
+                  value={inputPlayerHp[index]}
+                  onChange={(e) => handlePlayerHpChange(index, e.value)}
+                  id={player.name}
                   showButtons
                   buttonLayout="horizontal"
                   step={1}
@@ -189,17 +308,18 @@ const Battle = () => {
                   className="ms-8 w-8 h-8"
                   iconPos="right"
                   raised
-                  onClick={() => handleClick(index)}
+                  onClick={() => handlePlayerHp(index)}
                 />
               </div>
-              {player.player === myState.player && (
+              {/* {player.player === battleRecord.myState.player && (
                 <div className="flex gap-4 justify-center">
                   <div className="flex items-center text-xl w-28">
                     exp:&nbsp; {player.exp}
                   </div>
                   <InputNumber
                     inputId={`horizontal-buttons-${player.name}`}
-                    value={""}
+                    value={expDelta}
+                    onChange={(e) => setExpDelta(e.target.value)}
                     showButtons
                     buttonLayout="horizontal"
                     step={1}
@@ -226,10 +346,10 @@ const Battle = () => {
                     className="ms-8 w-8 h-8"
                     iconPos="right"
                     raised
-                    onClick={() => handleClick(index)}
+                    onClick={() => handlePlayerExp()}
                   />
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         ))}
@@ -238,9 +358,9 @@ const Battle = () => {
       {/* 怪物ㄋ */}
 
       <div
-        className={`w-full flex flex-col bg-slate-600 gap-y-3 flex-1 overflow-y-hidden p-5 ${""} bg-opacity-60 rounded-lg`}
+        className={`w-full flex flex-col bg-black flex-1 overflow-y-hidden bg-opacity-60 rounded-lg`}
       >
-        <div className="w-full overflow-y-auto flex flex-col p-2 ">
+        <div className="w-full overflow-y-auto flex flex-col ">
           {renderMonsterListObj(battleRecord.battleInitState.monsterState)}
         </div>
       </div>

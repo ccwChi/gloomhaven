@@ -300,10 +300,10 @@ const battleRecordStore = create((set) => ({
       },
       playersState: [
         {
-          name: "虛空守望者",
+          name: "石晶爆破手",
           color: "secondary",
           order: 3,
-          player: "靜香",
+          player: "胖虎",
           gold: "32",
           exp: "78",
           level: 2,
@@ -482,10 +482,10 @@ const battleRecordStore = create((set) => ({
           ],
         },
         {
-          name: "虛空守望者",
+          name: "飛斧手",
           color: "secondary",
           order: 3,
-          player: "靜香",
+          player: "小夫",
           gold: "32",
           exp: "78",
           level: 2,
@@ -664,10 +664,10 @@ const battleRecordStore = create((set) => ({
           ],
         },
         {
-          name: "虛空守望者",
+          name: "赤色守衛",
           color: "secondary",
           order: 3,
-          player: "靜香",
+          player: "大雄",
           gold: "32",
           exp: "78",
           level: 2,
