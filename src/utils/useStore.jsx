@@ -247,6 +247,7 @@ const battleRecordStore = create((set) => ({
     },
     scene: "scene3",
     battleInitState: {
+      area:[],
       monsterState: {
         1: [
           {

@@ -30,7 +30,7 @@ const Battle = () => {
   const [playerDivCollapse, setPlayerDivCollapse] = useState(false);
   // 進畫面先把前往下一關關掉
   useEffect(() => {
-    conn.invoke("ReadyChangeScene", false);
+    // conn.invoke("ReadyChangeScene", false);
   }, []);
 
   useEffect(() => {
@@ -63,17 +63,34 @@ const Battle = () => {
   };
   const inputPlayerHpRefs = useRef([]);
   const handlePlayerHp = (index) => {
-    console.log(inputPlayerHpRefs.current[index]);
     if (inputPlayerHpRefs.current[index]) {
       // 使用getInput方法獲取輸入元素的引用
       const inputElement = inputPlayerHpRefs.current[index].getInput();
       // 獲取輸入元素的值
       const value = inputElement.value;
       // 對獲取的值進行操作，這裡只是簡單地在console中輸出
-      console.log(
-        `Input ${inputPlayerHpRefs.current[index].props.id} value:`,
-        value
+      const targetPlayer = inputPlayerHpRefs.current[index].props.id;
+
+      const currentPlayers = [...battleRecord.currentTurnState.playersState];
+      const playerIndex = currentPlayers.findIndex(
+        (player) => player.name === targetPlayer
       );
+      if (playerIndex !== -1) {
+        currentPlayers[playerIndex] = {
+          ...currentPlayers[playerIndex],
+          maxHp: Math.max(
+            currentPlayers[playerIndex].maxHp - parseInt(value),
+            0
+          ),
+        };
+        updateBattleRecord({
+          ...battleRecord,
+          currentTurnState: {
+            ...battleRecord.currentTurnState,
+            playersState: currentPlayers,
+          },
+        });
+      }
     }
   };
   // --------------------------------------------------------用來處理每個怪物血量欄位的輸入讀取 //
@@ -121,14 +138,39 @@ const Battle = () => {
       inputMonHpRefs.current[index]
     );
     if (inputMonHpRefs.current[index]) {
-      // 使用getInput方法獲取輸入元素的引用
       const inputElement = inputMonHpRefs.current[index].getInput();
-      // 獲取輸入元素的值
       const value = inputElement.value;
-      // 對獲取的值進行操作，這裡只是簡單地在console中輸出
-      console.log(`index ${index} value:`, value);
+      const currentMon = battleRecord.currentTurnState.monsterState;
+      const targetMonIndex = Object.keys(currentMon).find((key) => {
+        return currentMon[key].some((mon) => mon.index === index);
+      });
+
+      if (targetMonIndex) {
+        const updatedMonState = {
+          ...currentMon,
+          [targetMonIndex]: currentMon[targetMonIndex].map((mon) => {
+            if (mon.index === index) {
+              return {
+                ...mon,
+                hp: Math.max(mon.hp - parseInt(value), 0), // 将 hp 减去 value 的值
+              };
+            }
+            return mon;
+          }),
+        };
+        // 存回 battleRecord.currentTurnState.monsterState 中
+        updateBattleRecord({
+          ...battleRecord,
+          currentTurnState: {
+            ...battleRecord.currentTurnState,
+            monsterState: updatedMonState,
+          },
+        });
+      }
     }
   };
+
+  // -------------------------------------------------怪物處理結束
 
   const [expDelta, setExpDelta] = useState(0);
   const handlePlayerExp = () => {};
@@ -140,22 +182,19 @@ const Battle = () => {
         <Card
           key={i}
           title={"區域" + area}
-          className=" bg-transparent border mb-2"
+          className="bg-black bg-opacity-70 border mb-2 p"
           pt={{
-            content: { className: "flex flex-col gap-y-2 p-0" },
-            title: { className: "text-white" },
+            content: { className: "flex flex-col gap-y-2 p-0 " },
+            title: { className: "text-white text-center text-xl p-0 m-0" },
           }}
         >
           {value.map((mon) => (
             <div
               key={mon.index}
-              onClick={() => {
-                console.log(inputMonHp);
-              }}
               className="bg-transparent text-gray-300 font-bold rounded-md flex flex-col justify-center items-center"
             >
               <div className="flex flex-1 w-full justify-center items-center bg-green-80 p-2">
-                <div className="h-fit w-full rounded-lg text-start text-lg bg-rose-80">
+                <div className="h-fit w-full rounded-lg text-start text-lg bg-rose-80 bg">
                   {/* 目標點1 */}
                   {mon.chineseName + mon.index}
                 </div>
@@ -166,7 +205,7 @@ const Battle = () => {
                   {"移動: " + (mon?.move ? mon.move : "-")}
                 </div>
               </div>
-              <div className="flex gap-2 justify-center px-">
+              <div className="flex gap-2 justify-start items-start w-full ps-2">
                 <div className="flex items-center text-lg w-24 bg-amber-95 ">
                   HP:&nbsp;
                   {battleRecord.currentTurnState?.monsterState
@@ -237,131 +276,139 @@ const Battle = () => {
       <div className="flex flex-col bg-black bg-opacity-70 p-6 w-full h-fit rounded-lg relative text-white">
         順序
       </div>
-      {/* 玩家腳色區 */}
-      <div
-        className={`flex ${
-          !playerDivCollapse ? "h-14" : "h-fit"
-        } flex-col bg-black bg-opacity-70 w-full rounded-lg text-center relative text-white overflow-hidden`}
-      >
-        {!playerDivCollapse && (
+      {/* 玩家角色區 */}
+      <div className="flex-1 flex overflow-hidden w-full">
+        <div className="flex flex-col gap-y-2 overflow-y-auto ">
+          {/* 怪物ㄋ */}
+
           <div
-            className="w-full text-xl p-4"
-            onClick={() => {
-              setPlayerDivCollapse(true);
-            }}
+            className={`w-full flex flex-col  flex-1 overflow-y-hiddens bg-opacity-60 rounded-lg gap-y-2`}
           >
-            角色血量
-          </div>
-        )}
-
-        <Button
-          icon={`pi ${
-            playerDivCollapse ? "pi-angle-double-up" : "pi-angle-double-down"
-          }`}
-          className="text-xl p-4 absolute left-3 top-3 bg-gray-500 h-8 w-8"
-          onClick={() => {
-            setPlayerDivCollapse(!playerDivCollapse);
-          }}
-        ></Button>
-
-        {battleRecord.battleInitState.playersState.map((player, index) => (
-          <div key={index} className="inline-flex gap-4 p-4 ">
-            <div className="flex flex-col  gap-3  text-xl ">
-              {player.name}
-              <div className="flex gap-4 justify-center">
-                <div className="flex items-center text-xl w-28">
-                  HP:&nbsp;{" "}
-                  {battleRecord.currentTurnState.playersState &&
-                    Object.values(
-                      battleRecord.currentTurnState.playersState
-                    ).find((role) => role.name === player.name)?.maxHp}{" "}
-                  / {player.maxHp}
-                </div>
-                <InputNumber
-                  ref={(el) => (inputPlayerHpRefs.current[index] = el)}
-                  value={inputPlayerHp[index]}
-                  onChange={(e) => handlePlayerHpChange(index, e.value)}
-                  id={player.name}
-                  showButtons
-                  buttonLayout="horizontal"
-                  step={1}
-                  incrementButtonIcon="pi pi-plus"
-                  decrementButtonIcon="pi pi-minus"
-                  size={1}
-                  pt={{
-                    input: {
-                      root: {
-                        className:
-                          "border-none focus:ring-none focus:border:none w-12 h-8",
-                      },
-                    },
-                    incrementButton: {
-                      className: "border-none h-8",
-                    },
-                    decrementButton: {
-                      className: "border-none h-8",
-                    },
+            <div
+              className={`flex ${
+                !playerDivCollapse ? "h-10" : "h-fit"
+              } flex-col bg-black bg-opacity-70 w-full rounded-lg text-center relative text-white overflow-hidden items-center`}
+            >
+              {
+                <div
+                  className="w-full text-xl p-2 border-gray-800 border bg-black rounded-lg"
+                  onClick={() => {
+                    setPlayerDivCollapse(!playerDivCollapse);
                   }}
-                />
-                <Button
-                  icon={"pi pi-check"}
-                  className="ms-8 w-8 h-8"
-                  iconPos="right"
-                  raised
-                  onClick={() => handlePlayerHp(index)}
-                />
-              </div>
-              {/* {player.player === battleRecord.myState.player && (
-                <div className="flex gap-4 justify-center">
-                  <div className="flex items-center text-xl w-28">
-                    exp:&nbsp; {player.exp}
-                  </div>
-                  <InputNumber
-                    inputId={`horizontal-buttons-${player.name}`}
-                    value={expDelta}
-                    onChange={(e) => setExpDelta(e.target.value)}
-                    showButtons
-                    buttonLayout="horizontal"
-                    step={1}
-                    incrementButtonIcon="pi pi-plus"
-                    decrementButtonIcon="pi pi-minus"
-                    size={1}
-                    pt={{
-                      input: {
-                        root: {
-                          className:
-                            "border-none focus:ring-none focus:border:none w-12 h-8",
-                        },
-                      },
-                      incrementButton: {
-                        className: "border-none h-8",
-                      },
-                      decrementButton: {
-                        className: "border-none h-8",
-                      },
-                    }}
-                  />
-                  <Button
-                    icon={"pi pi-check"}
-                    className="ms-8 w-8 h-8"
-                    iconPos="right"
-                    raised
-                    onClick={() => handlePlayerExp()}
-                  />
+                >
+                  角色血量
                 </div>
-              )} */}
+              }
+
+              <Button
+                icon={`pi ${
+                  playerDivCollapse
+                    ? "pi-angle-double-up"
+                    : "pi-angle-double-down"
+                }`}
+                className="text-xl p-4 absolute left-3 top-1 bg-transparent border-none h-8 w-8"
+                onClick={() => {
+                  setPlayerDivCollapse(!playerDivCollapse);
+                }}
+              ></Button>
+
+              {battleRecord.battleInitState.playersState.map(
+                (player, index) => (
+                  <div key={index} className="inline-flex gap-2 p-2 ">
+                    <div className="flex flex-col  gap-1  text-md text-start">
+                      {player.name}
+                      <div className="flex gap-4 justify-center bg-red">
+                        <div className="flex items-center text-lg w-28">
+                          HP:&nbsp;{" "}
+                          {battleRecord.currentTurnState.playersState &&
+                            Object.values(
+                              battleRecord.currentTurnState.playersState
+                            ).find((role) => role.name === player.name)
+                              ?.maxHp}{" "}
+                          / {player.maxHp}
+                        </div>
+                        <InputNumber
+                          ref={(el) => (inputPlayerHpRefs.current[index] = el)}
+                          value={inputPlayerHp[index]}
+                          onChange={(e) => handlePlayerHpChange(index, e.value)}
+                          id={player.name}
+                          showButtons
+                          buttonLayout="horizontal"
+                          step={1}
+                          incrementButtonIcon="pi pi-plus"
+                          decrementButtonIcon="pi pi-minus"
+                          size={1}
+                          pt={{
+                            input: {
+                              root: {
+                                className:
+                                  "border-none focus:ring-none focus:border:none w-12 h-8",
+                              },
+                            },
+                            incrementButton: {
+                              className: "border-none h-8",
+                            },
+                            decrementButton: {
+                              className: "border-none h-8",
+                            },
+                          }}
+                        />
+                        <Button
+                          icon={"pi pi-check"}
+                          className="ms-8 w-8 h-8"
+                          iconPos="right"
+                          raised
+                          onClick={() => handlePlayerHp(index)}
+                        />
+                      </div>
+                      {/* {player.player === battleRecord.myState.player && (
+                        <div className="flex gap-4 justify-center">
+                          <div className="flex items-center text-xl w-28">
+                            exp:&nbsp; {player.exp}
+                          </div>
+                          <InputNumber
+                            inputId={`horizontal-buttons-${player.name}`}
+                            value={expDelta}
+                            onChange={(e) => setExpDelta(e.target.value)}
+                            showButtons
+                            buttonLayout="horizontal"
+                            step={1}
+                            incrementButtonIcon="pi pi-plus"
+                            decrementButtonIcon="pi pi-minus"
+                            size={1}
+                            pt={{
+                              input: {
+                                root: {
+                                  className:
+                                    "border-none focus:ring-none focus:border:none w-12 h-8",
+                                },
+                              },
+                              incrementButton: {
+                                className: "border-none h-8",
+                              },
+                              decrementButton: {
+                                className: "border-none h-8",
+                              },
+                            }}
+                          />
+                          <Button
+                            icon={"pi pi-check"}
+                            className="ms-8 w-8 h-8"
+                            iconPos="right"
+                            raised
+                            onClick={() => handlePlayerExp()}
+                          />
+                        </div>
+                      )} */}
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+            <div className="w-full overflow-y-autos flex flex-col ">
+              {renderMonsterListObj(battleRecord.battleInitState.monsterState)}
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* 怪物ㄋ */}
-
-      <div
-        className={`w-full flex flex-col bg-black flex-1 overflow-y-hidden bg-opacity-60 rounded-lg`}
-      >
-        <div className="w-full overflow-y-auto flex flex-col ">
-          {renderMonsterListObj(battleRecord.battleInitState.monsterState)}
         </div>
       </div>
     </>

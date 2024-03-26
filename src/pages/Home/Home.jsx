@@ -15,6 +15,7 @@ import { record } from "../../asset/data";
 import { useSessionStorage } from "primereact/hooks";
 
 const Home = ({ joinRoom }) => {
+    const { conn, updateConn } = connStore();
   const [logingData, setLoginData] = useState({
     playerName: "大雄",
     record: "紀錄",
@@ -151,7 +152,8 @@ const Home = ({ joinRoom }) => {
             label="進入遊戲"
             className="p-button-warning"
             onClick={(e) => {
-              handelEnterGame(e);
+              // handelEnterGame(e);
+              updateConn("abc");
             }}
           />
           {/* <Button label="Submit" /> */}
