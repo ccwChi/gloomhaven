@@ -1032,6 +1032,8 @@ const battleRecordStore = create((set) => ({
     },
     prevTurn: {},
     currentTurnState: {
+      area:[],
+      actionableRole:[],
       mySkillSpeed: "",
       monsterState: [],
       playersState: [],

@@ -15,7 +15,7 @@ import {
 } from "../../utils/useStore";
 import { InputNumber } from "primereact/inputnumber";
 import { Card } from "primereact/card";
-
+import { MultiSelect } from "primereact/multiselect";
 const Battle = () => {
   const { conn, updateConn } = connStore();
   const { myState, updateMyState } = myStateStore();
@@ -27,22 +27,36 @@ const Battle = () => {
   const { monsterList, updateMonsterList } = monsterStore();
   const { monsterDetailList, updateMonsterDetailList } = monsterDetailStore();
   const { battleRecord, updateBattleRecord } = battleRecordStore();
+  const [activeArea, setActiveArea] = useState([]);
+  const [activeAreaList, setActiveAreaList] = useState([]);
   const [playerDivCollapse, setPlayerDivCollapse] = useState(false);
   // 進畫面先把前往下一關關掉
   useEffect(() => {
     // conn.invoke("ReadyChangeScene", false);
   }, []);
 
+  // 將怪物、人物的初始狀態複製到當前回合狀態
   useEffect(() => {
     const tempRecrod = { ...battleRecord };
+    const tempactionableRole = tempRecrod.battleInitState.playersState.map(
+      (player) => ({ name: player.name, speed: "", order: player.order })
+    );
     updateBattleRecord({
       ...tempRecrod,
       currentTurnState: {
         ...tempRecrod["currentTurnState"],
         monsterState: tempRecrod.battleInitState.monsterState,
         playersState: tempRecrod.battleInitState.playersState,
+        actionableRole: tempactionableRole,
       },
     });
+    // tempRecrod.Array
+    setActiveAreaList(
+      Object.keys(tempRecrod.battleInitState.monsterState).map((key) => ({
+        name: "區域" + key,
+        code: key,
+      }))
+    );
   }, []);
 
   // --------------------------------------------------------用來處理每個玩家血量欄位的輸入讀取 //
@@ -172,6 +186,10 @@ const Battle = () => {
 
   // -------------------------------------------------怪物處理結束
 
+  const handleAreaChange = (e) => {
+    e.preventDefault();
+  };
+
   const [expDelta, setExpDelta] = useState(0);
   const handlePlayerExp = () => {};
 
@@ -182,10 +200,13 @@ const Battle = () => {
         <Card
           key={i}
           title={"區域" + area}
-          className="bg-black bg-opacity-70 border mb-2 p"
+          className="bg-black bg-opacity-70 border mb-2 p relative"
           pt={{
             content: { className: "flex flex-col gap-y-2 p-0 " },
             title: { className: "text-white text-center text-xl p-0 m-0" },
+          }}
+          onClick={(e) => {
+            console.log(e.target.textContent);
           }}
         >
           {value.map((mon) => (
@@ -409,6 +430,30 @@ const Battle = () => {
               {renderMonsterListObj(battleRecord.battleInitState.monsterState)}
             </div>
           </div>
+        </div>
+      </div>
+      <div className="flex flex-col bg-black bg-opacity-70 p-2 w-full h-fit rounded-lg relative text-white">
+        <div className="card flex w-fit gap-x-2 border rounded-lg p-1">
+          <MultiSelect
+            value={activeArea}
+            onChange={(e) => setActiveArea(e.value)}
+            options={activeAreaList}
+            optionLabel="name"
+            placeholder="開啟區域"
+            // maxSelectedLabels={1}
+            className="w-24 bg-black md:w-20rem text-white"
+            pt={{
+              trigger: { className: "hidden" },
+              label: { className: "text-white !ps-4" },
+              header: { className: "hidden" },
+            }}
+          />
+          <Button
+            className="bg-transparent border-none rounded-lg flex justify-center items-center p-1"
+            onClick={(e) => handleAreaChange(e)}
+          >
+            送出
+          </Button>
         </div>
       </div>
     </>
