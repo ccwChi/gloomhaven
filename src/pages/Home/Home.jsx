@@ -152,8 +152,8 @@ const Home = ({ joinRoom }) => {
             label="進入遊戲"
             className="p-button-warning"
             onClick={(e) => {
-              handelEnterGame(e);
-              // updateConn("abc");
+              // handelEnterGame(e);
+              updateConn("abc");
             }}
           />
           {/* <Button label="Submit" /> */}

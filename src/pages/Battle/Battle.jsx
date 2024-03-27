@@ -43,7 +43,7 @@ const Battle = () => {
     );
     updateBattleRecord({
       ...tempRecrod,
-      currentTurnState: {
+      nextTurnState: {
         ...tempRecrod["currentTurnState"],
         monsterState: tempRecrod.battleInitState.monsterState,
         playersState: tempRecrod.battleInitState.playersState,
@@ -185,9 +185,25 @@ const Battle = () => {
   };
 
   // -------------------------------------------------怪物處理結束
+  
 
+  // ---處理區域的設置，並將對應怪物加到下回合可行動的清單
   const handleAreaChange = (e) => {
     e.preventDefault();
+    console.log(activeArea);
+    if (activeArea.length > 0) {
+      const activeMonsters = activeArea
+        .reduce((acc, area) => {
+          return acc.concat(
+            battleRecord.currentTurnState.monsterState[area.code]
+          );
+        }, [])
+        .filter((mon) => mon.hp !== 0);
+      const uniqueActiveMonsters = [
+        ...new Map(activeMonsters.map((mon) => [mon.name, mon])).values(),
+      ].map(mon=> ({name:mon.chineseName, value:mon.name, speed:"", actionCard:""})).concat(battleRecord.currentTurnState.actionableRole);
+      console.log(uniqueActiveMonsters);
+    }
   };
 
   const [expDelta, setExpDelta] = useState(0);
@@ -205,9 +221,9 @@ const Battle = () => {
             content: { className: "flex flex-col gap-y-2 p-0 " },
             title: { className: "text-white text-center text-xl p-0 m-0" },
           }}
-          onClick={(e) => {
-            console.log(e.target.textContent);
-          }}
+          // onClick={(e) => {
+          //   console.log(e.target.textContent);
+          // }}
         >
           {value.map((mon) => (
             <div

@@ -27,6 +27,7 @@ import Home from "./pages/Home/Home";
 import Battle from "./pages/Battle/Battle";
 import { Button } from "primereact/button";
 import CustomizeSidebar from "./component/CustomizeSidebar";
+import Loading from "./pages/Loading/Loading";
 const App = () => {
   const { conn, updateConn } = connStore();
   // const [conn, setConn] = useSessionStorage(null, "conn");
@@ -174,7 +175,7 @@ const App = () => {
 
       <CustomizeSidebar />
       {!conn && <Home joinRoom={joinRoom} />}
-
+        {/* <Loading /> */}
       {conn && gameScene === "scene1" && <SelectRole />}
 
       {conn && gameScene === "scene2" && <SelectMonAndSkill />}
