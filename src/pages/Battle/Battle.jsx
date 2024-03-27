@@ -15,7 +15,10 @@ import {
 } from "../../utils/useStore";
 import { InputNumber } from "primereact/inputnumber";
 import { Card } from "primereact/card";
+import { Dialog } from "primereact/dialog";
 import { MultiSelect } from "primereact/multiselect";
+import { RadioButton } from "primereact/radiobutton";
+
 const Battle = () => {
   const { conn, updateConn } = connStore();
   const { myState, updateMyState } = myStateStore();
@@ -30,6 +33,30 @@ const Battle = () => {
   const [activeArea, setActiveArea] = useState([]);
   const [activeAreaList, setActiveAreaList] = useState([]);
   const [playerDivCollapse, setPlayerDivCollapse] = useState(false);
+  const [nextTurnSpeed, setNextTurnSpeed] = useState("");
+  const [skillModalOpen, setSkillModalOpen] = useState(false);
+  const [skillModalPosition, setSkillModalPosition] = useState("center");
+
+  const footerContent = (
+    <div>
+      <Button
+        label="No"
+        icon="pi pi-times"
+        onClick={() => setSkillModalOpen(false)}
+        className="p-button-text"
+      />
+      <Button
+        label="Yes"
+        icon="pi pi-check"
+        onClick={() => setSkillModalOpen(false)}
+        autoFocus
+      />
+    </div>
+  );
+  const show = (position) => {
+    setSkillModalPosition(position);
+    setSkillModalOpen(true);
+  };
   // 進畫面先把前往下一關關掉
   useEffect(() => {
     // conn.invoke("ReadyChangeScene", false);
@@ -145,12 +172,12 @@ const Battle = () => {
   const inputMonHpRefs = useRef([]);
   const handleMonHp = (index) => {
     // console.log(inputPlayerHpRefs.current[index]);
-    console.log(
-      "index",
-      index,
-      "inputMonHpRefs.current[index]",
-      inputMonHpRefs.current[index]
-    );
+    // console.log(
+    //   "index",
+    //   index,
+    //   "inputMonHpRefs.current[index]",
+    //   inputMonHpRefs.current[index]
+    // );
     if (inputMonHpRefs.current[index]) {
       const inputElement = inputMonHpRefs.current[index].getInput();
       const value = inputElement.value;
@@ -185,7 +212,6 @@ const Battle = () => {
   };
 
   // -------------------------------------------------怪物處理結束
-  
 
   // ---處理區域的設置，並將對應怪物加到下回合可行動的清單
   const handleAreaChange = (e) => {
@@ -194,14 +220,24 @@ const Battle = () => {
     if (activeArea.length > 0) {
       const activeMonsters = activeArea
         .reduce((acc, area) => {
-          return acc.concat(
-            battleRecord.currentTurnState.monsterState[area.code]
-          );
+          const monsters =
+            battleRecord.currentTurnState.monsterState[area.code];
+          if (monsters) {
+            return acc.concat(monsters);
+          }
+          return acc;
         }, [])
         .filter((mon) => mon.hp !== 0);
       const uniqueActiveMonsters = [
         ...new Map(activeMonsters.map((mon) => [mon.name, mon])).values(),
-      ].map(mon=> ({name:mon.chineseName, value:mon.name, speed:"", actionCard:""})).concat(battleRecord.currentTurnState.actionableRole);
+      ]
+        .map((mon) => ({
+          name: mon.chineseName,
+          value: mon.name,
+          speed: "",
+          actionCard: "",
+        }))
+        .concat(battleRecord.currentTurnState.actionableRole);
       console.log(uniqueActiveMonsters);
     }
   };
@@ -470,6 +506,65 @@ const Battle = () => {
           >
             送出
           </Button>
+          <div className="flex flex-wrap justify-content-center gap-2">
+            <Button
+              label="Bottom"
+              icon="pi pi-arrow-up"
+              onClick={() => show("bottom")}
+              className="p-button-success"
+              style={{ minWidth: "10rem" }}
+            />
+          </div>
+
+          <Dialog
+            header="選擇技能速度"
+            visible={skillModalOpen}
+            position={skillModalPosition}
+            style={{ width: "85vw" }}
+            onHide={() => setSkillModalOpen(false)}
+            // footer={footerContent}
+            draggable={false}
+            resizable={false}
+            className="!bg-gray-900"
+            pt={{
+              root: { className: "border" },
+              header: { className: "bg-gray-700 bg-opacity-50 text-white" },
+              content: {
+                className: "bg-gray-700 bg-opacity-50 text-white p-4 flex flex-col gap-y-4",
+              },
+              // footer: {
+              //   className: "bg-gray-700 bg-opacity-50 text-white",
+              //   button: {
+              //     onClick: () => {
+              //       console.log("aa");
+              //     },
+              //   },
+              // },
+            }}
+          >
+            <div className="  flex flex-wrap flex-shrink gap-4 ">
+              {battleRecord.myState.selectSkill.map((skill, i) => {
+                return (
+                  <div key={skill.id} className="flex fle items-center">
+                    <RadioButton
+                      inputId={skill.id}
+                      name="category"
+                      value={nextTurnSpeed}
+                      onChange={(e) => {
+                        setNextTurnSpeed(e.value);
+                        console.log(e);
+                      }}
+                      checked={nextTurnSpeed.id === skill.id}
+                    />
+                    <label htmlFor={skill.id} className="ml-2 w-16">
+                      <span className="">Lv{skill.lv}</span> - {skill.value}
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
+            <div><Button></Button></div>
+          </Dialog>
         </div>
       </div>
     </>
