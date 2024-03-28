@@ -12,6 +12,7 @@ import {
   roomStore,
   sceneStore,
   scriptLevelStore,
+  sidebarStore,
 } from "../../utils/useStore";
 import { InputNumber } from "primereact/inputnumber";
 import { Card } from "primereact/card";
@@ -29,34 +30,17 @@ const Battle = () => {
   const { gameScene, updateGameScene } = sceneStore();
   const { monsterList, updateMonsterList } = monsterStore();
   const { monsterDetailList, updateMonsterDetailList } = monsterDetailStore();
+  const { sidebarVisible, updateSidebarVisible } = sidebarStore();
   const { battleRecord, updateBattleRecord } = battleRecordStore();
   const [activeArea, setActiveArea] = useState([]);
+  const [fromServerActiveArea, setFromServerActiveArea] = useState([]);
   const [activeAreaList, setActiveAreaList] = useState([]);
   const [playerDivCollapse, setPlayerDivCollapse] = useState(false);
   const [nextTurnSpeed, setNextTurnSpeed] = useState("");
   const [skillModalOpen, setSkillModalOpen] = useState(false);
-  const [skillModalPosition, setSkillModalPosition] = useState("center");
-
-  const footerContent = (
-    <div>
-      <Button
-        label="No"
-        icon="pi pi-times"
-        onClick={() => setSkillModalOpen(false)}
-        className="p-button-text"
-      />
-      <Button
-        label="Yes"
-        icon="pi pi-check"
-        onClick={() => setSkillModalOpen(false)}
-        autoFocus
-      />
-    </div>
-  );
-  const show = (position) => {
-    setSkillModalPosition(position);
-    setSkillModalOpen(true);
-  };
+  const [skillModalPosition, setSkillModalPosition] = useState("bottom");
+  const [nextTurnCheck, setNextTurnCheck] = useState(false);
+  const [fromServerPlayerState, setFromServerPlayerState] = useState({});
   // 進畫面先把前往下一關關掉
   useEffect(() => {
     // conn.invoke("ReadyChangeScene", false);
@@ -66,14 +50,25 @@ const Battle = () => {
   useEffect(() => {
     const tempRecrod = { ...battleRecord };
     const tempactionableRole = tempRecrod.battleInitState.playersState.map(
-      (player) => ({ name: player.name, speed: "", order: player.order })
+      (player) => ({
+        name: player.name,
+        speed: "",
+        order: player.order,
+        maxHp: player.maxHp,
+      })
     );
     updateBattleRecord({
       ...tempRecrod,
       nextTurnState: {
         ...tempRecrod["currentTurnState"],
         monsterState: tempRecrod.battleInitState.monsterState,
-        playersState: tempRecrod.battleInitState.playersState,
+        playersState: tempactionableRole,
+        actionableRole: tempactionableRole,
+      },
+      currentTurnState: {
+        ...tempRecrod["currentTurnState"],
+        monsterState: tempRecrod.battleInitState.monsterState,
+        playersState: tempactionableRole,
         actionableRole: tempactionableRole,
       },
     });
@@ -216,9 +211,15 @@ const Battle = () => {
   // ---處理區域的設置，並將對應怪物加到下回合可行動的清單
   const handleAreaChange = (e) => {
     e.preventDefault();
-    console.log(activeArea);
-    if (activeArea.length > 0) {
-      const activeMonsters = activeArea
+    sendAreaData(activeArea);
+  };
+  //------------------------------------------------------------------------------處理傳送開放區域清單出去
+  const sendAreaData = (activeArea) => {
+    setFromServerActiveArea(activeArea);
+  };
+  useEffect(() => {
+    if (fromServerActiveArea.length > 0) {
+      const activeMonsters = fromServerActiveArea
         .reduce((acc, area) => {
           const monsters =
             battleRecord.currentTurnState.monsterState[area.code];
@@ -239,9 +240,40 @@ const Battle = () => {
         }))
         .concat(battleRecord.currentTurnState.actionableRole);
       console.log(uniqueActiveMonsters);
+      updateBattleRecord({
+        ...battleRecord,
+        nextTurnState: {
+          ...battleRecord.nextTurnState,
+          actionableRole: uniqueActiveMonsters,
+        },
+      });
     }
+  }, [fromServerActiveArea]);
+
+  //------------------------------------------------------------------------------處理傳送開放區域清單出去
+  //------------------------------------------------------------------------------處理前往下一張地圖
+  const handleToNextTurn = () => {
+    setFromServerPlayerState();
+    // conn.invoke("ReadyChangeScene", false);
   };
 
+  // 如果大家都按了前往下一關，則切換scene
+  useEffect(() => {
+    const tempPlayerState = [...Object.values(playerState)];
+    const checkedNum = tempPlayerState.filter(
+      (i) => i.changeScene === true
+    ).length;
+    if (checkedNum > 0 && checkedNum === tempPlayerState.length) {
+      // console.log(checkedNum);
+
+
+
+     
+
+    }
+  }, [playerState]);
+
+  //------------------------------------------------------------------------------處理前往下一張地圖
   const [expDelta, setExpDelta] = useState(0);
   const handlePlayerExp = () => {};
 
@@ -345,7 +377,7 @@ const Battle = () => {
   };
 
   useEffect(() => {
-    console.log("nextTurnSpeed", nextTurnSpeed);
+    // console.log("nextTurnSpeed", nextTurnSpeed);
   }, [nextTurnSpeed]);
   return (
     <>
@@ -488,35 +520,62 @@ const Battle = () => {
           </div>
         </div>
       </div>
-      <div className="flex bg-black bg-opacity-70 p-2 w-full h-fit rounded-lg relative text-white">
-        <div className="card flex w-fit gap-x-2 border rounded-lg p-1">
+      <div className="flex bg-black bg-opacity-70 p-2 gap-2 w-full h-fit rounded-lg relative text-white">
+        <div className="flex-1 flex border border-[#06b6d4] p-1 rounded-md">
           <MultiSelect
             value={activeArea}
             onChange={(e) => setActiveArea(e.value)}
             options={activeAreaList}
             optionLabel="name"
-            placeholder="開啟區域"
+            placeholder="區域"
             // maxSelectedLabels={1}
-            className="w-24 bg-black md:w-20rem text-white"
+            className="w-full bg-black md:w-20rem text-white"
             pt={{
               trigger: { className: "hidden" },
-              label: { className: "text-white !ps-4" },
+              label: { className: "text-white ps-2 w-[4.5rem]" },
               header: { className: "hidden" },
             }}
           />
           <Button
-            className="bg-transparent border-none rounded-lg flex justify-center items-center p-1"
+            className="bg-transparent border-none w-full"
+            icon="pi pi-arrow-right"
             onClick={(e) => handleAreaChange(e)}
-          >
-            送出
-          </Button>
+          ></Button>
         </div>
-        <div className="flex flex-wrap justify-content-center gap-2">
+        <div className="flex flex-1">
           <Button
-            label="下一輪"
-            icon="pi pi-arrow-up"
-            onClick={() => show("bottom")}
-            className=""
+            label={`${
+              nextTurnSpeed.length > 0
+                ? "下一張卡" + nextTurnSpeed[0].value
+                : "下一張卡"
+            }`}
+            // icon="pi pi-arrow-u"
+            onClick={() => {
+              setSkillModalPosition("bottom");
+              setSkillModalOpen(true);
+            }}
+            className="w-full bg-black text-white text-[14px] p-1"
+          />
+        </div>
+        <div className="flex flex-1">
+          <Button
+            label={`${"下一輪"}`}
+            icon={`${nextTurnCheck && "pi pi-check"}`}
+            onClick={() => {
+              if (nextTurnSpeed.length > 0) {
+                setNextTurnCheck(!nextTurnCheck);
+              }
+            }}
+            iconPos="right"
+            className="w-full bg-black text-white text-[14px] p-0"
+            pt={{ icon: { className: "p-0 m-0 -translate-x-3" } }}
+          />
+        </div>
+        <div className="w-10">
+          <Button
+            className="absolute bottom-3 right-3 size-8 "
+            icon="pi pi-bars"
+            onClick={() => updateSidebarVisible(true)}
           />
         </div>
         <Dialog
@@ -561,7 +620,7 @@ const Battle = () => {
                           (i) => i.id === e.target.id
                         )
                       );
-                      console.log(e.value);
+                      // console.log(e.value);
                     }}
                     checked={nextTurnSpeed[0]?.id === skill.id}
                   />
@@ -572,7 +631,7 @@ const Battle = () => {
               );
             })}
           </div>
-          <div className="flex justify-end">
+          <div className="flex">
             <Button
               label="送出"
               className="h-10"

@@ -165,13 +165,13 @@ const App = () => {
           : "bg-[url('/src/asset/img/bg-04.webp')]"
       } bg-cover bg-no-repeat bg-black`}
     >
-      {conn && (
+      {/* {conn && (
         <Button
           className="absolute bottom-3 right-3 size-6 "
           icon="pi pi-bars"
           onClick={() => updateSidebarVisible(true)}
         />
-      )}
+      )} */}
 
       <CustomizeSidebar />
       {!conn && <Home joinRoom={joinRoom} />}

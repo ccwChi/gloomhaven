@@ -66,7 +66,7 @@ const battleRecordStore = create((set) => ({
     myState: {
       name: "虛空守望者",
       color: "secondary",
-      order: 3,
+      order: 1,
       player: "靜香",
       gold: "32",
       exp: "78",

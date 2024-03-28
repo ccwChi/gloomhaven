@@ -50,67 +50,71 @@ const CustomizeSidebar = () => {
         position="bottom"
         visible={sidebarVisible}
         onHide={() => updateSidebarVisible(false)}
-        className="bg-amber-100 "
+        className="bg-transparent h-fit text-white "
         pt={{ header: { className: "hidden" } }}
       >
-        <div
-          className="mt-4 bg-amber-800 text-white w-fit px-2 py-1 rounded-lg"
-          onClick={() => {
-            // console.log("myState", myState);
-            // console.log("roomState", roomState);
-            // console.log("playerState", playerState);
-            // console.log("monsterList", monsterList);
-            // console.log("gameScene", gameScene);
-            // console.log("monsterDetailList", monsterDetailList);
-            console.log("battleRecord", battleRecord);
-          }}
-        >
-          遊戲資訊
-          <p className="w-fit text-xs text-rose-100">
-            關卡等級 ( L ) = 全隊平均等級 / 2 向上取整
-          </p>
-        </div>
-        <div className="p-2">
-          <div className="flex gap-2 w-full ">
-            <p className=" flex-1">{myState.name || `角色:`}&nbsp;&nbsp;{myState.name ? "" : "-"}</p>
-            <div className="inline-flex flex-1">
-              <p className="w-fit">{"經驗值: "}&nbsp;</p>
-              <p>{myState.exp || "-"}</p>
-            </div>
-            <div className="inline-flex flex-1">
-              <p className="w-fit">{"最大HP: "}&nbsp;</p>
-              <p>{myState.maxHp || "-"}</p>
-            </div>
+        <div className="bg-gray-700 bg-opacity-95 rounded-lg p-1 py-2 ">
+          <div
+            className="mt-4 bg-gray-700 bg-opacity-90 text-white w-fit px-2 py-1 rounded-lg"
+            onClick={() => {
+              // console.log("myState", myState);
+              // console.log("roomState", roomState);
+              // console.log("playerState", playerState);
+              // console.log("monsterList", monsterList);
+              // console.log("gameScene", gameScene);
+              // console.log("monsterDetailList", monsterDetailList);
+              console.log("battleRecord", battleRecord);
+            }}
+          >
+            遊戲資訊
+            <p className="w-fit text-xs text-rose-100">
+              關卡等級 ( L ) = 全隊平均等級 / 2 向上取整
+            </p>
           </div>
-          <div className="flex gap-2 w-full ">
-            <div className="inline-flex flex-1 ">
-              <p className="w-fit">{"等級: "}&nbsp;</p>
-              <p>{myState.level || "-"}</p>
+          <div className="p-2">
+            <div className="flex gap-2 w-full ">
+              <p className=" flex-1">
+                {myState.name || `角色:`}&nbsp;&nbsp;{myState.name ? "" : "-"}
+              </p>
+              <div className="inline-flex flex-1">
+                <p className="w-fit">{"經驗值: "}&nbsp;</p>
+                <p>{myState.exp || "-"}</p>
+              </div>
+              <div className="inline-flex flex-1">
+                <p className="w-fit">{"最大HP: "}&nbsp;</p>
+                <p>{myState.maxHp || "-"}</p>
+              </div>
             </div>
-            <div className="inline-flex flex-1 ">
-              <p className="w-fit">{"金幣: "}&nbsp;</p>
-              <p>{myState.gold || "-"}</p>
+            <div className="flex gap-2 w-full ">
+              <div className="inline-flex flex-1 ">
+                <p className="w-fit">{"等級: "}&nbsp;</p>
+                <p>{myState.level || "-"}</p>
+              </div>
+              <div className="inline-flex flex-1 ">
+                <p className="w-fit">{"金幣: "}&nbsp;</p>
+                <p>{myState.gold || "-"}</p>
+              </div>
+              <div className="inline-flex flex-1">
+                <p className="w-fit">{"關卡等級: "}&nbsp;</p>
+                <p>{scriptLevel || "-"}</p>
+              </div>
             </div>
-            <div className="inline-flex flex-1">
-              <p className="w-fit">{"關卡等級: "}&nbsp;</p>
-              <p>{scriptLevel || "-"}</p>
+            <div className="flex gap-2 w-full ">
+              <div className="inline-flex flex-1 ">
+                <p className="w-fit">{"物品: "}&nbsp;</p>
+                {myState.length > 0
+                  ? myState.object.map((item, index) => (
+                      <React.Fragment key={index}>
+                        <span>{item}</span>
+                        {index !== myState.object.length - 1 && <span>, </span>}
+                      </React.Fragment>
+                    ))
+                  : "-"}
+              </div>
             </div>
-          </div>
-          <div className="flex gap-2 w-full ">
-            <div className="inline-flex flex-1 ">
-              <p className="w-fit">{"物品: "}&nbsp;</p>
-              {myState.length > 0
-                ? myState.object.map((item, index) => (
-                    <React.Fragment key={index}>
-                      <span>{item}</span>
-                      {index !== myState.object.length - 1 && <span>, </span>}
-                    </React.Fragment>
-                  ))
-                : "-"}
+            <div className="flex gap-2 w-full ">
+              <div className="inline-flex flex-1 "></div>
             </div>
-          </div>
-          <div className="flex gap-2 w-full ">
-            <div className="inline-flex flex-1 "></div>
           </div>
         </div>
       </Sidebar>
