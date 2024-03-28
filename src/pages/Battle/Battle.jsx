@@ -343,6 +343,10 @@ const Battle = () => {
       );
     });
   };
+
+  useEffect(() => {
+    console.log("nextTurnSpeed", nextTurnSpeed);
+  }, [nextTurnSpeed]);
   return (
     <>
       {/* 順序區 */}
@@ -484,7 +488,7 @@ const Battle = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col bg-black bg-opacity-70 p-2 w-full h-fit rounded-lg relative text-white">
+      <div className="flex bg-black bg-opacity-70 p-2 w-full h-fit rounded-lg relative text-white">
         <div className="card flex w-fit gap-x-2 border rounded-lg p-1">
           <MultiSelect
             value={activeArea}
@@ -506,66 +510,78 @@ const Battle = () => {
           >
             送出
           </Button>
-          <div className="flex flex-wrap justify-content-center gap-2">
-            <Button
-              label="Bottom"
-              icon="pi pi-arrow-up"
-              onClick={() => show("bottom")}
-              className="p-button-success"
-              style={{ minWidth: "10rem" }}
-            />
-          </div>
-
-          <Dialog
-            header="選擇技能速度"
-            visible={skillModalOpen}
-            position={skillModalPosition}
-            style={{ width: "85vw" }}
-            onHide={() => setSkillModalOpen(false)}
-            // footer={footerContent}
-            draggable={false}
-            resizable={false}
-            className="!bg-gray-900"
-            pt={{
-              root: { className: "border" },
-              header: { className: "bg-gray-700 bg-opacity-50 text-white" },
-              content: {
-                className: "bg-gray-700 bg-opacity-50 text-white p-4 flex flex-col gap-y-4",
-              },
-              // footer: {
-              //   className: "bg-gray-700 bg-opacity-50 text-white",
-              //   button: {
-              //     onClick: () => {
-              //       console.log("aa");
-              //     },
-              //   },
-              // },
-            }}
-          >
-            <div className="  flex flex-wrap flex-shrink gap-4 ">
-              {battleRecord.myState.selectSkill.map((skill, i) => {
-                return (
-                  <div key={skill.id} className="flex fle items-center">
-                    <RadioButton
-                      inputId={skill.id}
-                      name="category"
-                      value={nextTurnSpeed}
-                      onChange={(e) => {
-                        setNextTurnSpeed(e.value);
-                        console.log(e);
-                      }}
-                      checked={nextTurnSpeed.id === skill.id}
-                    />
-                    <label htmlFor={skill.id} className="ml-2 w-16">
-                      <span className="">Lv{skill.lv}</span> - {skill.value}
-                    </label>
-                  </div>
-                );
-              })}
-            </div>
-            <div><Button></Button></div>
-          </Dialog>
         </div>
+        <div className="flex flex-wrap justify-content-center gap-2">
+          <Button
+            label="下一輪"
+            icon="pi pi-arrow-up"
+            onClick={() => show("bottom")}
+            className=""
+          />
+        </div>
+        <Dialog
+          header="選擇技能速度"
+          visible={skillModalOpen}
+          position={skillModalPosition}
+          style={{ width: "85vw" }}
+          onHide={() => setSkillModalOpen(false)}
+          // footer={footerContent}
+          draggable={false}
+          resizable={false}
+          className="!bg-gray-900"
+          pt={{
+            root: { className: "border" },
+            header: { className: "bg-gray-700 bg-opacity-50 text-white p-4" },
+            content: {
+              className:
+                "bg-gray-700 bg-opacity-50 text-white p-4 flex flex-col gap-y-4",
+            },
+            // footer: {
+            //   className: "bg-gray-700 bg-opacity-50 text-white",
+            //   button: {
+            //     onClick: () => {
+            //       console.log("aa");
+            //     },
+            //   },
+            // },
+          }}
+        >
+          <div className="  flex flex-wrap flex-shrink gap-4 ">
+            {battleRecord.myState.selectSkill.map((skill, i) => {
+              return (
+                <div key={skill.id} className="flex fle items-center">
+                  <RadioButton
+                    inputId={skill.id}
+                    name="category"
+                    id={skill.id}
+                    value={skill.value}
+                    onChange={(e) => {
+                      setNextTurnSpeed(
+                        battleRecord.myState.selectSkill.filter(
+                          (i) => i.id === e.target.id
+                        )
+                      );
+                      console.log(e.value);
+                    }}
+                    checked={nextTurnSpeed[0]?.id === skill.id}
+                  />
+                  <label htmlFor={skill.id} className="ml-2 w-16">
+                    <span className="">Lv{skill.lv}</span> - {skill.value}
+                  </label>
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex justify-end">
+            <Button
+              label="送出"
+              className="h-10"
+              onClick={() => {
+                setSkillModalOpen(false);
+              }}
+            ></Button>
+          </div>
+        </Dialog>
       </div>
     </>
   );
