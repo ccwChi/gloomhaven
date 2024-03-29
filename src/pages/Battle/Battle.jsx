@@ -41,6 +41,7 @@ const Battle = () => {
   const [skillModalPosition, setSkillModalPosition] = useState("bottom");
   const [nextTurnCheck, setNextTurnCheck] = useState(false);
   const [fromServerPlayerState, setFromServerPlayerState] = useState({});
+  const [thisTurnActiveRole, setThisTurnActiveRole] = useState([]);
   // 進畫面先把前往下一關關掉
   useEffect(() => {
     // conn.invoke("ReadyChangeScene", false);
@@ -52,9 +53,10 @@ const Battle = () => {
     const tempactionableRole = tempRecrod.battleInitState.playersState.map(
       (player) => ({
         name: player.name,
-        speed: "",
+        speed: 0,
         order: player.order,
         maxHp: player.maxHp,
+        color: player.color,
       })
     );
     updateBattleRecord({
@@ -79,7 +81,13 @@ const Battle = () => {
         code: key,
       }))
     );
+    // setThisTurnActiveRole(tempRecrod.nextTurnState.actionableRole);
+    setThisTurnActiveRole(tempactionableRole);
   }, []);
+
+  useEffect(() => {
+    console.log(thisTurnActiveRole);
+  }, [thisTurnActiveRole]);
 
   // --------------------------------------------------------用來處理每個玩家血量欄位的輸入讀取 //
   const [inputPlayerHp, setInputPlayerHp] = useState(
@@ -247,6 +255,7 @@ const Battle = () => {
           actionableRole: uniqueActiveMonsters,
         },
       });
+      
     }
   }, [fromServerActiveArea]);
 
@@ -254,6 +263,7 @@ const Battle = () => {
   //------------------------------------------------------------------------------處理前往下一張地圖
   const handleToNextTurn = () => {
     setFromServerPlayerState();
+    // sent true && speed
     // conn.invoke("ReadyChangeScene", false);
   };
 
@@ -265,11 +275,16 @@ const Battle = () => {
     ).length;
     if (checkedNum > 0 && checkedNum === tempPlayerState.length) {
       // console.log(checkedNum);
-
-
-
-     
-
+      const tempRecrod = { ...battleRecord };
+      updateBattleRecord({
+        ...tempRecrod,
+        currentTurnState: {
+          ...tempRecrod["currentTurnState"],
+          playersState: tempRecrod.nextTurnState.playersState,
+          actionableRole: tempRecrod.nextTurnState.actionableRole,
+        },
+      });
+      setThisTurnActiveRole(tempRecrod.nextTurnState.actionableRole);
     }
   }, [playerState]);
 
@@ -382,8 +397,15 @@ const Battle = () => {
   return (
     <>
       {/* 順序區 */}
-      <div className="flex flex-col bg-black bg-opacity-70 p-6 w-full h-fit rounded-lg relative text-white">
-        順序
+      <div className="flex gap-2 bg-black bg-opacity-70 p-2 w-full h-fit rounded-lg relative text-white overflow-auto">
+        {thisTurnActiveRole.sort().map((role, index) => (
+          <div
+            className={`size-14 bg-slate-800 flex justify-center items-center rounded-md flex-col`}
+          >
+            <span> {role.name[0] + role.name[1]}</span>
+            <span>{role.speed}</span>
+          </div>
+        ))}
       </div>
       {/* 玩家角色區 */}
       <div className="flex-1 flex overflow-hidden w-full">
