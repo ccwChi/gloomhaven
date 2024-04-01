@@ -2,16 +2,17 @@ const record = [
   {
     name: "紀錄",
     roleData: {
-      RG: {
+      赤色守衛: {
         name: "赤色守衛",
         color: "danger",
+        // color: "#ef4444",
         order: 1,
         player: "",
         gold: "21",
         exp: "73",
         level: 2,
         averageLevel: "",
-        maxHp: 12,
+        hp: 12,
         cardMount: 10,
         perk: "",
         object: ["手套", "鞋子", "竹蜻蜓"],
@@ -113,8 +114,9 @@ const record = [
           },
         ],
       },
-      DE: {
+      石晶爆破手: {
         name: "石晶爆破手",
+        // color: "#f97316",
         color: "warning",
         order: 2,
         player: "",
@@ -122,7 +124,7 @@ const record = [
         exp: "78",
         level: 2,
         averageLevel: "",
-        maxHp: "",
+        hp: 9,
         cardMount: 9,
         perk: "",
         object: ["手套", "鞋子", "竹蜻蜓"],
@@ -229,16 +231,17 @@ const record = [
           },
         ],
       },
-      VW: {
+      虛空守望者: {
         name: "虛空守望者",
         color: "secondary",
+        // color: "#64748b",
         order: 3,
         player: "",
         gold: "32",
         exp: "78",
         level: 2,
         averageLevel: "",
-        maxHp: "",
+        hp: 7,
         cardMount: 11,
         perk: "",
         object: ["手套", "鞋子", "竹蜻蜓"],
@@ -345,16 +348,17 @@ const record = [
           },
         ],
       },
-      HA: {
+      "鋼角飛斧手": {
         name: "鋼角飛斧手",
         color: "info",
+        // color: "#0ea5e9",
         order: 4,
         player: "",
         gold: "67",
         exp: "75",
         level: 2,
         averageLevel: "",
-        maxHp: "",
+        hp: 9,
         cardMount: 10,
         perk: "",
         object: ["手套", "鞋子", "竹蜻蜓"],
@@ -481,7 +485,7 @@ const enemyList = [
         hp: 4,
         move: 1,
         att: 2,
-        ability: [],
+        ability: "",
       },
       {
         name: "blackSludgeEX",
@@ -489,7 +493,7 @@ const enemyList = [
         isElite: true,
         hp: 8,
         move: 1,
-        ability: [],
+        ability: "",
       },
       {
         name: "ratMonstrosity",
@@ -498,7 +502,7 @@ const enemyList = [
         hp: 4,
         move: 1,
         att: 1,
-        ability: ["死亡時鄰近一格敵人受到1點傷害"],
+        ability: "死亡時鄰近一格敵人受到1點傷害",
       },
       {
         name: "ratMonstrosityEX",
@@ -507,7 +511,7 @@ const enemyList = [
         hp: 6,
         move: 1,
         att: 2,
-        ability: ["死亡時鄰近一格敵人受到1點傷害"],
+        ability: "死亡時鄰近一格敵人受到1點傷害",
       },
       {
         name: "giantViper",
@@ -516,7 +520,7 @@ const enemyList = [
         hp: 2,
         move: 2,
         att: 1,
-        debuff: ["中毒"],
+        debuff: "中毒",
       },
       {
         name: "giantViperEX",
@@ -525,7 +529,7 @@ const enemyList = [
         hp: 3,
         move: 2,
         att: 2,
-        debuff: ["中毒"],
+        debuff: "中毒",
       },
       {
         name: "chaosDemon",
@@ -534,7 +538,7 @@ const enemyList = [
         hp: 7,
         move: 3,
         att: 2,
-        debuff: ["迷茫"],
+        debuff: "迷茫",
       },
       {
         name: "chaosDemonEX",
@@ -543,7 +547,7 @@ const enemyList = [
         hp: 10,
         move: 4,
         att: 3,
-        debuff: ["迷茫"],
+        debuff: "迷茫",
       },
     ],
   },
@@ -561,7 +565,7 @@ const enemyList = [
         hp: 5,
         move: 1,
         att: 2,
-        ability: [],
+        ability: "",
       },
       {
         name: "blackSludgeEX",
@@ -569,7 +573,7 @@ const enemyList = [
         isElite: true,
         hp: 9,
         move: 1,
-        ability: [],
+        ability: "",
       },
       {
         name: "ratMonstrosity",
@@ -578,7 +582,7 @@ const enemyList = [
         hp: 4,
         move: 1,
         att: 2,
-        ability: ["死亡時鄰近一格敵人受到1點傷害"],
+        ability: "死亡時鄰近一格敵人受到1點傷害",
       },
       {
         name: "ratMonstrosityEX",
@@ -587,7 +591,7 @@ const enemyList = [
         hp: 7,
         move: 1,
         att: 2,
-        ability: ["死亡時鄰近一格敵人受到2點傷害"],
+        ability: "死亡時鄰近一格敵人受到2點傷害",
       },
       {
         name: "giantViper",
@@ -596,7 +600,7 @@ const enemyList = [
         hp: 3,
         move: 2,
         att: 1,
-        debuff: ["中毒"],
+        debuff: "中毒",
       },
       {
         name: "giantViperEX",
@@ -605,7 +609,7 @@ const enemyList = [
         hp: 5,
         move: 2,
         att: 2,
-        debuff: ["中毒"],
+        debuff: "中毒",
       },
       {
         name: "chaosDemon",
@@ -614,7 +618,7 @@ const enemyList = [
         hp: 8,
         move: 3,
         att: 3,
-        debuff: ["迷茫"],
+        debuff: "迷茫",
       },
       {
         name: "chaosDemonEX",
@@ -623,7 +627,7 @@ const enemyList = [
         hp: 12,
         move: 4,
         att: 4,
-        debuff: ["迷茫"],
+        debuff: "迷茫",
       },
     ],
   },
@@ -641,8 +645,8 @@ const enemyList = [
         hp: 7,
         move: 1,
         att: 2,
-        ability: ["護盾1"],
-        debuff: ["中毒"],
+        ability: "護盾1",
+        debuff: "中毒",
       },
       {
         name: "blackSludgeEX",
@@ -651,8 +655,8 @@ const enemyList = [
         hp: 11,
         move: 1,
         att: 3,
-        ability: ["護盾1"],
-        debuff: ["中毒"],
+        ability: "護盾1",
+        debuff: "中毒",
       },
       {
         name: "ratMonstrosity",
@@ -661,7 +665,7 @@ const enemyList = [
         hp: 5,
         move: 2,
         att: 2,
-        ability: ["死亡時鄰近一格敵人受到1點傷害"],
+        ability: "死亡時鄰近一格敵人受到1點傷害",
       },
       {
         name: "ratMonstrosityEX",
@@ -670,7 +674,7 @@ const enemyList = [
         hp: 8,
         move: 1,
         att: 3,
-        ability: ["死亡時鄰近一格敵人受到2點傷害"],
+        ability: "死亡時鄰近一格敵人受到2點傷害",
       },
       {
         name: "giantViper",
@@ -679,7 +683,7 @@ const enemyList = [
         hp: 4,
         move: 3,
         att: 1,
-        debuff: ["中毒"],
+        debuff: "中毒",
       },
       {
         name: "giantViperEX",
@@ -688,7 +692,7 @@ const enemyList = [
         hp: 7,
         move: 3,
         att: 2,
-        debuff: ["中毒"],
+        debuff: "中毒",
       },
       {
         name: "chaosDemon",
@@ -697,7 +701,7 @@ const enemyList = [
         hp: 11,
         move: 3,
         att: 3,
-        debuff: ["迷茫"],
+        debuff: "迷茫",
       },
       {
         name: "chaosDemonEX",
@@ -706,7 +710,7 @@ const enemyList = [
         hp: 14,
         move: 4,
         att: 5,
-        debuff: ["迷茫"],
+        debuff: "迷茫",
       },
     ],
   },
@@ -724,8 +728,8 @@ const enemyList = [
         hp: 8,
         move: 1,
         att: 3,
-        ability: ["護盾1"],
-        debuff: ["中毒"],
+        ability: "護盾1",
+        debuff: "中毒",
       },
       {
         name: "blackSludgeEX",
@@ -734,8 +738,8 @@ const enemyList = [
         hp: 11,
         move: 2,
         att: 3,
-        ability: ["護盾1"],
-        debuff: ["中毒"],
+        ability: "護盾1",
+        debuff: "中毒",
       },
       {
         name: "ratMonstrosity",
@@ -744,7 +748,7 @@ const enemyList = [
         hp: 6,
         move: 2,
         att: 3,
-        ability: ["死亡時鄰近一格敵人受到2點傷害"],
+        ability: "死亡時鄰近一格敵人受到2點傷害",
       },
       {
         name: "ratMonstrosityEX",
@@ -753,7 +757,7 @@ const enemyList = [
         hp: 10,
         move: 2,
         att: 3,
-        ability: ["死亡時鄰近一格敵人受到2點傷害"],
+        ability: "死亡時鄰近一格敵人受到2點傷害",
       },
       {
         name: "giantViper",
@@ -762,7 +766,7 @@ const enemyList = [
         hp: 4,
         move: 3,
         att: 2,
-        debuff: ["中毒"],
+        debuff: "中毒",
       },
       {
         name: "giantViperEX",
@@ -771,7 +775,7 @@ const enemyList = [
         hp: 8,
         move: 3,
         att: 3,
-        debuff: ["中毒"],
+        debuff: "中毒",
       },
       {
         name: "chaosDemon",
@@ -780,7 +784,7 @@ const enemyList = [
         hp: 12,
         move: 3,
         att: 4,
-        debuff: ["迷茫"],
+        debuff: "迷茫",
       },
       {
         name: "chaosDemonEX",
@@ -789,7 +793,7 @@ const enemyList = [
         hp: 18,
         move: 5,
         att: 5,
-        debuff: ["迷茫"],
+        debuff: "迷茫",
       },
     ],
   },

@@ -1,6 +1,7 @@
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import React, { useEffect, useState } from "react";
 import {
+  actionableWithMonSkillStore,
   battleRecordStore,
   connStore,
   gameStore,
@@ -10,6 +11,10 @@ import {
   roomStore,
   sceneStore,
   sidebarStore,
+  tempAreaOpenStore,
+  tempMonDataStore,
+  tempPlayerDataStore,
+  tempPlayerDataWithSpStore,
 } from "./utils/useStore";
 // import {
 //   connLocalStore,
@@ -53,6 +58,15 @@ const App = () => {
   // 用來紀錄目前怪物選擇清單，(簡易)
   const { mosterList, updateMonsterList } = monsterStore();
   const { sidebarVisible, updateSidebarVisible } = sidebarStore();
+
+  const { tempMonData, updateTempMonData } = tempMonDataStore();
+  const { tempPlayerData, updateTempPlayerData } = tempPlayerDataStore();
+  const { tempPlayerDataWithSp, updateTempPlayerDataWithSp } =
+    tempPlayerDataWithSpStore();
+  const { tempAreaOpen, updateTempAreaOpen } = tempAreaOpenStore();
+  const { actionableWithMonSkill, updateActionableWithMonSkill } =
+    actionableWithMonSkillStore();
+
   const { battleRecord, updateBattleRecord } = battleRecordStore();
   const [fullGameRecord, setFullGameRecord] = useLocalStorage(
     {
@@ -92,7 +106,7 @@ const App = () => {
 
   useEffect(() => {
     if (conn && roomState) {
-      updateGameScene("scene3");
+      updateGameScene("scene1");
       setFullGameRecord({ ...fullGameRecord, scene: "scene1" });
     } else if (!roomState) {
       updateGameScene("");
@@ -103,7 +117,8 @@ const App = () => {
   const joinRoom = async (playerName, recordNum) => {
     try {
       const newConn = new HubConnectionBuilder()
-        .withUrl("https://localhost:7169/room")
+        // .withUrl("https://localhost:7169/room")
+        .withUrl("https://gloomhaven.azurewebsites.net/room")
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();
@@ -111,24 +126,25 @@ const App = () => {
       newConn.on("LeaveRoom", (connectedPlayers) => {
         updateRoomState(connectedPlayers);
         updatePlayerState(connectedPlayers);
-        // updatePlayerStateLocal(connectedPlayers);
+        console.log("joinroom myState", connectedPlayers);
       });
 
       newConn.on("JoinRoom", (connectedPlayers) => {
         updateRoomState(connectedPlayers);
         updatePlayerState(connectedPlayers);
         // updatePlayerStateLocal(connectedPlayers);
-        // console.log("joinroom myState", myState);
+        console.log("joinroom myState", connectedPlayers);
       });
 
       newConn.on("SelectRole", (connectedPlayers) => {
         updatePlayerState(connectedPlayers);
         // updatePlayerStateLocal(connectedPlayers);
-        // console.log("SelectRole myState", myState);
+        console.log("SelectRole myState", myState);
       });
 
       newConn.on("ReadyChangeScene", (connectedPlayers) => {
         updatePlayerState(connectedPlayers);
+
         // updateGameState(connectedPlayers);
         // updatePlayerStateLocal(connectedPlayers);
         // updateGameStateLocal(connectedPlayers);
@@ -139,6 +155,34 @@ const App = () => {
         updateMonsterList(monDataList);
         // updateMonsterListLocal(monDataList);
         // console.log("monDataList", monDataList);
+      });
+      newConn.on("SendCurrentMonState", (currentMonState) => {
+        updateTempMonData(currentMonState);
+        // console.log("currentMonState", currentMonState);
+        // console.log("battleRecord", battleRecord);
+      });
+      newConn.on("SendCurrentPlayerState", (currentPlayerState) => {
+        updateTempPlayerData(currentPlayerState);
+        // console.log("currentPlayerState", currentPlayerState);
+        // console.log("battleRecord", battleRecord);
+      });
+
+      newConn.on("SendPlayerStateWithNextSp", (currentPlayerState) => {
+        updateTempPlayerDataWithSp(currentPlayerState);
+        // console.log("currentPlayerState", currentPlayerState);
+        // console.log("battleRecord", battleRecord);
+      });
+
+      newConn.on("SendOpenArea", (openArea) => {
+        updateTempAreaOpen(openArea);
+        // console.log("openArea", openArea);
+        // console.log("battleRecord", battleRecord);
+      });
+
+      newConn.on("SendWithSkillCardActionableList", (ActionableList) => {
+        updateActionableWithMonSkill(ActionableList);
+        // console.log("openArea", openArea);
+        // console.log("battleRecord", battleRecord);
       });
 
       await newConn.start();
@@ -175,7 +219,7 @@ const App = () => {
 
       <CustomizeSidebar />
       {!conn && <Home joinRoom={joinRoom} />}
-        {/* <Loading /> */}
+      {/* <Loading /> */}
       {conn && gameScene === "scene1" && <SelectRole />}
 
       {conn && gameScene === "scene2" && <SelectMonAndSkill />}

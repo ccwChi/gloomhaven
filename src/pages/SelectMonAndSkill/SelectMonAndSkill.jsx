@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { useEffect, useState } from "react";
 import {
+  battleRecordStore,
   connStore,
   gameStore,
   monsterDetailStore,
@@ -11,6 +12,7 @@ import {
   roomStore,
   sceneStore,
   scriptLevelStore,
+  sidebarStore,
 } from "../../utils/useStore";
 import { enemyList, record } from "../../asset/data";
 import { TabPanel, TabView } from "primereact/tabview";
@@ -29,8 +31,10 @@ const SelectMonAndSkill = ({}) => {
   const { scriptLevel, updateScriptLevel } = scriptLevelStore();
   const { gameScene, updateGameScene } = sceneStore();
   const { monsterList, updateMonsterList } = monsterStore();
+  const { battleRecord, updateBattleRecord } = battleRecordStore();
   const { monsterDetailList, updateMonsterDetailList } = monsterDetailStore();
   const [targetPointHP, setTargetPointHP] = useState(0);
+  const { sidebarVisible, updateSidebarVisible } = sidebarStore();
   const [selectMonList, setSelectMonList] = useState([
     { name: "區域", code: "" },
   ]);
@@ -42,7 +46,7 @@ const SelectMonAndSkill = ({}) => {
 
   // 進畫面先把前往下一關關掉
   useEffect(() => {
-    conn.invoke("ReadyChangeScene", false);
+    conn.invoke("ReadyChangeScene", false, 0);
   }, []);
 
   // 一進畫面就先計算關卡等級
@@ -71,8 +75,23 @@ const SelectMonAndSkill = ({}) => {
         (i) => i.changeScene === true
       ).length;
       if (checkedNum > 0 && checkedNum === tempPlayerState.length) {
-        // console.log(checkedNum);
-        updateGameScene("scene3");
+        conn.invoke("ReadyChangeScene", false, 0);
+        const tempBatttleRecord = { ...battleRecord };
+        setTimeout(() => {
+          updateBattleRecord({
+            ...tempBatttleRecord,
+            battleInitState: {
+              ...tempBatttleRecord.battleInitState,
+              monsterState: monsterDetailList,
+              playersState: tempPlayerState,
+              openArea:[]
+            },
+            scene: "scene3",
+            myState: myState,
+          });
+          updateGameScene("scene3");
+        }, 1000);
+
         // setFullGameRecord({ ...fullGameRecord, scene: "scene2" });
       }
     }
@@ -80,9 +99,8 @@ const SelectMonAndSkill = ({}) => {
 
   // 收到別人傳來的monsterList之後要填入自己的畫面
   useEffect(() => {
-    // console.log("monsterList", monsterList);
     if (monsterList.length > 0) {
-      console.log("monsterList", monsterList);
+
       setSelectMonList(monsterList);
 
       let areaCount = 0;
@@ -95,7 +113,7 @@ const SelectMonAndSkill = ({}) => {
             name: mon.name,
             area: areaCount,
             code: mon.code,
-            hp: mon.hp
+            hp: mon.hp,
           };
         } else {
           return {
@@ -214,23 +232,30 @@ const SelectMonAndSkill = ({}) => {
           />
         </TabPanel>
       </TabView>
-      <div className="flex w-full justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
-        <Button
-          label={
-            toNextScene ? "等待所有玩家確認中..." : "怪物/技能卡確認、前往關卡"
-          }
-          className="w-full mx-10"
-          icon={toNextScene ? "pi pi-check" : "pi pi-arrow-right"}
-          iconPos="right"
-          raised
-          severity="warning"
-          onClick={() => {
-            if (checkMonster && checkPlayer) {
-              setToNextScene(!toNextScene)
-              conn.invoke("ReadyChangeScene", !toNextScene);
-            }
-          }}
-        />
+      <div className="flex bg-black bg-opacity-70 p-2 gap-2 w-full h-fit rounded-lg relative text-white">
+        <div className="flex w-full justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
+          <Button
+            label={toNextScene ? "等待所有玩家確認中..." : "確認、前往關卡"}
+            className="w-full mx-10"
+            icon={toNextScene ? "pi pi-check" : "pi pi-arrow-right"}
+            iconPos="right"
+            raised
+            severity="warning"
+            onClick={() => {
+              if (checkMonster && checkPlayer) {
+                setToNextScene(!toNextScene);
+                conn.invoke("ReadyChangeScene", !toNextScene, 0);
+              }
+            }}
+          />
+          <div className="w-10">
+            <Button
+              className="absolute bottom-3 right-3 size-8 "
+              icon="pi pi-bars"
+              onClick={() => updateSidebarVisible(true)}
+            />
+          </div>
+        </div>
       </div>
     </>
   );
@@ -277,7 +302,6 @@ const MonstSelectTab = ({
   const SendMonData = async (monData) => {
     try {
       await conn.invoke("SendMonData", monData);
-      console.log("SendMonData");
     } catch (error) {
       console.error("Error invoking SendMonData:", error);
       // 在這裡處理錯誤，例如顯示錯誤訊息給使用者或執行其他適當的操作
@@ -589,8 +613,8 @@ const PlayerStateTab = ({
             </h3>
             <h3>LV = X</h3>
             <div className="flex flex-wrap gap-3">
-              {lvXItems.map((item) => (
-                <div key={item.id} className="flex align-items-center">
+              {lvXItems.map((item, i) => (
+                <div key={item.id + i} className="flex align-items-center">
                   <Checkbox
                     inputId={`item-${item.id}`}
                     name="lvX"
@@ -676,9 +700,6 @@ const PlayerStateTab = ({
           </div>
           <div className="flex flex-col flex-wrap justify-content-center gap-3 p-3">
             <h3
-              onClick={() => {
-                console.log(selectedCards);
-              }}
             >
               選擇優劣勢卡片
             </h3>
@@ -725,11 +746,12 @@ const PlayerStateTab = ({
           </div>
         </div>
       </div>
+
       <div className=" py-3 flex w-full gap-2 flex-col  justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
         <Button
           label="確任個人狀態"
           icon={checkPlayer && "pi pi-check"}
-          disabled={selectedCards.length !== myState.cardMount}
+          // disabled={selectedCards.length !== myState.cardMount}
           iconPos="right"
           raised
           onClick={() => {

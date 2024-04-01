@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import React, { useEffect, useRef, useState } from "react";
 import CustomizeSidebar from "../../component/CustomizeSidebar";
 import {
+  actionableWithMonSkillStore,
   battleRecordStore,
   connStore,
   gameStore,
@@ -13,12 +14,17 @@ import {
   sceneStore,
   scriptLevelStore,
   sidebarStore,
+  tempAreaOpenStore,
+  tempMonDataStore,
+  tempPlayerDataStore,
+  tempPlayerDataWithSpStore,
 } from "../../utils/useStore";
 import { InputNumber } from "primereact/inputnumber";
 import { Card } from "primereact/card";
 import { Dialog } from "primereact/dialog";
 import { MultiSelect } from "primereact/multiselect";
 import { RadioButton } from "primereact/radiobutton";
+import { enemyAction } from "../../asset/data";
 
 const Battle = () => {
   const { conn, updateConn } = connStore();
@@ -30,10 +36,18 @@ const Battle = () => {
   const { gameScene, updateGameScene } = sceneStore();
   const { monsterList, updateMonsterList } = monsterStore();
   const { monsterDetailList, updateMonsterDetailList } = monsterDetailStore();
+  const { tempMonData, updateTempMonData } = tempMonDataStore();
+  const { tempPlayerData, updateTempPlayerData } = tempPlayerDataStore();
+  const { tempAreaOpen, updateTempAreaOpen } = tempAreaOpenStore();
   const { sidebarVisible, updateSidebarVisible } = sidebarStore();
   const { battleRecord, updateBattleRecord } = battleRecordStore();
+  const { actionableWithMonSkill, updateActionableWithMonSkill } =
+    actionableWithMonSkillStore();
+
   const [activeArea, setActiveArea] = useState([]);
   const [fromServerActiveArea, setFromServerActiveArea] = useState([]);
+  const { tempPlayerDataWithSp, updateTempPlayerDataWithSp } =
+    tempPlayerDataWithSpStore();
   const [activeAreaList, setActiveAreaList] = useState([]);
   const [playerDivCollapse, setPlayerDivCollapse] = useState(false);
   const [nextTurnSpeed, setNextTurnSpeed] = useState("");
@@ -42,23 +56,22 @@ const Battle = () => {
   const [nextTurnCheck, setNextTurnCheck] = useState(false);
   const [fromServerPlayerState, setFromServerPlayerState] = useState({});
   const [thisTurnActiveRole, setThisTurnActiveRole] = useState([]);
-  // 進畫面先把前往下一關關掉
-  useEffect(() => {
-    // conn.invoke("ReadyChangeScene", false);
-  }, []);
-
+  const [updateMosterSp, setUpdateMosterSp] = useState([]);
   // 將怪物、人物的初始狀態複製到當前回合狀態
   useEffect(() => {
     const tempRecrod = { ...battleRecord };
-    const tempactionableRole = tempRecrod.battleInitState.playersState.map(
-      (player) => ({
-        name: player.name,
-        speed: 0,
-        order: player.order,
-        maxHp: player.maxHp,
-        color: player.color,
-      })
-    );
+    const tempactionableRole = tempRecrod.battleInitState.playersState;
+    tempactionableRole.sort((a, b) => {
+      if (a.nextSpeed !== b.nextSpeed) {
+        return a.nextSpeed - b.nextSpeed;
+      } else {
+        return a.order - b.order;
+      }
+    });
+    // 重新設置排序後的 order 屬性值
+    tempactionableRole.forEach((player, index) => {
+      player.order = index + 1;
+    });
     updateBattleRecord({
       ...tempRecrod,
       nextTurnState: {
@@ -74,22 +87,20 @@ const Battle = () => {
         actionableRole: tempactionableRole,
       },
     });
-    // tempRecrod.Array
+
+    // 進場先設置區域選單
     setActiveAreaList(
       Object.keys(tempRecrod.battleInitState.monsterState).map((key) => ({
         name: "區域" + key,
         code: key,
       }))
     );
-    // setThisTurnActiveRole(tempRecrod.nextTurnState.actionableRole);
+
+    // 進場先設置上方有幾個玩家在排序
     setThisTurnActiveRole(tempactionableRole);
   }, []);
 
-  useEffect(() => {
-    console.log(thisTurnActiveRole);
-  }, [thisTurnActiveRole]);
-
-  // --------------------------------------------------------用來處理每個玩家血量欄位的輸入讀取 //
+  // -----------------------------用來處理每個玩家血量欄位的輸入讀取 //
   const [inputPlayerHp, setInputPlayerHp] = useState(
     Array.from(
       { length: battleRecord.battleInitState.playersState.length },
@@ -108,36 +119,52 @@ const Battle = () => {
   const inputPlayerHpRefs = useRef([]);
   const handlePlayerHp = (index) => {
     if (inputPlayerHpRefs.current[index]) {
+      console.log(
+        "inputPlayerHpRefs.current[index]",
+        inputPlayerHpRefs.current[index]
+      );
       // 使用getInput方法獲取輸入元素的引用
       const inputElement = inputPlayerHpRefs.current[index].getInput();
+      console.log("inputElement", inputElement);
       // 獲取輸入元素的值
       const value = inputElement.value;
       // 對獲取的值進行操作，這裡只是簡單地在console中輸出
       const targetPlayer = inputPlayerHpRefs.current[index].props.id;
-
+      console.log("targetPlayer", targetPlayer);
       const currentPlayers = [...battleRecord.currentTurnState.playersState];
+      console.log("currentPlayers", currentPlayers);
       const playerIndex = currentPlayers.findIndex(
-        (player) => player.name === targetPlayer
+        (player) => player.selectRole === targetPlayer
       );
       if (playerIndex !== -1) {
         currentPlayers[playerIndex] = {
           ...currentPlayers[playerIndex],
-          maxHp: Math.max(
-            currentPlayers[playerIndex].maxHp - parseInt(value),
-            0
-          ),
+          hp: Math.max(currentPlayers[playerIndex].hp - parseInt(value), 0),
         };
-        updateBattleRecord({
-          ...battleRecord,
-          currentTurnState: {
-            ...battleRecord.currentTurnState,
-            playersState: currentPlayers,
-          },
-        });
+        console.log("currentPlayers", currentPlayers);
+        conn.invoke("SendCurrentPlayerState", currentPlayers);
       }
     }
   };
-  // --------------------------------------------------------用來處理每個怪物血量欄位的輸入讀取 //
+
+  // 有人傳送打怪資訊的話，同步
+  useEffect(() => {
+    if (!!tempPlayerData) {
+      updateBattleRecord({
+        ...battleRecord,
+        currentTurnState: {
+          ...battleRecord.currentTurnState,
+          playersState: tempPlayerData,
+        },
+        nextTurnState: {
+          ...battleRecord.nextTurnState,
+          playersState: tempPlayerData,
+        },
+      });
+      updateTempPlayerData(null);
+    }
+  }, [tempPlayerData]);
+  // -------------------------------------------用來處理每個怪物血量欄位的輸入讀取 //
 
   const [inputMonHp, setInputMonHp] = useState(
     // Array.from({ maxIndex }, () => 0)
@@ -174,13 +201,6 @@ const Battle = () => {
   };
   const inputMonHpRefs = useRef([]);
   const handleMonHp = (index) => {
-    // console.log(inputPlayerHpRefs.current[index]);
-    // console.log(
-    //   "index",
-    //   index,
-    //   "inputMonHpRefs.current[index]",
-    //   inputMonHpRefs.current[index]
-    // );
     if (inputMonHpRefs.current[index]) {
       const inputElement = inputMonHpRefs.current[index].getInput();
       const value = inputElement.value;
@@ -203,16 +223,28 @@ const Battle = () => {
           }),
         };
         // 存回 battleRecord.currentTurnState.monsterState 中
-        updateBattleRecord({
-          ...battleRecord,
-          currentTurnState: {
-            ...battleRecord.currentTurnState,
-            monsterState: updatedMonState,
-          },
-        });
+        conn.invoke("SendCurrentMonState", updatedMonState);
       }
     }
   };
+
+  // 有人傳送打怪資訊的話，同步
+  useEffect(() => {
+    if (!!tempMonData) {
+      updateBattleRecord({
+        ...battleRecord,
+        currentTurnState: {
+          ...battleRecord.currentTurnState,
+          monsterState: tempMonData,
+        },
+        nextTurnState: {
+          ...battleRecord.nextTurnState,
+          monsterState: tempMonData,
+        },
+      });
+      updateTempMonData(null);
+    }
+  }, [tempMonData]);
 
   // -------------------------------------------------怪物處理結束
 
@@ -221,76 +253,314 @@ const Battle = () => {
     e.preventDefault();
     sendAreaData(activeArea);
   };
-  //------------------------------------------------------------------------------處理傳送開放區域清單出去
+  //-----------------------------------------------處理傳送開放區域清單出去
   const sendAreaData = (activeArea) => {
-    setFromServerActiveArea(activeArea);
+    conn.invoke("SendOpenArea", activeArea);
+    // setFromServerActiveArea(activeArea);
   };
   useEffect(() => {
-    if (fromServerActiveArea.length > 0) {
-      const activeMonsters = fromServerActiveArea
+    setActiveArea(tempAreaOpen);
+    console.log("tempAreaOpen", tempAreaOpen);
+    if (!!tempAreaOpen && tempAreaOpen.length > 0) {
+      const activeMonsters = tempAreaOpen
         .reduce((acc, area) => {
-          const monsters =
-            battleRecord.currentTurnState.monsterState[area.code];
+          const monsters = battleRecord.nextTurnState.monsterState[area.code];
+          console.log("monsters", monsters);
           if (monsters) {
             return acc.concat(monsters);
           }
+          console.log("acc", acc);
           return acc;
         }, [])
         .filter((mon) => mon.hp !== 0);
-      const uniqueActiveMonsters = [
-        ...new Map(activeMonsters.map((mon) => [mon.name, mon])).values(),
-      ]
+      console.log("更新區域後activeMonsters", activeMonsters);
+      // const uniqueActiveMonsters = [ ...new Map(activeMonsters.map((mon) => [mon.name, mon])).values(),]
+      const uniqueActiveMonsters = activeMonsters
         .map((mon) => ({
-          name: mon.chineseName,
-          value: mon.name,
-          speed: "",
+          playerName: mon.chineseName,
+          selectRole: mon.chineseName,
+          index: mon.index,
+          value: mon.name.replace(/EX$/, ""),
+          nextSpeed: 0,
           actionCard: "",
         }))
-        .concat(battleRecord.currentTurnState.actionableRole);
-      console.log(uniqueActiveMonsters);
+        .concat(battleRecord.nextTurnState.playersState);
+      // console.log(uniqueActiveMonsters);
       updateBattleRecord({
         ...battleRecord,
         nextTurnState: {
           ...battleRecord.nextTurnState,
           actionableRole: uniqueActiveMonsters,
+          openArea: tempAreaOpen,
+        },
+        currentTurnState: {
+          ...battleRecord.currentTurnState,
+          openArea: tempAreaOpen,
         },
       });
-      
     }
-  }, [fromServerActiveArea]);
+  }, [tempAreaOpen]);
 
-  //------------------------------------------------------------------------------處理傳送開放區域清單出去
-  //------------------------------------------------------------------------------處理前往下一張地圖
-  const handleToNextTurn = () => {
-    setFromServerPlayerState();
-    // sent true && speed
-    // conn.invoke("ReadyChangeScene", false);
+  //-------------------------------------------------------處理傳送開放區域清單出去
+  //-------------------------------------------------------處理玩家送出下一輪速度
+  const sendPlayerNextSpeed = () => {
+    // console.log("nextTurnSpeed", nextTurnSpeed);
+    const tempNextPlayers = battleRecord.nextTurnState.playersState.map(
+      (player) => {
+        if (player.selectRole === myState.name) {
+          return { ...player, nextSpeed: nextTurnSpeed.value };
+        } else {
+          return player;
+        }
+      }
+    );
+    conn.invoke("SendPlayerStateWithNextSp", tempNextPlayers);
+    // 嘗試在這邊處理新增怪物邏輯
+    const myOrder = battleRecord.nextTurnState.playersState.find(
+      (i) => i.selectRole === myState.name
+    ).order;
+    if (myOrder === 1) {
+      const processedRoles = {};
+
+      const activeRolesWithSpeed =
+        battleRecord.nextTurnState.actionableRole.map((role) => {
+          console.log(processedRoles);
+          if (processedRoles[role.value]) {
+            console.log("已經有怪物資料，回傳", {
+              ...role,
+              nextSpeed: processedRoles[role.value].nextSpeed,
+              cardAction: processedRoles[role.value].cardAction,
+            });
+            return {
+              ...role,
+              nextSpeed: processedRoles[role.value].nextSpeed,
+              cardAction: processedRoles[role.value].cardAction,
+            };
+          } else if (!!role?.enemyData) {
+            console.log(
+              "怪獸已經有卡牌資料過(之前使用過卡牌組",
+              role?.enemyData
+            );
+            const enemyData = role.enemyData;
+            if (enemyData && enemyData.length > 0) {
+              console.log("enemyData && enemyData.length > 0");
+              // 隨機選擇一個怪物資料
+              const randomIndex = Math.floor(Math.random() * enemyData.length);
+              const selectedEnemy = enemyData[randomIndex];
+
+              // 移除已選擇的怪物資料
+              enemyData.splice(randomIndex, 1);
+              console.log("enemyData", enemyData);
+              // 返回選擇的怪物資料的 as 屬性作為 nextSpeed
+              if (role.value) {
+                processedRoles[role.value] = {
+                  ...role,
+                  nextSpeed: selectedEnemy.as,
+                  cardAction: selectedEnemy,
+                };
+                console.log("A", processedRoles[role.value]);
+              }
+              console.log("B", {
+                ...role,
+                nextSpeed: selectedEnemy.as,
+                cardAction: selectedEnemy,
+              });
+              return {
+                ...role,
+                nextSpeed: selectedEnemy.as,
+                cardAction: selectedEnemy,
+              };
+            } else {
+              if (role.value) {
+                console.log("C  processedRoles[role.value] = role;", processedRoles[role.value],role);
+                processedRoles[role.value] = role;
+              }
+              console.log("CC",role)
+              return role;
+            }
+          } else {
+            const enemyData = role.value && enemyAction[role.value];
+            console.log("d",enemyData)
+            if (enemyData && enemyData.length > 0) {
+              console.log("e",enemyData)
+              // 檢查是否已處理過該 role.value
+              if (processedRoles[role.value]) {
+                console.log("f",processedRoles[role.value])
+                return role; // 如果已處理過，直接返回原始 role
+              }
+
+              // 隨機選擇一個怪物資料
+              const randomIndex = Math.floor(Math.random() * enemyData.length);
+              const selectedEnemy = enemyData[randomIndex];
+
+              // 移除已選擇的怪物資料
+              enemyData.splice(randomIndex, 1);
+              console.log("gg  enemyData", enemyData);
+
+              // 更新已處理的 role.value
+              if (role.value) {
+                processedRoles[role.value] = {
+                  ...role,
+                  nextSpeed: selectedEnemy.as,
+                  cardAction: selectedEnemy,
+                  enemyData: enemyData,
+                };
+                console.log("hh",processedRoles[role.value] )
+              }
+
+              // 返回選擇的怪物資料的 as 屬性作為 nextSpeed
+              console.log("i",{
+                ...role,
+                nextSpeed: selectedEnemy.as,
+                cardAction: selectedEnemy,
+                enemyData: enemyData,
+              })
+              return {
+                ...role,
+                nextSpeed: selectedEnemy.as,
+                cardAction: selectedEnemy,
+                enemyData: enemyData,
+              };
+            } else {
+              if (role.value) {
+                processedRoles[role.value] = role;
+              }
+              console.log("m", role)
+              return role;
+            }
+          }
+        });
+      // const activeRolesWithSpeed =
+      //   battleRecord.nextTurnState.actionableRole.map((role) => {
+      //     if (!!role?.enemyData) {
+      //       const enemyData = role.enemyData;
+      //       if (enemyData && enemyData.length > 0) {
+      //         // 隨機選擇一個怪物資料
+      //         const randomIndex = Math.floor(Math.random() * enemyData.length);
+      //         const selectedEnemy = enemyData[randomIndex];
+
+      //         // 移除已選擇的怪物資料
+      //         enemyData.splice(randomIndex, 1);
+      //         console.log("enemyData", enemyData);
+      //         // 返回選擇的怪物資料的 as 屬性作為 nextSpeed
+      //         return {
+      //           ...role,
+      //           nextSpeed: selectedEnemy.as,
+      //           cardAction: selectedEnemy,
+      //         };
+      //       } else {
+      //         return role;
+      //       }
+      //     } else {
+      //       const enemyData =
+      //         role.value && enemyAction[role.value];
+      //       if (enemyData && enemyData.length > 0) {
+      //         // 隨機選擇一個怪物資料
+      //         const randomIndex = Math.floor(Math.random() * enemyData.length);
+      //         const selectedEnemy = enemyData[randomIndex];
+
+      //         // 移除已選擇的怪物資料
+      //         enemyData.splice(randomIndex, 1);
+      //         console.log("enemyData", enemyData);
+      //         // 返回選擇的怪物資料的 as 屬性作為 nextSpeed
+      //         return {
+      //           ...role,
+      //           nextSpeed: selectedEnemy.as,
+      //           cardAction: selectedEnemy,
+      //           enemyData: enemyData,
+      //         };
+      //       } else {
+      //         return role;
+      //       }
+      //     }
+      //   });
+      // ------------------------------------------新建怪物速度
+      conn.invoke("SendWithSkillCardActionableList", activeRolesWithSpeed);
+      // setUpdateMosterSp(activeRolesWithSpeed);
+      // ------------------------------------------新建怪物速度
+      console.log(activeRolesWithSpeed);
+    }
   };
 
+  useEffect(() => {
+    if (actionableWithMonSkill.length > 0) {
+      console.log("updateMosterSp", actionableWithMonSkill);
+      updateBattleRecord({
+        ...battleRecord,
+        nextTurnState: {
+          ...battleRecord.nextTurnState,
+          actionableRole: actionableWithMonSkill,
+        },
+      });
+      setUpdateMosterSp([]);
+    }
+  }, [actionableWithMonSkill]);
+
+  useEffect(() => {
+    if (!!tempPlayerDataWithSp) {
+      updateBattleRecord({
+        ...battleRecord,
+        nextTurnState: {
+          ...battleRecord.nextTurnState,
+          playersState: tempPlayerDataWithSp,
+        },
+      });
+      updateTempPlayerData(null);
+    }
+  }, [tempPlayerDataWithSp]);
+
+  // -----------------------------------------------------處理
+
+  //----------------------------------------------------處理前往下一輪
+  const handleToNextTurn = () => {
+    if (!!nextTurnSpeed) {
+      // console.log("nextTurnCheck", nextTurnCheck);
+      conn.invoke("ReadyChangeScene", !nextTurnCheck, 0);
+      setNextTurnCheck(!nextTurnCheck);
+    }
+  };
+
+  useEffect(() => {
+    // console.log(playerState);
+  }, []);
   // 如果大家都按了前往下一關，則切換scene
   useEffect(() => {
+    console.log("確認是否跑到A這邊");
     const tempPlayerState = [...Object.values(playerState)];
     const checkedNum = tempPlayerState.filter(
       (i) => i.changeScene === true
     ).length;
     if (checkedNum > 0 && checkedNum === tempPlayerState.length) {
-      // console.log(checkedNum);
+      console.log("確認是否跑到B這邊");
       const tempRecrod = { ...battleRecord };
+      console.log();
+      conn.invoke("ReadyChangeScene", false, 0);
+      setNextTurnSpeed("");
+      setNextTurnCheck(false);
       updateBattleRecord({
         ...tempRecrod,
-        currentTurnState: {
-          ...tempRecrod["currentTurnState"],
-          playersState: tempRecrod.nextTurnState.playersState,
-          actionableRole: tempRecrod.nextTurnState.actionableRole,
-        },
+        currentTurnState: tempRecrod.nextTurnState,
       });
-      setThisTurnActiveRole(tempRecrod.nextTurnState.actionableRole);
+      const tempNewActionRole = tempRecrod.nextTurnState.actionableRole.map(
+        (role) => ({
+          ...role,
+          playerName: role.playerName,
+          selectRole: role.selectRole,
+          index: role?.index || "",
+          value: role?.value || "",
+          nextSpeed: role.order
+            ? tempRecrod.nextTurnState.playersState.find(
+                (i) => i.playerName === role.playerName
+              )?.nextSpeed || 0
+            : role.nextSpeed || 0,
+        })
+      );
+      setThisTurnActiveRole(tempNewActionRole);
+      // setThisTurnActiveRole(tempRecrod.nextTurnState.actionableRole);
     }
   }, [playerState]);
 
   //------------------------------------------------------------------------------處理前往下一張地圖
-  const [expDelta, setExpDelta] = useState(0);
-  const handlePlayerExp = () => {};
 
   const renderMonsterListObj = (list) => {
     return Object.keys(list).map((area, i) => {
@@ -392,20 +662,34 @@ const Battle = () => {
   };
 
   useEffect(() => {
-    // console.log("nextTurnSpeed", nextTurnSpeed);
-  }, [nextTurnSpeed]);
+    console.log("activeArea", activeArea);
+  }, [activeArea]);
   return (
     <>
       {/* 順序區 */}
-      <div className="flex gap-2 bg-black bg-opacity-70 p-2 w-full h-fit rounded-lg relative text-white overflow-auto">
-        {thisTurnActiveRole.sort().map((role, index) => (
-          <div
-            className={`size-14 bg-slate-800 flex justify-center items-center rounded-md flex-col`}
-          >
-            <span> {role.name[0] + role.name[1]}</span>
-            <span>{role.speed}</span>
-          </div>
-        ))}
+      <div
+        onClick={() => {
+          console.log("thisTurnActiveRole", thisTurnActiveRole);
+        }}
+        className="flex gap-2 bg-black bg-opacity-70 p-2 w-full h-fit rounded-lg relative text-white overflow-auto"
+      >
+        {thisTurnActiveRole
+          .sort((a, b) => a.nextSpeed - b.nextSpeed) // 根據 nextSpeed 排序
+          .map((role, index) => (
+            <div
+              draggable
+              key={index}
+              className={`size-14 bg-slate-800 flex justify-center items-center rounded-md flex-col`}
+            >
+              <span>
+                {" "}
+                {role?.selectRole?.[0] +
+                  role?.selectRole?.[1] +
+                  (role?.index || "")}
+              </span>
+              <span>{role?.nextSpeed}</span>
+            </div>
+          ))}
       </div>
       {/* 玩家角色區 */}
       <div className="flex-1 flex overflow-hidden w-full">
@@ -447,22 +731,23 @@ const Battle = () => {
                 (player, index) => (
                   <div key={index} className="inline-flex gap-2 p-2 ">
                     <div className="flex flex-col  gap-1  text-md text-start">
-                      {player.name}
+                      {player.selectRole}
                       <div className="flex gap-4 justify-center bg-red">
                         <div className="flex items-center text-lg w-28">
                           HP:&nbsp;{" "}
-                          {battleRecord.currentTurnState.playersState &&
+                          {battleRecord?.currentTurnState?.playersState &&
                             Object.values(
                               battleRecord.currentTurnState.playersState
-                            ).find((role) => role.name === player.name)
-                              ?.maxHp}{" "}
-                          / {player.maxHp}
+                            ).find(
+                              (role) => role.selectRole === player.selectRole
+                            )?.hp}{" "}
+                          / {player.hp}
                         </div>
                         <InputNumber
                           ref={(el) => (inputPlayerHpRefs.current[index] = el)}
                           value={inputPlayerHp[index]}
                           onChange={(e) => handlePlayerHpChange(index, e.value)}
-                          id={player.name}
+                          id={player.selectRole}
                           showButtons
                           buttonLayout="horizontal"
                           step={1}
@@ -492,45 +777,6 @@ const Battle = () => {
                           onClick={() => handlePlayerHp(index)}
                         />
                       </div>
-                      {/* {player.player === battleRecord.myState.player && (
-                        <div className="flex gap-4 justify-center">
-                          <div className="flex items-center text-xl w-28">
-                            exp:&nbsp; {player.exp}
-                          </div>
-                          <InputNumber
-                            inputId={`horizontal-buttons-${player.name}`}
-                            value={expDelta}
-                            onChange={(e) => setExpDelta(e.target.value)}
-                            showButtons
-                            buttonLayout="horizontal"
-                            step={1}
-                            incrementButtonIcon="pi pi-plus"
-                            decrementButtonIcon="pi pi-minus"
-                            size={1}
-                            pt={{
-                              input: {
-                                root: {
-                                  className:
-                                    "border-none focus:ring-none focus:border:none w-12 h-8",
-                                },
-                              },
-                              incrementButton: {
-                                className: "border-none h-8",
-                              },
-                              decrementButton: {
-                                className: "border-none h-8",
-                              },
-                            }}
-                          />
-                          <Button
-                            icon={"pi pi-check"}
-                            className="ms-8 w-8 h-8"
-                            iconPos="right"
-                            raised
-                            onClick={() => handlePlayerExp()}
-                          />
-                        </div>
-                      )} */}
                     </div>
                   </div>
                 )
@@ -542,7 +788,12 @@ const Battle = () => {
           </div>
         </div>
       </div>
-      <div className="flex bg-black bg-opacity-70 p-2 gap-2 w-full h-fit rounded-lg relative text-white">
+      <div
+        className="flex bg-black bg-opacity-70 p-2 gap-2 w-full h-fit rounded-lg relative text-white"
+        onClick={() => {
+          console.log("thisTurnActiveRole", thisTurnActiveRole);
+        }}
+      >
         <div className="flex-1 flex border border-[#06b6d4] p-1 rounded-md">
           <MultiSelect
             value={activeArea}
@@ -567,9 +818,7 @@ const Battle = () => {
         <div className="flex flex-1">
           <Button
             label={`${
-              nextTurnSpeed.length > 0
-                ? "下一張卡" + nextTurnSpeed[0].value
-                : "下一張卡"
+              !!nextTurnSpeed ? "下一張卡 " + nextTurnSpeed.value : "下一張卡"
             }`}
             // icon="pi pi-arrow-u"
             onClick={() => {
@@ -584,9 +833,7 @@ const Battle = () => {
             label={`${"下一輪"}`}
             icon={`${nextTurnCheck && "pi pi-check"}`}
             onClick={() => {
-              if (nextTurnSpeed.length > 0) {
-                setNextTurnCheck(!nextTurnCheck);
-              }
+              handleToNextTurn();
             }}
             iconPos="right"
             className="w-full bg-black text-white text-[14px] p-0"
@@ -637,14 +884,17 @@ const Battle = () => {
                     id={skill.id}
                     value={skill.value}
                     onChange={(e) => {
-                      setNextTurnSpeed(
+                      const [nextCard] =
                         battleRecord.myState.selectSkill.filter(
                           (i) => i.id === e.target.id
-                        )
-                      );
+                        );
+                      if (!!nextCard) {
+                        console.log(nextCard);
+                        setNextTurnSpeed(nextCard);
+                      }
                       // console.log(e.value);
                     }}
-                    checked={nextTurnSpeed[0]?.id === skill.id}
+                    checked={nextTurnSpeed?.id === skill.id}
                   />
                   <label htmlFor={skill.id} className="ml-2 w-16">
                     <span className="">Lv{skill.lv}</span> - {skill.value}
@@ -659,6 +909,7 @@ const Battle = () => {
               className="h-10"
               onClick={() => {
                 setSkillModalOpen(false);
+                sendPlayerNextSpeed();
               }}
             ></Button>
           </div>

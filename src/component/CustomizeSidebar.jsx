@@ -57,12 +57,12 @@ const CustomizeSidebar = () => {
           <div
             className="mt-4 bg-gray-700 bg-opacity-90 text-white w-fit px-2 py-1 rounded-lg"
             onClick={() => {
-              // console.log("myState", myState);
-              // console.log("roomState", roomState);
-              // console.log("playerState", playerState);
-              // console.log("monsterList", monsterList);
-              // console.log("gameScene", gameScene);
-              // console.log("monsterDetailList", monsterDetailList);
+              console.log("myState", myState);
+              console.log("roomState", roomState);
+              console.log("playerState", playerState);
+              console.log("monsterList", monsterList);
+              console.log("gameScene", gameScene);
+              console.log("monsterDetailList", monsterDetailList);
               console.log("battleRecord", battleRecord);
             }}
           >
@@ -82,7 +82,7 @@ const CustomizeSidebar = () => {
               </div>
               <div className="inline-flex flex-1">
                 <p className="w-fit">{"最大HP: "}&nbsp;</p>
-                <p>{myState.maxHp || "-"}</p>
+                <p>{myState.hp || "-"}</p>
               </div>
             </div>
             <div className="flex gap-2 w-full ">

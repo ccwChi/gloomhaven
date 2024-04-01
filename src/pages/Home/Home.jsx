@@ -69,7 +69,6 @@ const Home = ({ joinRoom }) => {
             </Fieldset>
             <Checkbox
               onChange={(e) => {
-                console.log(e);
                 setLoginData((prev) => ({ ...prev, record: e.target.name }));
               }}
               checked={logingData.record === record.name}
@@ -152,8 +151,8 @@ const Home = ({ joinRoom }) => {
             label="進入遊戲"
             className="p-button-warning"
             onClick={(e) => {
-              // handelEnterGame(e);
-              updateConn("abc");
+              handelEnterGame(e);
+              // updateConn("abc");
             }}
           />
           {/* <Button label="Submit" /> */}
