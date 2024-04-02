@@ -32,7 +32,8 @@ import Home from "./pages/Home/Home";
 import Battle from "./pages/Battle/Battle";
 import { Button } from "primereact/button";
 import CustomizeSidebar from "./component/CustomizeSidebar";
-import Loading from "./pages/Loading/Loading";
+import LoadingBulbasaur from "./component/Loading/LoadingBulbasaur";
+import LoadingDots from "./component/Loading/LoadingDots";
 const App = () => {
   const { conn, updateConn } = connStore();
   // const [conn, setConn] = useSessionStorage(null, "conn");
@@ -67,50 +68,31 @@ const App = () => {
   const { actionableWithMonSkill, updateActionableWithMonSkill } =
     actionableWithMonSkillStore();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const { battleRecord, updateBattleRecord } = battleRecordStore();
-  const [fullGameRecord, setFullGameRecord] = useLocalStorage(
-    {
-      myState: {},
-      scene: "",
-      monSelect: [],
-      battleInitState: {
-        monsterState: [],
-        playersState: [],
-      },
-      prevTurn: {},
-      currentTurnState: {
-        mySkillSpeed: "",
-        monsterState: [],
-        playersState: [],
-      },
-    },
-    "FullGameRecord"
-  );
 
   useEffect(() => {
     const handleKeyPress = (event) => {
-      // 如果按下的是特定按键，例如 "C" 键，并且同时按下了 Ctrl 键，则执行清除 session 的操作
+      // 同時按下了 Ctrl +C 键，清除 session
       if (event.key === "c" && event.ctrlKey) {
         sessionStorage.clear(); // 清除 session
-        localStorage.clear(); // 清除 session
+        localStorage.clear(); // 清除 localStorage
         // alert("Session 已清除");
       }
     };
     // 添加键盘事件监听器
     window.addEventListener("keydown", handleKeyPress);
-    // 清除副作用
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, []); // 仅在组件挂载和卸载时执行
+  }, []);
 
   useEffect(() => {
     if (conn && roomState) {
       updateGameScene("scene1");
-      setFullGameRecord({ ...fullGameRecord, scene: "scene1" });
     } else if (!roomState) {
       updateGameScene("");
-      setFullGameRecord({ ...fullGameRecord, scene: "" });
     }
   }, [conn]);
 
@@ -132,23 +114,17 @@ const App = () => {
       newConn.on("JoinRoom", (connectedPlayers) => {
         updateRoomState(connectedPlayers);
         updatePlayerState(connectedPlayers);
-        // updatePlayerStateLocal(connectedPlayers);
         console.log("joinroom myState", connectedPlayers);
       });
 
       newConn.on("SelectRole", (connectedPlayers) => {
         updatePlayerState(connectedPlayers);
-        // updatePlayerStateLocal(connectedPlayers);
-        console.log("SelectRole myState", myState);
+        console.log("updatePlayerState", connectedPlayers);
       });
 
       newConn.on("ReadyChangeScene", (connectedPlayers) => {
         updatePlayerState(connectedPlayers);
-
-        // updateGameState(connectedPlayers);
-        // updatePlayerStateLocal(connectedPlayers);
-        // updateGameStateLocal(connectedPlayers);
-        // console.log("SelectRole myState", myState);
+        // console.log("updatePlayerState", connectedPlayers);
       });
 
       newConn.on("SendMonData", (monDataList) => {
@@ -194,7 +170,10 @@ const App = () => {
           newConn.invoke("LeaveRoom", { playerName, recordNum });
         }
       });
-      updateConn(newConn);
+      if (newConn) {
+        updateConn(newConn);
+        setIsLoading(false);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -207,18 +186,12 @@ const App = () => {
         conn
           ? "bg-[url('/src/asset/img/bg-03.webp')]"
           : "bg-[url('/src/asset/img/bg-04.webp')]"
-      } bg-cover bg-no-repeat bg-black`}
+      } bg-cover bg-no-repeat `}
     >
-      {/* {conn && (
-        <Button
-          className="absolute bottom-3 right-3 size-6 "
-          icon="pi pi-bars"
-          onClick={() => updateSidebarVisible(true)}
-        />
-      )} */}
-
+      
+      {isLoading && <LoadingBulbasaur />}
       <CustomizeSidebar />
-      {!conn && <Home joinRoom={joinRoom} />}
+      {!conn && <Home joinRoom={joinRoom} setIsLoading={setIsLoading} />}
       {/* <Loading /> */}
       {conn && gameScene === "scene1" && <SelectRole />}
 

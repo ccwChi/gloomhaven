@@ -1,5 +1,5 @@
 import { Button } from "primereact/button";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { record } from "../../asset/data";
 import {
   connStore,
@@ -8,12 +8,12 @@ import {
   sceneStore,
   scriptLevelStore,
 } from "../../utils/useStore";
+import LoadingDots from "../../component/Loading/LoadingDots";
 
 const SelectRole = () => {
+  const [toNextSceneCheck, setToNextSceneCheck] = useState(false);
   const { conn } = connStore();
-
   const { updateScriptLevel } = scriptLevelStore();
-
   const { myState, updateMyState } = myStateStore();
   const { playerState } = playerStore();
   const { updateGameScene } = sceneStore();
@@ -63,10 +63,16 @@ const SelectRole = () => {
     updateMyState({ ...myState, selectRole: selectRole });
   };
 
-  const readyChangeScene = (prepare) => {
-    conn.invoke("ReadyChangeScene", prepare, 0);
-    // 這邊的prepare用true跟false
-  };
+  useEffect(() => {
+    if (toNextSceneCheck) {
+      conn.invoke("ReadyChangeScene", true, 0);
+    }
+  }, [toNextSceneCheck]);
+
+  // const readyChangeScene = (prepare) => {
+
+  //   // 這邊的prepare用true跟false
+  // };
 
   return (
     <>
@@ -129,7 +135,7 @@ const SelectRole = () => {
         <div className=" pb-3 flex  flex-1 gap-4  justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
           <Button
             onClick={() => {
-              selectRole("");
+              selectRole("", 0, 0);
             }}
             className="flex-1"
             label="重選角色"
@@ -141,9 +147,14 @@ const SelectRole = () => {
             className="flex-1"
             label="確認"
             onClick={() => {
-              readyChangeScene(true);
+              // readyChangeScene(true);
+              setToNextSceneCheck(true);
             }}
-          />
+          >
+            <div className="h-8 w-12">
+              <LoadingDots />
+            </div>
+          </Button>
         </div>
       </div>
     </>

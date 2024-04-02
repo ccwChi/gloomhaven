@@ -3,38 +3,22 @@ import { Checkbox } from "primereact/checkbox";
 import { Fieldset } from "primereact/fieldset";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
-import {
-  connStore,
-  gameStore,
-  myStateStore,
-  playerStore,
-  roomStore,
-  sceneStore,
-} from "../../utils/useStore";
+import { connStore, myStateStore } from "../../utils/useStore";
 import { record } from "../../asset/data";
-import { useSessionStorage } from "primereact/hooks";
+// import { useSessionStorage } from "primereact/hooks";
 
-const Home = ({ joinRoom }) => {
-    const { conn, updateConn } = connStore();
+const Home = ({ joinRoom, setIsLoading }) => {
   const [logingData, setLoginData] = useState({
     playerName: "大雄",
     record: "紀錄",
   });
-  // 用及記錄玩家自身情況，自己的技能卡，經驗，優劣勢卡片狀態
-  const [myStateSession, setMyStateSession] = useSessionStorage(
-    null,
-    "MyState"
-  );
   const { myState, updateMyState } = myStateStore();
 
   // 用來記錄目前場景，每個場景當四個人都按OK的的話則前往下一個場景
-  const { gameScene, updateGameScene } = sceneStore();
-
   const handelEnterGame = (e) => {
     e.preventDefault();
     if (!!logingData.playerName && !!logingData.record) {
       joinRoom(logingData.playerName, logingData.record);
-      setMyStateSession({ player: logingData.playerName });
       updateMyState({ player: logingData.playerName });
     }
   };
@@ -79,7 +63,8 @@ const Home = ({ joinRoom }) => {
         ))}
       </div>
       <form className="w-full max-w-md flex flex-col gap-x-2 gap-y-4 mb-12 shadow-md">
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
+          <p className="text-white ps-4 ">* 請跟夥伴們取不同名稱</p>
           <div className="inline-flex flex-wrap justify-content-center gap-3 bg-black rounded-xl text-white  p-3 w-full ">
             <div className="flex align-items-center flex-1">
               <Checkbox
@@ -138,6 +123,7 @@ const Home = ({ joinRoom }) => {
         <div className="p-inputgroup flex-1">
           <InputText
             placeholder="我就是想叫多拉A夢"
+            
             onChange={(e) => {
               setLoginData((prevData) => ({
                 ...prevData,
@@ -152,10 +138,9 @@ const Home = ({ joinRoom }) => {
             className="p-button-warning"
             onClick={(e) => {
               handelEnterGame(e);
-              // updateConn("abc");
+              setIsLoading(true)
             }}
           />
-          {/* <Button label="Submit" /> */}
         </div>
       </form>
     </>
