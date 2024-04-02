@@ -76,6 +76,13 @@ const SelectRole = () => {
 
   return (
     <>
+      <Button
+        icon="pi pi-refresh"
+        className="absolute bg-transparent border-none left-2 top-0 text-gray-700"
+        onClick={() => {
+          conn.invoke("ClearSharedDb");
+        }}
+      ></Button>
       <div className="flex flex-1 flex-col gap-y-2 items-center">
         <div className="bg-black bg-opacity-30 p-3 rounded-md w-fit text-center font-bold text-white">
           請選擇你要操作的角色
@@ -145,15 +152,12 @@ const SelectRole = () => {
               (i) => i.playerName === myState.player && i.selectRole === ""
             )}
             className="flex-1"
-            label="確認"
+            label={!toNextSceneCheck? "確認":"等待夥伴中"}
             onClick={() => {
-              // readyChangeScene(true);
-              setToNextSceneCheck(true);
+              setToNextSceneCheck(!toNextSceneCheck);
             }}
           >
-            <div className="h-8 w-12">
-              <LoadingDots />
-            </div>
+            {toNextSceneCheck && <LoadingDots />}
           </Button>
         </div>
       </div>

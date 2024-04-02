@@ -12,6 +12,7 @@ const Home = ({ joinRoom, setIsLoading }) => {
     playerName: "大雄",
     record: "紀錄",
   });
+  const { conn } = connStore();
   const { myState, updateMyState } = myStateStore();
 
   // 用來記錄目前場景，每個場景當四個人都按OK的的話則前往下一個場景
@@ -25,7 +26,8 @@ const Home = ({ joinRoom, setIsLoading }) => {
 
   return (
     <>
-      <div className="bg-black text-white bg-opacity-80 rounded-lg p-4 font-bold text-center text-2xl mt-12 lg:mt-36">
+
+      <div className="bg-black text-white bg-opacity-80 rounded-lg p-4 font-bold text-center text-2xl mt-12 lg:mt-36 focus:shadow-none">
         請選擇紀錄
       </div>
       <div className="px-4 w-full flex flex-col flex-1 gap-y-4 p-1 overflow-y-auto">
@@ -123,7 +125,6 @@ const Home = ({ joinRoom, setIsLoading }) => {
         <div className="p-inputgroup flex-1">
           <InputText
             placeholder="我就是想叫多拉A夢"
-            
             onChange={(e) => {
               setLoginData((prevData) => ({
                 ...prevData,
@@ -138,7 +139,7 @@ const Home = ({ joinRoom, setIsLoading }) => {
             className="p-button-warning"
             onClick={(e) => {
               handelEnterGame(e);
-              setIsLoading(true)
+              setIsLoading(true);
             }}
           />
         </div>

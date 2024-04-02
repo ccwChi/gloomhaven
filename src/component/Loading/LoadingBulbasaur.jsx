@@ -434,46 +434,7 @@ const LoadingBulbasaur = () => {
         </div>
       </div>
 
-      {/*     <div className="bulbasaur">
-        <div className="bulbs">
-          <div className="bulb"></div>
-        </div>
-        <div className="body">
-          <div className="spot"></div>
-        </div>
-        <div className="head">
-          <div className="eye">
-            <div className="pupil"></div>
-          </div>
-          <div className="eye-lid"></div>
-          <div className="smile"></div>
-          <div className="spot"></div>
-        </div>
-
-        <div className="ears"></div>
-
-        <div className="hind-legs">
-          <div className="leg"></div>
-          <div className="leg"></div>
-        </div>
-        <div className="legs">
-          <div className="leg">
-            <div className="spot"></div>
-          </div>
-          <div className="leg">
-            <div className="spot"></div>
-          </div>
-        </div>
-
-        <div className="spots">
-          <div className="spot"></div>
-          <div className="spot"></div>
-          <div className="spot"></div>
-          <div className="spot"></div>
-          <div className="spot"></div>
-        </div>
-      </div>  */}
-      <div className="bush">
+      {/* <div className="bush">
         <div className="leaf"></div>
         <div className="leaf"></div>
         <div className="leaf"></div>
@@ -483,15 +444,15 @@ const LoadingBulbasaur = () => {
         <div className="leaf"></div>
         <div className="leaf"></div>
         <div className="leaf"></div>
-      </div>
-      <div className="big-tree">
+      </div> */}
+      {/* <div className="big-tree">
         <div className="leaf"></div>
         <div className="leaf"></div>
         <div className="leaf"></div>
         <div className="leaf"></div>
         <div className="leaf"></div>
         <div className="leaf"></div>
-      </div>
+      </div> */}
       <ul className="sparkles">
         <li className="sparkle one"></li>
         <li className="sparkle one"></li>

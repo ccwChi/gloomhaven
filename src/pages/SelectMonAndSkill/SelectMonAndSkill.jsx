@@ -1,6 +1,6 @@
 import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   battleRecordStore,
   connStore,
@@ -21,6 +21,7 @@ import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { Carousel } from "primereact/carousel";
 import { Card } from "primereact/card";
+import { Toast } from "primereact/toast";
 
 const SelectMonAndSkill = ({}) => {
   const { conn, updateConn } = connStore();
@@ -43,12 +44,22 @@ const SelectMonAndSkill = ({}) => {
   const [attackMod, setAttackMod] = useState({});
   const [selectedCards, setSelectedCards] = useState([]);
   const [toNextScene, setToNextScene] = useState(false);
-
+  const toast = useRef(null);
   // 進畫面先把前往下一關關掉
   useEffect(() => {
     conn.invoke("ReadyChangeScene", false, 0);
   }, []);
 
+  const showMessage = (event, ref, severity) => {
+    const label = "需確認怪物及角色狀態才能進入下一階段";
+
+    ref.current.show({
+      severity: severity,
+      // summary: label,
+      detail: label,
+      life: 3000,
+    });
+  };
   // 一進畫面就先計算關卡等級
   useEffect(() => {
     calculateAverageLevel(record);
@@ -84,7 +95,7 @@ const SelectMonAndSkill = ({}) => {
               ...tempBatttleRecord.battleInitState,
               monsterState: monsterDetailList,
               playersState: tempPlayerState,
-              openArea:[]
+              openArea: [],
             },
             scene: "scene3",
             myState: myState,
@@ -100,7 +111,6 @@ const SelectMonAndSkill = ({}) => {
   // 收到別人傳來的monsterList之後要填入自己的畫面
   useEffect(() => {
     if (monsterList.length > 0) {
-
       setSelectMonList(monsterList);
 
       let areaCount = 0;
@@ -161,6 +171,7 @@ const SelectMonAndSkill = ({}) => {
 
   return (
     <>
+     
       <TabView
         scrollable
         className="bg-transparent w-full flex flex-col flex-1 overflow-y-hidden "
@@ -241,10 +252,12 @@ const SelectMonAndSkill = ({}) => {
             iconPos="right"
             raised
             severity="warning"
-            onClick={() => {
+            onClick={(e) => {
               if (checkMonster && checkPlayer) {
                 setToNextScene(!toNextScene);
                 conn.invoke("ReadyChangeScene", !toNextScene, 0);
+              } else {
+                showMessage(e, toast, "warn");
               }
             }}
           />
@@ -257,6 +270,7 @@ const SelectMonAndSkill = ({}) => {
           </div>
         </div>
       </div>
+      <Toast ref={toast} position="center" pt={{message:{className:"text-black"}}}/>
     </>
   );
 };
@@ -277,13 +291,6 @@ const MonstSelectTab = ({
   updateMonsterDetailList,
 }) => {
   const { conn, updateConn } = connStore();
-  // const { myState, updateMyState } = myStateStore();
-  // const { roomState, updateRoomState } = roomStore();
-  // const { playerState, updatePlayerState } = playerStore();
-  // const { gameState, updateGameState } = gameStore();
-  // const { gameScene, updateGameScene } = sceneStore();
-  // const { sidebarVisible, updateSidebarVisible } = sidebarStore();
-  // const { scriptLevel, updateScriptLevel } = scriptLevelStore();
 
   const [selectMon, setSelectMon] = useState("");
 
@@ -588,21 +595,6 @@ const PlayerStateTab = ({
     <div className="w-full flex flex-col gap-2 items-center flex-1">
       <div className="w-full  flex flex-col text-white items-center bg-slate-600 gap-y-3 flex-1 overflow-y-auto bg-opacity-60 rounded-lg">
         <div className="w-full overflow-y-auto flex flex-col ">
-          <Carousel
-            value={myState.skillLib}
-            numVisible={1}
-            numScroll={1}
-            className="custom-carousel  py-4 flex"
-            circular
-            itemTemplate={productTemplate}
-            pt={{
-              previousButton: { className: "w-4 m-2 p-0" },
-              nextButton: { className: " w-4 m-2 p-0" },
-              indicators: { className: "flex gap-1" },
-              indicator: { className: "w-2 m-0 p-0" },
-              indicatorbutton: { className: "w-2 m-0 p-0" },
-            }}
-          />
           <div className="flex flex-col flex-wrap justify-content-center gap-3 p-3">
             <h3>
               角色 LV2 只能選擇 1 張 LV2 技能卡，LV 3總共可以選 2 張 LV2 及 LV3
@@ -698,7 +690,7 @@ const PlayerStateTab = ({
               </div>
             </div>
           </div>
-          <div className="flex flex-col flex-wrap justify-content-center gap-3 p-3">
+          {/* <div className="flex flex-col flex-wrap justify-content-center gap-3 p-3">
             <h3
             >
               選擇優劣勢卡片
@@ -743,7 +735,7 @@ const PlayerStateTab = ({
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
 

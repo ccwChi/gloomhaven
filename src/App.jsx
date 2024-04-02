@@ -99,8 +99,8 @@ const App = () => {
   const joinRoom = async (playerName, recordNum) => {
     try {
       const newConn = new HubConnectionBuilder()
-        // .withUrl("https://localhost:7169/room")
-        .withUrl("https://gloomhaven.azurewebsites.net/room")
+        .withUrl("https://localhost:7169/room")
+        // .withUrl("https://gloomhaven.azurewebsites.net/room")
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();
@@ -160,6 +160,10 @@ const App = () => {
         // console.log("openArea", openArea);
         // console.log("battleRecord", battleRecord);
       });
+      newConn.on("SharedDbCleared", (content) => {
+        console.log(content);
+        // console.log("battleRecord", battleRecord);
+      });
 
       await newConn.start();
       await newConn.invoke("JoinRoom", { playerName, recordNum });
@@ -188,7 +192,6 @@ const App = () => {
           : "bg-[url('/src/asset/img/bg-04.webp')]"
       } bg-cover bg-no-repeat `}
     >
-      
       {isLoading && <LoadingBulbasaur />}
       <CustomizeSidebar />
       {!conn && <Home joinRoom={joinRoom} setIsLoading={setIsLoading} />}

@@ -10,7 +10,7 @@ ul {
 
 .container {
   position: absolute;
-  width: 450px;
+  width: 600px;
   height: 450px;
   transform: translate(-50%, -50%) rotate(5deg);
   left: 50%;
