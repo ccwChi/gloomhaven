@@ -22,6 +22,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { Carousel } from "primereact/carousel";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
+import LoadingDots from "../../component/Loading/LoadingDots";
 
 const SelectMonAndSkill = ({}) => {
   const { conn, updateConn } = connStore();
@@ -57,7 +58,7 @@ const SelectMonAndSkill = ({}) => {
       severity: severity,
       // summary: label,
       detail: label,
-      life: 3000,
+      life: 2000,
     });
   };
   // 一進畫面就先計算關卡等級
@@ -171,7 +172,6 @@ const SelectMonAndSkill = ({}) => {
 
   return (
     <>
-     
       <TabView
         scrollable
         className="bg-transparent w-full flex flex-col flex-1 overflow-y-hidden "
@@ -244,11 +244,10 @@ const SelectMonAndSkill = ({}) => {
         </TabPanel>
       </TabView>
       <div className="flex bg-black bg-opacity-70 p-2 gap-2 w-full h-fit rounded-lg relative text-white">
-        <div className="flex w-full justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
+        <div className="flex gap-x-2 px-5 w-full justify-center items-center text-white font-medium rounded-lg text-sm  text-center">
           <Button
-            label={toNextScene ? "等待所有玩家確認中..." : "確認、前往關卡"}
-            className="w-full mx-10"
-            icon={toNextScene ? "pi pi-check" : "pi pi-arrow-right"}
+            label={toNextScene ? "等待所有玩家確認中" : "確認、前往關卡"}
+            className="w-full"
             iconPos="right"
             raised
             severity="warning"
@@ -260,7 +259,14 @@ const SelectMonAndSkill = ({}) => {
                 showMessage(e, toast, "warn");
               }
             }}
-          />
+          >
+            {toNextScene && (
+              <i
+                className="pi pi-spin pi-spinner"
+                style={{ fontSize: "1rem" }}
+              ></i>
+            )}
+          </Button>
           <div className="w-10">
             <Button
               className="absolute bottom-3 right-3 size-8 "
@@ -270,7 +276,11 @@ const SelectMonAndSkill = ({}) => {
           </div>
         </div>
       </div>
-      <Toast ref={toast} position="center" pt={{message:{className:"text-black"}}}/>
+      <Toast
+        ref={toast}
+        position="bottom-center"
+        pt={{ message: { className: "text-black" } }}
+      />
     </>
   );
 };
@@ -754,3 +764,4 @@ const PlayerStateTab = ({
     </div>
   );
 };
+

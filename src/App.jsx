@@ -99,8 +99,8 @@ const App = () => {
   const joinRoom = async (playerName, recordNum) => {
     try {
       const newConn = new HubConnectionBuilder()
-        .withUrl("https://localhost:7169/room")
-        // .withUrl("https://gloomhaven.azurewebsites.net/room")
+        // .withUrl("https://localhost:7169/room")
+        .withUrl("https://gloomhaven.azurewebsites.net/room")
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();
@@ -194,7 +194,13 @@ const App = () => {
     >
       {isLoading && <LoadingBulbasaur />}
       <CustomizeSidebar />
-      {!conn && <Home joinRoom={joinRoom} setIsLoading={setIsLoading} />}
+      {!conn && (
+        <Home
+          joinRoom={joinRoom}
+          setIsLoading={setIsLoading}
+          isLoading={isLoading}
+        />
+      )}
       {/* <Loading /> */}
       {conn && gameScene === "scene1" && <SelectRole />}
 

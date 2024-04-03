@@ -250,7 +250,6 @@ const Battle = () => {
 
   // ---處理區域的設置，並將對應怪物加到下回合可行動的清單
   const handleAreaChange = (e) => {
-    e.preventDefault();
     sendAreaData(activeArea);
   };
   //-----------------------------------------------處理傳送開放區域清單出去
@@ -430,55 +429,11 @@ const Battle = () => {
             }
           }
         });
-      // const activeRolesWithSpeed =
-      //   battleRecord.nextTurnState.actionableRole.map((role) => {
-      //     if (!!role?.enemyData) {
-      //       const enemyData = role.enemyData;
-      //       if (enemyData && enemyData.length > 0) {
-      //         // 隨機選擇一個怪物資料
-      //         const randomIndex = Math.floor(Math.random() * enemyData.length);
-      //         const selectedEnemy = enemyData[randomIndex];
-
-      //         // 移除已選擇的怪物資料
-      //         enemyData.splice(randomIndex, 1);
-      //         console.log("enemyData", enemyData);
-      //         // 返回選擇的怪物資料的 as 屬性作為 nextSpeed
-      //         return {
-      //           ...role,
-      //           nextSpeed: selectedEnemy.as,
-      //           cardAction: selectedEnemy,
-      //         };
-      //       } else {
-      //         return role;
-      //       }
-      //     } else {
-      //       const enemyData =
-      //         role.value && enemyAction[role.value];
-      //       if (enemyData && enemyData.length > 0) {
-      //         // 隨機選擇一個怪物資料
-      //         const randomIndex = Math.floor(Math.random() * enemyData.length);
-      //         const selectedEnemy = enemyData[randomIndex];
-
-      //         // 移除已選擇的怪物資料
-      //         enemyData.splice(randomIndex, 1);
-      //         console.log("enemyData", enemyData);
-      //         // 返回選擇的怪物資料的 as 屬性作為 nextSpeed
-      //         return {
-      //           ...role,
-      //           nextSpeed: selectedEnemy.as,
-      //           cardAction: selectedEnemy,
-      //           enemyData: enemyData,
-      //         };
-      //       } else {
-      //         return role;
-      //       }
-      //     }
-      //   });
       // ------------------------------------------新建怪物速度
       conn.invoke("SendWithSkillCardActionableList", activeRolesWithSpeed);
       // setUpdateMosterSp(activeRolesWithSpeed);
       // ------------------------------------------新建怪物速度
-      console.log(activeRolesWithSpeed);
+      // console.log(activeRolesWithSpeed);
     }
   };
 
@@ -525,13 +480,13 @@ const Battle = () => {
   }, []);
   // 如果大家都按了前往下一關，則切換scene
   useEffect(() => {
-    console.log("確認是否跑到A這邊");
+    // console.log("確認是否跑到A這邊");
     const tempPlayerState = [...Object.values(playerState)];
     const checkedNum = tempPlayerState.filter(
       (i) => i.changeScene === true
     ).length;
     if (checkedNum > 0 && checkedNum === tempPlayerState.length) {
-      console.log("確認是否跑到B這邊");
+      // console.log("確認是否跑到B這邊");
       const tempRecrod = { ...battleRecord };
       console.log();
       conn.invoke("ReadyChangeScene", false, 0);
@@ -803,17 +758,19 @@ const Battle = () => {
             placeholder="區域"
             // maxSelectedLabels={1}
             className="w-full bg-black md:w-20rem text-white"
+            onHide={(e)=>handleAreaChange(e)}
             pt={{
+              root:{className:"border-none"},
               trigger: { className: "hidden" },
               label: { className: "text-white ps-2 w-[4.5rem]" },
               header: { className: "hidden" },
             }}
           />
-          <Button
+          {/* <Button
             className="bg-transparent border-none w-full"
             icon="pi pi-arrow-right"
             onClick={(e) => handleAreaChange(e)}
-          ></Button>
+          ></Button> */}
         </div>
         <div className="flex flex-1">
           <Button
@@ -857,6 +814,7 @@ const Battle = () => {
           draggable={false}
           resizable={false}
           className="!bg-gray-900"
+          onMaskClick={()=>setSkillModalOpen(false)}
           pt={{
             root: { className: "border" },
             header: { className: "bg-gray-700 bg-opacity-50 text-white p-4" },
@@ -864,14 +822,7 @@ const Battle = () => {
               className:
                 "bg-gray-700 bg-opacity-50 text-white p-4 flex flex-col gap-y-4",
             },
-            // footer: {
-            //   className: "bg-gray-700 bg-opacity-50 text-white",
-            //   button: {
-            //     onClick: () => {
-            //       console.log("aa");
-            //     },
-            //   },
-            // },
+            
           }}
         >
           <div className="  flex flex-wrap flex-shrink gap-4 ">

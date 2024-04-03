@@ -348,7 +348,7 @@ const record = [
           },
         ],
       },
-      "鋼角飛斧手": {
+      鋼角飛斧手: {
         name: "鋼角飛斧手",
         color: "info",
         // color: "#0ea5e9",
@@ -799,244 +799,173 @@ const enemyList = [
   },
 ];
 
+// giantViper 396-403
+// chaosDemon 412-419
+// monsrosity 420-427
+// blackSluge 428-435
+
 const enemyAction = {
-  blackSludge: [
-    { name: "精算打擊", as: 66, move: -1, att: +1, attRange: 3 },
+  giantViper: [
     {
-      name: "吞物進食",
-      as: 66,
-      move: +0,
-      loot: +1,
-      healSelf: 2,
-      useElement: "dark",
-      elementEffect: "治療自己1",
+      name: "迅捷尖牙",
+      as: 33,
+      id: "396",
     },
     {
-      name: "倉促攻擊",
-      as: 36,
-      move: +1,
-      att: -1,
-      attRange: 3,
+      name: "尋找掩護",
+      as: 18,
+      id: "397",
     },
     {
-      name: "普通攻擊",
-      as: 57,
-      move: +0,
-      att: +0,
-      attRange: 2,
+      name: "精算打擊",
+      as: 58,
+      id: "398",
     },
     {
-      name: "劇毒爆破",
-      as: 57,
-      att: +0,
-      attRange: 2,
-      target: 2,
-      effect: "中毒",
-      useElement: "leaf",
-      elementEffect: "目標+1",
+      name: "劇毒狂亂",
+      as: 43,
+      id: "399",
     },
     {
-      name: "電漿結界",
-      as: 85,
-      firstAction: ["推一格並中毒"],
-      target: "周圍一格",
-      att: +1,
-      attRange: 2,
+      name: "包抄圍堵",
+      as: 32,
+      id: "400",
     },
     {
-      name: "黑色巫術",
-      as: 85,
-      action: ["視線內最近敵人承受 1+L/2 向上取整傷害，無視距離"],
-      healSelf: 1,
-      createElement: ["dark"],
+      name: "包抄圍堵",
+      as: 32,
+      id: "401",
     },
     {
-      name: "敗血巫術",
-      as: 85,
-      action: ["視線內最近敵人承受 1+L/2 向上取整傷害，無視距離"],
-      healSelf: 1,
-      createElement: ["wind"],
+      name: "防禦打擊",
+      as: 11,
+      id: "402",
+    },
+    {
+      name: "纏身收束",
+      as: 23,
+      id: "403",
     },
   ],
   chaosDemon: [
     {
       name: "冰凍吐息",
       as: 13,
-      move: -1,
-      att: +0,
-      attRange: 1,
-      useElement: "ice",
-      elementEffect: "遭受攻擊時，攻擊方受到2點傷害",
+      id: "412"
     },
     {
       name: "高溫爆彈",
       as: 1,
-      move: +1,
-      att: -1,
-      attRange: 3,
-      useElement: "fire",
-      elementEffect: "負傷",
+      id: "413"
     },
     {
       name: "震波拳擊",
       as: 67,
-      move: -2,
-      att: +1,
-      afterAtt: "推2格",
-      useElement: "leaf",
-      elementEffect: "變成範圍攻擊",
+      id: "414"
     },
     {
       name: "氣流旋風",
       as: 20,
-      move: 0,
-      att: -1,
-      attRange: 2,
-      useElement: "wind",
-      elementEffect: "本回合護盾2",
+      id: "415"
     },
     {
       name: "飢餓巨口",
-      as: 98,
-      move: -1,
-      att: -1,
-      useElement: "any",
-      elementEffect: "繳械",
+      as: 41,
+      id: "416"
     },
     {
       name: "魔力爆破",
-      as: 76,
-      move: +0,
-      att: +0,
-      createElement: ["fire", "ice", "wind", "leaf", "light", "dark"],
+      as: 52,
+      id: "417"
     },
     {
       name: "黑色觸鬚",
-      as: 52,
-      move: -1,
-      att: +1,
-      useElement: "dark",
-      elementEffect: "所有與目標相鄰的敵人承受1傷害",
+      as: 76,
+      id: "418"
     },
     {
       name: "閃光利爪",
-      as: 41,
-      move: 0,
-      att: 0,
-      useElement: "light",
-      elementEffect: "自療自己4",
-    },
-  ],
-  giantViper: [
-    {
-      name: "迅捷尖牙",
-      as: 33,
-      move: +1,
-      att: +0,
-      target: 2,
-    },
-    {
-      name: "尋找掩護",
-      as: 18,
-      move: +1,
-      att: -1,
-      discript: "本輪以巨型蝰蛇為目標的攻擊獲得劣勢",
-    },
-    {
-      name: "精算打擊",
-      as: 58,
-      move: -1,
-      att: +1,
-    },
-    {
-      name: "劇毒狂亂",
-      as: 43,
-      move: +1,
-      att: -1,
-      discript: "目標為所有相鄰的敵人",
-    },
-    {
-      name: "包抄圍堵",
-      as: 32,
-      move: +0,
-      att: +0,
-      discript: "目標與任何蝰蛇的盟友相鄰，攻擊+2",
-    },
-    {
-      name: "包抄圍堵",
-      as: 32,
-      move: +0,
-      att: +0,
-      discript: "目標與任何蝰蛇的盟友相鄰，攻擊+2",
-    },
-    {
-      name: "防禦打擊",
-      as: 11,
-      move: +0,
-      att: +0,
-      shield: +1,
-    },
-    {
-      name: "纏身收束",
-      as: 23,
-      move: -1,
-      att: -2,
-      discript: "禁足",
+      as: 98,
+      id: "419"
     },
   ],
   ratMonstrosity: [
     {
       name: "普通攻擊",
       as: 39,
-      move: +0,
-      att: +0,
+      id: "420"
     },
     {
       name: "精算打擊",
       as: 60,
-      move: -1,
-      att: +1,
+      id: "421"
     },
     {
       name: "不穩爪擊",
       as: 52,
-      move: 0,
-      att: +1,
-      discript: "攻擊成功的話，自身遭受一點傷害",
+      id: "422"
     },
     {
       name: "群體攻擊",
       as: 21,
-      move: +1,
-      att: -1,
-      discript: "如果對象鄰近鼠類巨怪的盟友身邊，則攻擊+1",
+      id: "423"
     },
     {
       name: "群體攻擊",
       as: 21,
-      move: +1,
-      att: -1,
-      discript: "如果對象鄰近鼠類巨怪的盟友身邊，則攻擊+1",
+      id: "424"
     },
     {
       name: "致虛啃咬",
       as: 34,
-      move: +0,
-      att: +0,
-      discript: "導致混亂",
+      id: "425"
     },
     {
       name: "爆裂氣泡",
       as: 9,
-      move: +1,
-      discript: "本輪中如果遭受攻擊，攻擊方受到兩點傷害",
+      id: "426"
     },
     {
       name: "不穩狂熱",
       as: 74,
-      move: 0,
-      att: +1,
-      discript: "自身受到1點傷害，鄰近所有敵人皆為攻擊目標",
+      id: "427"
+    },
+  ],  blackSludge: [
+    { name: "精算打擊", as: 36, id: "428" },
+    {
+      name: "吞物進食",
+      as: 57,
+      id: "429"
+    },
+    {
+      name: "倉促攻擊",
+      as: 57,
+      id: "430"
+    },
+    {
+      name: "普通攻擊",
+      as: 66,
+      id: "431"
+    },
+    {
+      name: "劇毒爆破",
+      as: 66,
+      id: "432"
+    },
+    {
+      name: "電漿結界",
+      as: 85,
+      id: "433"
+    },
+    {
+      name: "黑色巫術",
+      as: 85,
+      id: "434"
+    },
+    {
+      name: "敗血巫術",
+      as: 85,
+      id: "435"
     },
   ],
 };

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./LoadingDots.css";
 
 const LoadingDots = () => {
-  return <div className="loader"></div>;
+  return <span className="loader"></span>;
 };
 
 export default LoadingDots;

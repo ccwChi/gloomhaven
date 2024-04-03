@@ -7,7 +7,7 @@ import { connStore, myStateStore } from "../../utils/useStore";
 import { record } from "../../asset/data";
 // import { useSessionStorage } from "primereact/hooks";
 
-const Home = ({ joinRoom, setIsLoading }) => {
+const Home = ({ joinRoom,isLoading, setIsLoading }) => {
   const [logingData, setLoginData] = useState({
     playerName: "大雄",
     record: "紀錄",
@@ -137,6 +137,7 @@ const Home = ({ joinRoom, setIsLoading }) => {
             iconPos="right"
             label="進入遊戲"
             className="p-button-warning"
+            disabled={isLoading}
             onClick={(e) => {
               handelEnterGame(e);
               setIsLoading(true);
