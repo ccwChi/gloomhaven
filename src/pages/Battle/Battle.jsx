@@ -56,7 +56,9 @@ const Battle = () => {
   const [nextTurnCheck, setNextTurnCheck] = useState(false);
   const [fromServerPlayerState, setFromServerPlayerState] = useState({});
   const [thisTurnActiveRole, setThisTurnActiveRole] = useState([]);
-  const [updateMosterSp, setUpdateMosterSp] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [showPicId, setShowPicId] = useState(null);
+  const [updatePlayerSp, setUpdatePlayerSp] = useState(false);
   // 將怪物、人物的初始狀態複製到當前回合狀態
   useEffect(() => {
     const tempRecrod = { ...battleRecord };
@@ -285,6 +287,7 @@ const Battle = () => {
         }))
         .concat(battleRecord.nextTurnState.playersState);
       // console.log(uniqueActiveMonsters);
+      console.log("設置temparea後的");
       updateBattleRecord({
         ...battleRecord,
         nextTurnState: {
@@ -314,6 +317,7 @@ const Battle = () => {
       }
     );
     conn.invoke("SendPlayerStateWithNextSp", tempNextPlayers);
+    console.log("SendPlayerStateWithNextSp", tempNextPlayers);
     // 嘗試在這邊處理新增怪物邏輯
     const myOrder = battleRecord.nextTurnState.playersState.find(
       (i) => i.selectRole === myState.name
@@ -323,33 +327,24 @@ const Battle = () => {
 
       const activeRolesWithSpeed =
         battleRecord.nextTurnState.actionableRole.map((role) => {
-          console.log(processedRoles);
+          // 有role.value 才是怪物，沒有的話是player
+          // 如果processedRoles這個剛剛宣告的物件裡面有怪物資料，
+          // 代表同類怪物已經在剛剛被賦予卡牌速度了，這隻就直接拿一樣的卡牌速度
           if (processedRoles[role.value]) {
-            console.log("已經有怪物資料，回傳", {
-              ...role,
-              nextSpeed: processedRoles[role.value].nextSpeed,
-              cardAction: processedRoles[role.value].cardAction,
-            });
             return {
               ...role,
               nextSpeed: processedRoles[role.value].nextSpeed,
               cardAction: processedRoles[role.value].cardAction,
             };
           } else if (!!role?.enemyData) {
-            console.log(
-              "怪獸已經有卡牌資料過(之前使用過卡牌組",
-              role?.enemyData
-            );
+            // 怪獸已經有卡牌資料  之前使用過卡牌組
             const enemyData = role.enemyData;
             if (enemyData && enemyData.length > 0) {
-              console.log("enemyData && enemyData.length > 0");
-              // 隨機選擇一個怪物資料
+              // 如果卡牌(data)數量還大於0，隨機挑選一張作為下回合的技能卡
               const randomIndex = Math.floor(Math.random() * enemyData.length);
               const selectedEnemy = enemyData[randomIndex];
-
-              // 移除已選擇的怪物資料
               enemyData.splice(randomIndex, 1);
-              console.log("enemyData", enemyData);
+
               // 返回選擇的怪物資料的 as 屬性作為 nextSpeed
               if (role.value) {
                 processedRoles[role.value] = {
@@ -357,13 +352,8 @@ const Battle = () => {
                   nextSpeed: selectedEnemy.as,
                   cardAction: selectedEnemy,
                 };
-                console.log("A", processedRoles[role.value]);
               }
-              console.log("B", {
-                ...role,
-                nextSpeed: selectedEnemy.as,
-                cardAction: selectedEnemy,
-              });
+
               return {
                 ...role,
                 nextSpeed: selectedEnemy.as,
@@ -371,20 +361,23 @@ const Battle = () => {
               };
             } else {
               if (role.value) {
-                console.log("C  processedRoles[role.value] = role;", processedRoles[role.value],role);
+                console.log(
+                  "C  processedRoles[role.value] = role;",
+                  processedRoles[role.value],
+                  role
+                );
                 processedRoles[role.value] = role;
               }
-              console.log("CC",role)
+              console.log("CC", role);
               return role;
             }
           } else {
             const enemyData = role.value && enemyAction[role.value];
-            console.log("d",enemyData)
             if (enemyData && enemyData.length > 0) {
-              console.log("e",enemyData)
+              console.log("e", enemyData);
               // 檢查是否已處理過該 role.value
               if (processedRoles[role.value]) {
-                console.log("f",processedRoles[role.value])
+                console.log("f", processedRoles[role.value]);
                 return role; // 如果已處理過，直接返回原始 role
               }
 
@@ -394,7 +387,6 @@ const Battle = () => {
 
               // 移除已選擇的怪物資料
               enemyData.splice(randomIndex, 1);
-              console.log("gg  enemyData", enemyData);
 
               // 更新已處理的 role.value
               if (role.value) {
@@ -404,16 +396,16 @@ const Battle = () => {
                   cardAction: selectedEnemy,
                   enemyData: enemyData,
                 };
-                console.log("hh",processedRoles[role.value] )
+                console.log("hh", processedRoles[role.value]);
               }
 
               // 返回選擇的怪物資料的 as 屬性作為 nextSpeed
-              console.log("i",{
+              console.log("i", {
                 ...role,
                 nextSpeed: selectedEnemy.as,
                 cardAction: selectedEnemy,
                 enemyData: enemyData,
-              })
+              });
               return {
                 ...role,
                 nextSpeed: selectedEnemy.as,
@@ -424,35 +416,40 @@ const Battle = () => {
               if (role.value) {
                 processedRoles[role.value] = role;
               }
-              console.log("m", role)
+              console.log("m", role);
               return role;
             }
           }
         });
       // ------------------------------------------新建怪物速度
+      console.log("SendWithSkillCardActionableList", activeRolesWithSpeed);
       conn.invoke("SendWithSkillCardActionableList", activeRolesWithSpeed);
-      // setUpdateMosterSp(activeRolesWithSpeed);
       // ------------------------------------------新建怪物速度
       // console.log(activeRolesWithSpeed);
     }
   };
 
   useEffect(() => {
-    if (actionableWithMonSkill.length > 0) {
-      console.log("updateMosterSp", actionableWithMonSkill);
-      updateBattleRecord({
+    if (actionableWithMonSkill.length > 0 && updatePlayerSp) {
+      console.log("actionableWithMonSkill", actionableWithMonSkill);
+      const newBattleRecord = {
         ...battleRecord,
         nextTurnState: {
           ...battleRecord.nextTurnState,
           actionableRole: actionableWithMonSkill,
         },
-      });
-      setUpdateMosterSp([]);
+      };
+      updateBattleRecord(newBattleRecord);
+      console.log("都吸爹", newBattleRecord);
+      // setUpdateMosterSp([]);
+      setUpdatePlayerSp(false);
     }
-  }, [actionableWithMonSkill]);
+  }, [actionableWithMonSkill, updatePlayerSp]);
 
   useEffect(() => {
     if (!!tempPlayerDataWithSp) {
+      console.log("tempPlayerDataWithSp", tempPlayerDataWithSp);
+      console.log("battleRecord", battleRecord);
       updateBattleRecord({
         ...battleRecord,
         nextTurnState: {
@@ -460,11 +457,18 @@ const Battle = () => {
           playersState: tempPlayerDataWithSp,
         },
       });
+
+      console.log("abacb", {
+        ...battleRecord,
+        nextTurnState: {
+          ...battleRecord.nextTurnState,
+          playersState: tempPlayerDataWithSp,
+        },
+      });
       updateTempPlayerData(null);
+      setUpdatePlayerSp(true);
     }
   }, [tempPlayerDataWithSp]);
-
-  // -----------------------------------------------------處理
 
   //----------------------------------------------------處理前往下一輪
   const handleToNextTurn = () => {
@@ -475,9 +479,6 @@ const Battle = () => {
     }
   };
 
-  useEffect(() => {
-    // console.log(playerState);
-  }, []);
   // 如果大家都按了前往下一關，則切換scene
   useEffect(() => {
     // console.log("確認是否跑到A這邊");
@@ -488,11 +489,16 @@ const Battle = () => {
     if (checkedNum > 0 && checkedNum === tempPlayerState.length) {
       // console.log("確認是否跑到B這邊");
       const tempRecrod = { ...battleRecord };
+      console.log("典籍下一輪", tempRecrod);
       console.log();
       conn.invoke("ReadyChangeScene", false, 0);
       setNextTurnSpeed("");
       setNextTurnCheck(false);
       updateBattleRecord({
+        ...tempRecrod,
+        currentTurnState: tempRecrod.nextTurnState,
+      });
+      console.log("更新下一輪狀態，", {
         ...tempRecrod,
         currentTurnState: tempRecrod.nextTurnState,
       });
@@ -510,6 +516,7 @@ const Battle = () => {
             : role.nextSpeed || 0,
         })
       );
+      console.log("進入下一輪的", tempNewActionRole);
       setThisTurnActiveRole(tempNewActionRole);
       // setThisTurnActiveRole(tempRecrod.nextTurnState.actionableRole);
     }
@@ -617,11 +624,49 @@ const Battle = () => {
   };
 
   useEffect(() => {
-    console.log("activeArea", activeArea);
-  }, [activeArea]);
+    if (!!showPicId) {
+      setVisible(true);
+    }
+  }, [showPicId]);
+
   return (
     <>
       {/* 順序區 */}
+      <Dialog
+        visible={visible}
+        modal
+        draggable={false}
+        onMaskClick={() => {
+          setVisible(false);
+          setTimeout(() => {
+            setShowPicId(null);
+          }, 300);
+        }}
+        style={{ width: "90vw" }}
+        onHide={() => {
+          setVisible(false);
+          setShowPicId(null);
+        }}
+        pt={{
+          header: { className: "hidden text-white p-4" },
+          content: {
+            className:
+              "bg-gray-700 bg-opacity-50 text-white p-4 flex flex-col gap-y-4",
+          },
+        }}
+      >
+        {" "}
+        <img
+          src={
+            showPicId
+              ? require(`../../asset/monSkill/${showPicId}.webp`)
+              : require(`../../asset/monSkill/396.webp`)
+          } // 修改图片路径的构建方式
+          alt="iamage"
+          className="w-fit shadow-2"
+        />
+      </Dialog>
+
       <div
         onClick={() => {
           console.log("thisTurnActiveRole", thisTurnActiveRole);
@@ -632,18 +677,23 @@ const Battle = () => {
           .sort((a, b) => a.nextSpeed - b.nextSpeed) // 根據 nextSpeed 排序
           .map((role, index) => (
             <div
-              draggable
               key={index}
               className={`size-14 bg-slate-800 flex justify-center items-center rounded-md flex-col`}
+              onClick={() => {
+                if (!!role.cardAction) {
+                  setShowPicId(role.cardAction.id);
+                  console.log("有設置rolecardactionid", role.cardAction.id);
+                }
+              }}
             >
               <span>
-                {" "}
                 {role?.selectRole?.[0] +
                   role?.selectRole?.[1] +
                   (role?.index || "")}
               </span>
               <span>{role?.nextSpeed}</span>
             </div>
+            // <Button label="Show" icon="pi pi-external-link" onClick={() => setVisible(true)} />
           ))}
       </div>
       {/* 玩家角色區 */}
@@ -758,9 +808,9 @@ const Battle = () => {
             placeholder="區域"
             // maxSelectedLabels={1}
             className="w-full bg-black md:w-20rem text-white"
-            onHide={(e)=>handleAreaChange(e)}
+            onHide={(e) => handleAreaChange(e)}
             pt={{
-              root:{className:"border-none"},
+              root: { className: "border-none" },
               trigger: { className: "hidden" },
               label: { className: "text-white ps-2 w-[4.5rem]" },
               header: { className: "hidden" },
@@ -814,7 +864,6 @@ const Battle = () => {
           draggable={false}
           resizable={false}
           className="!bg-gray-900"
-          onMaskClick={()=>setSkillModalOpen(false)}
           pt={{
             root: { className: "border" },
             header: { className: "bg-gray-700 bg-opacity-50 text-white p-4" },
@@ -822,7 +871,6 @@ const Battle = () => {
               className:
                 "bg-gray-700 bg-opacity-50 text-white p-4 flex flex-col gap-y-4",
             },
-            
           }}
         >
           <div className="  flex flex-wrap flex-shrink gap-4 ">

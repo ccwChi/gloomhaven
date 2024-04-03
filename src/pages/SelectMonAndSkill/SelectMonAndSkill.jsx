@@ -764,4 +764,3 @@ const PlayerStateTab = ({
     </div>
   );
 };
-

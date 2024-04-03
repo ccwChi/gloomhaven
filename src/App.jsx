@@ -185,28 +185,28 @@ const App = () => {
 
   return (
     <section
-      className={`w-full h-screen flex flex-col gap-4 p-4 items-center relative
+      className={`w-full h-screen flex items-center  justify-center overflow-hidden bg-[url('/src/asset/img/bg-04.webp')]
       ${
-        conn
-          ? "bg-[url('/src/asset/img/bg-03.webp')]"
-          : "bg-[url('/src/asset/img/bg-04.webp')]"
-      } bg-cover bg-no-repeat `}
+        conn && "!bg-[url('/src/asset/img/bg-03.webp')]"
+      } bg-cover bg-no-repeat`}
     >
-      {isLoading && <LoadingBulbasaur />}
-      <CustomizeSidebar />
-      {!conn && (
-        <Home
-          joinRoom={joinRoom}
-          setIsLoading={setIsLoading}
-          isLoading={isLoading}
-        />
-      )}
-      {/* <Loading /> */}
-      {conn && gameScene === "scene1" && <SelectRole />}
+      <div className="h-full flex flex-col p-4 relative gap-4 sm:max-w-[400px] min-w-[400px] w-full sm:bg-black sm:bg-opacity-30">
+        {isLoading && <LoadingBulbasaur />}
+        <CustomizeSidebar />
+        {!conn && (
+          <Home
+            joinRoom={joinRoom}
+            setIsLoading={setIsLoading}
+            isLoading={isLoading}
+          />
+        )}
+        {/* <Loading /> */}
+        {conn && gameScene === "scene1" && <SelectRole />}
 
-      {conn && gameScene === "scene2" && <SelectMonAndSkill />}
+        {conn && gameScene === "scene2" && <SelectMonAndSkill />}
 
-      {conn && gameScene === "scene3" && <Battle />}
+        {conn && gameScene === "scene3" && <Battle />}
+      </div>
     </section>
   );
 };

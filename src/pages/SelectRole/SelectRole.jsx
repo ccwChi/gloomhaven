@@ -152,7 +152,7 @@ const SelectRole = () => {
               (i) => i.playerName === myState.player && i.selectRole === ""
             )}
             className="flex-1"
-            label={!toNextSceneCheck? "確認":"等待夥伴中"}
+            label={!toNextSceneCheck? "確認":"等待中"}
             onClick={() => {
               setToNextSceneCheck(!toNextSceneCheck);
             }}
