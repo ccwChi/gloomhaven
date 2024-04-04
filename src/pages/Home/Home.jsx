@@ -3,32 +3,36 @@ import { Checkbox } from "primereact/checkbox";
 import { Fieldset } from "primereact/fieldset";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useState } from "react";
-import { connStore, myStateStore } from "../../utils/useStore";
+import { connStore, myStateStore, playerStore } from "../../utils/useStore";
 import { record } from "../../asset/data";
+import { useLocalStorage } from "primereact/hooks";
 // import { useSessionStorage } from "primereact/hooks";
 
-const Home = ({ joinRoom,isLoading, setIsLoading }) => {
+const Home = ({ joinRoom, isLoading, setIsLoading }) => {
   const [logingData, setLoginData] = useState({
-    playerName: "大雄",
+    playerName: "",
     record: "紀錄",
   });
-  const { conn } = connStore();
+  const [myStateLocal, setMyStateLocal] = useLocalStorage({}, "MyState");
   const { myState, updateMyState } = myStateStore();
-
+  const { playerState } = playerStore();
+  const [scene, setScene] = useLocalStorage("", "Scene");
   // 用來記錄目前場景，每個場景當四個人都按OK的的話則前往下一個場景
+
   const handelEnterGame = (e) => {
     e.preventDefault();
     if (!!logingData.playerName && !!logingData.record) {
       joinRoom(logingData.playerName, logingData.record);
+      if (scene === "scene3") return;
       updateMyState({ player: logingData.playerName });
+      setMyStateLocal({ player: logingData.playerName });
     }
   };
 
   return (
     <>
-
       <div className="bg-black text-white bg-opacity-80 rounded-lg p-4 font-bold text-center text-2xl mt-12 lg:mt-36 focus:shadow-none">
-        請選擇紀錄
+        前提回顧
       </div>
       <div className="px-4 w-full flex flex-col flex-1 gap-y-4 p-1 overflow-y-auto">
         {record.map((record, i) => (
@@ -46,9 +50,9 @@ const Home = ({ joinRoom,isLoading, setIsLoading }) => {
             >
               <div className="bg-black bg-opacity-30 rounded-lg p-2" key={i}>
                 {record.ChapterDescript.map((event, i) => (
-                  <div className="flex" key={"ChapterDescript" + i}>
-                    <p className="w-fit">{event.map + ": "}&nbsp;</p>
-                    <p>{event.describe}</p>
+                  <div className="flex flex-col" key={"ChapterDescript" + i}>
+                    <p className="w-fit py-1">{event.map}&nbsp;</p>
+                    <p className="mx-2">{event.describe}</p>
                   </div>
                 ))}
               </div>

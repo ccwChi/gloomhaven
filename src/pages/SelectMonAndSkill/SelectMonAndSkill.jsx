@@ -9,34 +9,30 @@ import {
   monsterStore,
   myStateStore,
   playerStore,
-  roomStore,
   sceneStore,
   scriptLevelStore,
   sidebarStore,
 } from "../../utils/useStore";
 import { enemyList, record } from "../../asset/data";
 import { TabPanel, TabView } from "primereact/tabview";
-import CustomizeSidebar from "../../component/CustomizeSidebar";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
-import { Carousel } from "primereact/carousel";
 import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
-import LoadingDots from "../../component/Loading/LoadingDots";
+import { useLocalStorage } from "primereact/hooks";
 
 const SelectMonAndSkill = ({}) => {
-  const { conn, updateConn } = connStore();
+  const { conn } = connStore();
   const { myState, updateMyState } = myStateStore();
-  const { roomState, updateRoomState } = roomStore();
-  const { playerState, updatePlayerState } = playerStore();
-  const { gameState, updateGameState } = gameStore();
+  const { playerState } = playerStore();
   const { scriptLevel, updateScriptLevel } = scriptLevelStore();
-  const { gameScene, updateGameScene } = sceneStore();
+  const { updateGameScene } = sceneStore();
+  const [scene, setScene] = useLocalStorage("", 'Scene');
   const { monsterList, updateMonsterList } = monsterStore();
   const { battleRecord, updateBattleRecord } = battleRecordStore();
   const { monsterDetailList, updateMonsterDetailList } = monsterDetailStore();
   const [targetPointHP, setTargetPointHP] = useState(0);
-  const { sidebarVisible, updateSidebarVisible } = sidebarStore();
+  const { updateSidebarVisible } = sidebarStore();
   const [selectMonList, setSelectMonList] = useState([
     { name: "區域", code: "" },
   ]);
@@ -45,6 +41,8 @@ const SelectMonAndSkill = ({}) => {
   const [attackMod, setAttackMod] = useState({});
   const [selectedCards, setSelectedCards] = useState([]);
   const [toNextScene, setToNextScene] = useState(false);
+  const [myStateLocal, setMyStateLocal] = useLocalStorage({}, "MyState");
+
   const toast = useRef(null);
   // 進畫面先把前往下一關關掉
   useEffect(() => {
@@ -98,13 +96,11 @@ const SelectMonAndSkill = ({}) => {
               playersState: tempPlayerState,
               openArea: [],
             },
-            scene: "scene3",
             myState: myState,
           });
           updateGameScene("scene3");
+          setScene("scene3")
         }, 1000);
-
-        // setFullGameRecord({ ...fullGameRecord, scene: "scene2" });
       }
     }
   }, [playerState]);
@@ -544,6 +540,7 @@ const PlayerStateTab = ({
   updateMyState,
 }) => {
   const attackModType = ["+0", "+1", "-1", "+2", "-2", "x2", "x0"];
+  const [myStateLocal, setMyStateLocal] = useLocalStorage({}, "MyState");
 
   const lv1Items = myState.skillLib.filter((item) => item.lv === "1");
   const lv2Items = myState.skillLib.filter((item) => item.lv === "2");
@@ -566,19 +563,6 @@ const PlayerStateTab = ({
     setSelectedCards(updatedSelectedItems);
   };
 
-  // 要把卡片渲染出來的處理
-  const productTemplate = (product) => {
-    return (
-      <div className="mx-8 flex justify-center">
-        <img
-          src={require(`../../asset/roleSkill/${product.id}.webp`)} // 修改图片路径的构建方式
-          alt={product.image}
-          className="w-fit shadow-2 max-w-28"
-        />
-      </div>
-    );
-  };
-
   /** 選擇攻擊補正卡的邏輯 只在一開始更新，理論上一渲染就讀的到myState才對*/
   useEffect(() => {
     if (myState) {
@@ -590,6 +574,7 @@ const PlayerStateTab = ({
   const handlePlayerDataCheck = () => {
     if (checkPlayer) {
       updateMyState({ ...myState, selectAttackMod: [], selectSkill: [] });
+      setMyStateLocal({ ...myState, selectAttackMod: [], selectSkill: [] })
       setCheckPlayer(false);
     } else {
       updateMyState({
@@ -597,6 +582,11 @@ const PlayerStateTab = ({
         selectAttackMod: attackMod,
         selectSkill: selectedCards,
       });
+      setMyStateLocal({
+        ...myState,
+        selectAttackMod: attackMod,
+        selectSkill: selectedCards,
+      })
       setCheckPlayer(true);
     }
   };

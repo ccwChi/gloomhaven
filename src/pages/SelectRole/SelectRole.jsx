@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import React, { useEffect, useState } from "react";
 import { record } from "../../asset/data";
 import {
+  battleRecordStore,
   connStore,
   myStateStore,
   playerStore,
@@ -9,6 +10,7 @@ import {
   scriptLevelStore,
 } from "../../utils/useStore";
 import LoadingDots from "../../component/Loading/LoadingDots";
+import { useLocalStorage } from "primereact/hooks";
 
 const SelectRole = () => {
   const [toNextSceneCheck, setToNextSceneCheck] = useState(false);
@@ -17,9 +19,10 @@ const SelectRole = () => {
   const { myState, updateMyState } = myStateStore();
   const { playerState } = playerStore();
   const { updateGameScene } = sceneStore();
-
+  const [scene, setScene] = useLocalStorage("", "Scene");
+  const [myStateLocal, setMyStateLocal] = useLocalStorage({}, "MyState");
+  const { battleRecord, updateBattleRecord } = battleRecordStore();
   const characters = [...Object.values(record[0].roleData)];
-
   // 如果大家都按了前往下一關，則切換scene
   useEffect(() => {
     const tempPlayerState = [...Object.values(playerState)];
@@ -28,6 +31,7 @@ const SelectRole = () => {
     ).length;
     if (checkedNum > 0 && checkedNum === tempPlayerState.length) {
       updateGameScene("scene2");
+      setScene("scene2");
       const [newMyStateObj] = record
         .map((rc) => {
           const newMyState = tempPlayerState.find(
@@ -39,9 +43,10 @@ const SelectRole = () => {
           return null;
         })
         .filter(Boolean); // 過濾掉為 null 的結果
-      if (newMyStateObj) {
+      if (!!newMyStateObj) {
         newMyStateObj["player"] = myState.player;
         updateMyState(newMyStateObj);
+        setMyStateLocal(newMyStateObj);
       }
     }
   }, [playerState]);
@@ -60,7 +65,25 @@ const SelectRole = () => {
 
   const selectRole = (selectRole, roleHp, order) => {
     conn.invoke("SelectRole", selectRole, roleHp, order);
-    updateMyState({ ...myState, selectRole: selectRole });
+    // 如果scene==scene3 代表是斷線後重連，不要更新myState，等等要去撈local斷線前的myState
+    const tempPlayerState = [...Object.values(playerState)];
+    if (scene === "scene3" && tempPlayerState.length > 1) {
+      updateGameScene("reloadScene3");
+      updateMyState(myStateLocal)
+      conn.invoke("AskSynchronize");
+    } else if (scene === "scene3" && tempPlayerState.length === 1) {
+      updateMyState({
+        player: tempPlayerState[0].playerName,
+        selectRole: selectRole,
+      });
+      setMyStateLocal({
+        player: tempPlayerState[0].playerName,
+        selectRole: selectRole,
+      });
+    } else {
+      updateMyState({ ...myState, selectRole: selectRole });
+      setMyStateLocal({ ...myState, selectRole: selectRole });
+    }
   };
 
   useEffect(() => {
@@ -152,7 +175,7 @@ const SelectRole = () => {
               (i) => i.playerName === myState.player && i.selectRole === ""
             )}
             className="flex-1"
-            label={!toNextSceneCheck? "確認":"等待中"}
+            label={!toNextSceneCheck ? "確認" : "等待中"}
             onClick={() => {
               setToNextSceneCheck(!toNextSceneCheck);
             }}

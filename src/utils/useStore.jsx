@@ -21,7 +21,7 @@ const roomStore = create((set) => ({
 
 // 用來記錄每個玩家的狀態，哪個玩家選哪個腳色，..
 const playerStore = create((set) => ({
-  playerState: [],
+  playerState: {},
   updatePlayerState: (newState) => {
     set({ playerState: newState });
   },
@@ -62,7 +62,7 @@ const scriptLevelStore = create((set) => ({
 }));
 
 const battleRecordStore = create((set) => ({
-  battleRecord: {},
+  battleRecord: null,
   updateBattleRecord: (newState) => set({ battleRecord: newState }),
 }));
 
@@ -90,6 +90,16 @@ const actionableWithMonSkillStore = create((set) => ({
     set({ actionableWithMonSkill: newState }),
 }));
 
+const askSynchronizeStore = create((set) => ({
+  askSynchronize: false,
+  updateAskSynchronize: (newState) => set({ askSynchronize: newState }),
+}));
+
+const synchronizeDataStore = create((set) => ({
+  synchronizeData: null,
+  updateSynchronizeData: (newState) => set({ synchronizeData: newState }),
+}));
+
 export {
   connStore,
   myStateStore,
@@ -107,4 +117,6 @@ export {
   tempAreaOpenStore,
   tempPlayerDataWithSpStore,
   actionableWithMonSkillStore,
+  askSynchronizeStore,
+  synchronizeDataStore
 };

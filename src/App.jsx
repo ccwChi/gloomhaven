@@ -2,82 +2,62 @@ import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import React, { useEffect, useState } from "react";
 import {
   actionableWithMonSkillStore,
+  askSynchronizeStore,
   battleRecordStore,
   connStore,
-  gameStore,
   monsterStore,
   myStateStore,
   playerStore,
   roomStore,
   sceneStore,
-  sidebarStore,
+  synchronizeDataStore,
   tempAreaOpenStore,
   tempMonDataStore,
   tempPlayerDataStore,
   tempPlayerDataWithSpStore,
 } from "./utils/useStore";
-// import {
-//   connLocalStore,
-//   gameLocalStore,
-//   monsterLocalStore,
-//   myStateLocalStore,
-//   playerLocalStore,
-//   roomLocalStore,
-//   sceneLocalStore,
-// } from "./utils/usePersistStore";
-import { useLocalStorage, useSessionStorage } from "primereact/hooks";
+
+import { useLocalStorage } from "primereact/hooks";
 import SelectMonAndSkill from "./pages/SelectMonAndSkill/SelectMonAndSkill";
 import SelectRole from "./pages/SelectRole/SelectRole";
 import Home from "./pages/Home/Home";
 import Battle from "./pages/Battle/Battle";
-import { Button } from "primereact/button";
 import CustomizeSidebar from "./component/CustomizeSidebar";
 import LoadingBulbasaur from "./component/Loading/LoadingBulbasaur";
-import LoadingDots from "./component/Loading/LoadingDots";
+
 const App = () => {
   const { conn, updateConn } = connStore();
-  // const [conn, setConn] = useSessionStorage(null, "conn");
-  // 用及記錄玩家自身情況，自己的技能卡，經驗，優劣勢卡片狀態
-  const { myState, updateMyState } = myStateStore();
-  const [myStateSession, setMyStateSession] = useSessionStorage(
-    null,
-    "MyState"
-  );
 
   // 用來記錄目前房間中有那些人，如果有人斷線，或加入，則更新每個人的房間狀態
   const { roomState, updateRoomState } = roomStore();
 
-  // 用來記錄遊戲目前狀況，例如怪物的分布，遊戲的每輪狀態
-  const { gameState, updateGameState } = gameStore();
-
   // 用來記錄目前場景，每個場景當四個人都按OK的的話則前往下一個場景
+
   const { gameScene, updateGameScene } = sceneStore();
+  const [scene, setScene] = useLocalStorage("", "Scene");
 
   // 用來記錄每個玩家的狀態，哪個玩家選哪個腳色，...
   const { playerState, updatePlayerState } = playerStore();
+  const { myState, updateMyState } = myStateStore();
 
   // 用來紀錄目前怪物選擇清單，(簡易)
-  const { mosterList, updateMonsterList } = monsterStore();
-  const { sidebarVisible, updateSidebarVisible } = sidebarStore();
-
-  const { tempMonData, updateTempMonData } = tempMonDataStore();
-  const { tempPlayerData, updateTempPlayerData } = tempPlayerDataStore();
-  const { tempPlayerDataWithSp, updateTempPlayerDataWithSp } =
-    tempPlayerDataWithSpStore();
-  const { tempAreaOpen, updateTempAreaOpen } = tempAreaOpenStore();
-  const { actionableWithMonSkill, updateActionableWithMonSkill } =
-    actionableWithMonSkillStore();
-
-  const [isLoading, setIsLoading] = useState(false);
-
+  const { updateMonsterList } = monsterStore();
+  const { askSynchronize, updateAskSynchronize } = askSynchronizeStore();
+  const { updateTempMonData } = tempMonDataStore();
+  const { updateTempPlayerData } = tempPlayerDataStore();
+  const { updateTempPlayerDataWithSp } = tempPlayerDataWithSpStore();
+  const { updateTempAreaOpen } = tempAreaOpenStore();
+  const { updateActionableWithMonSkill } = actionableWithMonSkillStore();
   const { battleRecord, updateBattleRecord } = battleRecordStore();
+  const { synchronizeData, updateSynchronizeData } = synchronizeDataStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
-      // 同時按下了 Ctrl +C 键，清除 session
+      // 同時按下了 Ctrl +C 键，清除 session/localStorage
       if (event.key === "c" && event.ctrlKey) {
-        sessionStorage.clear(); // 清除 session
-        localStorage.clear(); // 清除 localStorage
+        sessionStorage.clear();
+        localStorage.clear();
         // alert("Session 已清除");
       }
     };
@@ -100,7 +80,7 @@ const App = () => {
     try {
       const newConn = new HubConnectionBuilder()
         // .withUrl("https://localhost:7169/room")
-        .withUrl("https://gloomhaven.azurewebsites.net/room")
+        .withUrl("https://gloomhaven.azugrewebsites.net/room")
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();
@@ -108,18 +88,18 @@ const App = () => {
       newConn.on("LeaveRoom", (connectedPlayers) => {
         updateRoomState(connectedPlayers);
         updatePlayerState(connectedPlayers);
-        console.log("joinroom myState", connectedPlayers);
+        // console.log("joinroom myState", connectedPlayers);
       });
 
       newConn.on("JoinRoom", (connectedPlayers) => {
         updateRoomState(connectedPlayers);
         updatePlayerState(connectedPlayers);
-        console.log("joinroom myState", connectedPlayers);
+        // console.log("joinroom myState", connectedPlayers);
       });
 
       newConn.on("SelectRole", (connectedPlayers) => {
         updatePlayerState(connectedPlayers);
-        console.log("updatePlayerState", connectedPlayers);
+        // console.log("updatePlayerState", connectedPlayers);
       });
 
       newConn.on("ReadyChangeScene", (connectedPlayers) => {
@@ -164,6 +144,14 @@ const App = () => {
         console.log(content);
         // console.log("battleRecord", battleRecord);
       });
+      newConn.on("AskSynchronize", (content) => {
+        updateAskSynchronize(content);
+        console.log("AskSynchronize", content);
+      });
+      newConn.on("Synchronize", (SynchronizeData) => {
+        updateSynchronizeData(SynchronizeData);
+        console.log("Synchronize", SynchronizeData);
+      });
 
       await newConn.start();
       await newConn.invoke("JoinRoom", { playerName, recordNum });
@@ -182,6 +170,11 @@ const App = () => {
       console.log(e);
     }
   };
+  useEffect(() => {
+    if (!!synchronizeData && scene === "scene3") {
+      updateBattleRecord(synchronizeData);
+    }
+  }, [synchronizeData]);
 
   return (
     <section
@@ -189,8 +182,15 @@ const App = () => {
       ${
         conn && "!bg-[url('/src/asset/img/bg-03.webp')]"
       } bg-cover bg-no-repeat`}
+      // onClick={() => {
+      //   console.log("myState", myState);
+      //   console.log("roomState", roomState);
+      //   console.log("playerState", playerState);
+      //   console.log("gameScene", gameScene);
+      //   console.log("battleRecord", battleRecord);
+      // }}
     >
-      <div className="h-full flex flex-col p-4 relative gap-4 sm:max-w-[400px] min-w-[400px] w-full sm:bg-black sm:bg-opacity-30">
+      <div className="h-full flex flex-col p-4 relative gap-4 sm:max-w-[400px] max-w-[500px] min-w-[400px] w-full sm:bg-black sm:bg-opacity-30">
         {isLoading && <LoadingBulbasaur />}
         <CustomizeSidebar />
         {!conn && (
@@ -205,7 +205,9 @@ const App = () => {
 
         {conn && gameScene === "scene2" && <SelectMonAndSkill />}
 
-        {conn && gameScene === "scene3" && <Battle />}
+        {conn &&
+          (gameScene === "scene3" || gameScene === "reloadScene3") &&
+          battleRecord && <Battle />}
       </div>
     </section>
   );
