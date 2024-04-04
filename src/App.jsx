@@ -80,7 +80,7 @@ const App = () => {
     try {
       const newConn = new HubConnectionBuilder()
         // .withUrl("https://localhost:7169/room")
-        .withUrl("https://gloomhaven.azugrewebsites.net/room")
+        .withUrl("https://gloomhaven.azurewebsites.net/room")
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();
@@ -191,7 +191,7 @@ const App = () => {
       // }}
     >
       <div className="h-full flex flex-col p-4 relative gap-4 sm:max-w-[400px] max-w-[500px] min-w-[400px] w-full sm:bg-black sm:bg-opacity-30">
-        {isLoading && <LoadingBulbasaur />}
+        {/* {isLoading && <LoadingBulbasaur />} */}
         <CustomizeSidebar />
         {!conn && (
           <Home

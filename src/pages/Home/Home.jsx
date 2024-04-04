@@ -141,7 +141,7 @@ const Home = ({ joinRoom, isLoading, setIsLoading }) => {
             iconPos="right"
             label="進入遊戲"
             className="p-button-warning"
-            disabled={isLoading}
+            disabled={isLoading || !logingData.playerName}
             onClick={(e) => {
               handelEnterGame(e);
               setIsLoading(true);
