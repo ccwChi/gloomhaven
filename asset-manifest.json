@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/gloomhaven/static/css/main.180799be.css",
-    "main.js": "/gloomhaven/static/js/main.f26ad0e9.js",
+    "main.css": "/gloomhaven/static/css/main.7207223e.css",
+    "main.js": "/gloomhaven/static/js/main.ba6cc158.js",
     "static/js/453.2ba13ced.chunk.js": "/gloomhaven/static/js/453.2ba13ced.chunk.js",
     "static/media/primeicons.svg": "/gloomhaven/static/media/primeicons.e1441b135b3ca9ad643c.svg",
     "static/media/Inter-italic.var.woff2?v=3.19": "/gloomhaven/static/media/Inter-italic.var.30807be7abc48ba8c73c.woff2",
@@ -11,6 +11,7 @@
     "static/media/primeicons.ttf": "/gloomhaven/static/media/primeicons.ea5358601d0a3fd6670b.ttf",
     "static/media/bg-03.webp": "/gloomhaven/static/media/bg-03.53f3093c8411be7daf74.webp",
     "static/media/primeicons.woff2": "/gloomhaven/static/media/primeicons.78172950b335ccdb94e2.woff2",
+    "static/media/charback.webp": "/gloomhaven/static/media/charback.ba44467417ed756764a9.webp",
     "static/media/bg-04.webp": "/gloomhaven/static/media/bg-04.09e68680962ae2d78781.webp",
     "static/media/412.webp": "/gloomhaven/static/media/412.75b0e45e62014979f3d2.webp",
     "static/media/401.webp": "/gloomhaven/static/media/401.6850cc8537e2c9830440.webp",
@@ -45,12 +46,12 @@
     "static/media/421.webp": "/gloomhaven/static/media/421.d15691ebfc7acf2fcbc0.webp",
     "static/media/402.webp": "/gloomhaven/static/media/402.e3b1920f216b315266a6.webp",
     "index.html": "/gloomhaven/index.html",
-    "main.180799be.css.map": "/gloomhaven/static/css/main.180799be.css.map",
-    "main.f26ad0e9.js.map": "/gloomhaven/static/js/main.f26ad0e9.js.map",
+    "main.7207223e.css.map": "/gloomhaven/static/css/main.7207223e.css.map",
+    "main.ba6cc158.js.map": "/gloomhaven/static/js/main.ba6cc158.js.map",
     "453.2ba13ced.chunk.js.map": "/gloomhaven/static/js/453.2ba13ced.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.180799be.css",
-    "static/js/main.f26ad0e9.js"
+    "static/css/main.7207223e.css",
+    "static/js/main.ba6cc158.js"
   ]
 }
