@@ -182,16 +182,10 @@ const App = () => {
       ${
         conn && "!bg-[url('/src/asset/img/bg-03.webp')]"
       } bg-cover bg-no-repeat`}
-      // onClick={() => {
-      //   console.log("myState", myState);
-      //   console.log("roomState", roomState);
-      //   console.log("playerState", playerState);
-      //   console.log("gameScene", gameScene);
-      //   console.log("battleRecord", battleRecord);
-      // }}
+
     >
-      <div className="h-full flex flex-col p-4 relative gap-4 sm:max-w-[400px] max-w-[500px] min-w-[400px] w-full sm:bg-black sm:bg-opacity-30">
-        {/* {isLoading && <LoadingBulbasaur />} */}
+      <div className="h-full flex flex-col p-4 relative gap-4 sm:max-w-[400px] max-w-[500px] min-w-[400px] w-full sm:bg-black sm:bg-opacity-30 items-center">
+        {isLoading && <LoadingBulbasaur />}
         <CustomizeSidebar />
         {!conn && (
           <Home

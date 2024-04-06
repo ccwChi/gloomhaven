@@ -31,8 +31,15 @@ const Home = ({ joinRoom, isLoading, setIsLoading }) => {
 
   return (
     <>
-      <div className="bg-black text-white bg-opacity-80 rounded-lg p-4 font-bold text-center text-2xl mt-12 lg:mt-36 focus:shadow-none">
-        前提回顧
+      {/* <div className="bg-black text-white bg-opacity-80 rounded-lg p-4 font-bold text-center text-2xl mt-6 focus:shadow-none"> */}
+      <div className="w-80 h-24 bg-[length:20rem_6rem] bg-no-repeat bg-transparent border-none flex justify-center items-center
+               bg-[url('/src/asset/img/title.webp')]">
+        <img className="w-40 -translate-y-1" src={require(`../../asset/img/titletext.webp`)} alt="幽港迷城"/>
+        {/* src={
+            showPicId
+              ? require(`../../asset/img/titletext.webp`)
+              : require(`../../asset/monSkill/396.webp`)
+          } */}
       </div>
       <div className="px-4 w-full flex flex-col flex-1 gap-y-4 p-1 overflow-y-auto">
         {record.map((record, i) => (
@@ -40,9 +47,10 @@ const Home = ({ joinRoom, isLoading, setIsLoading }) => {
             <Fieldset
               legend={record.name}
               toggleable
-              className="bg-transparent rounded-xl border-none"
+              className="bg-transparent rounded-xl border-none "
               pt={{
-                legend: { className: " translate-x-8 " },
+                legend: { className: " translate-x-8" },
+                toggler: { className: " h-fit !m-0 !p-2" },
                 content: {
                   className: "-translate-y-4  rounded-lg text-white",
                 },

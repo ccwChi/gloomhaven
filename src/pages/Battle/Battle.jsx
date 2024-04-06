@@ -23,6 +23,7 @@ import { enemyAction } from "../../asset/data";
 import { useLocalStorage } from "primereact/hooks";
 
 const Battle = () => {
+
   const { conn } = connStore();
   const { myState } = myStateStore();
   const { playerState } = playerStore();
@@ -33,6 +34,7 @@ const Battle = () => {
   const { battleRecord, updateBattleRecord } = battleRecordStore();
   const { actionableWithMonSkill } = actionableWithMonSkillStore();
   const { tempPlayerDataWithSp } = tempPlayerDataWithSpStore();
+
   const [activeArea, setActiveArea] = useState([]);
   const [activeAreaList, setActiveAreaList] = useState([]);
   const [playerDivCollapse, setPlayerDivCollapse] = useState(false);
@@ -44,27 +46,29 @@ const Battle = () => {
   const [visible, setVisible] = useState(false);
   const [showPicId, setShowPicId] = useState(null);
   const [updatePlayerSp, setUpdatePlayerSp] = useState(false);
-  const { gameScene, updateGameScene } = sceneStore();
-  const { askSynchronize, updateAskSynchronize } = askSynchronizeStore();
-  const [myStateLocal, setMyStateLocal] = useLocalStorage(null, "MyState");
-  // console.log(battleRecord);
+  const { gameScene } = sceneStore();
+  const { askSynchronize } = askSynchronizeStore();
+  const [myStateLocal] = useLocalStorage(null, "MyState");
+
+  // 有人重新加入用，如果有人按到重新整理，進入會發出通知，請求在戰鬥畫面的玩家同步資料
   useEffect(() => {
     if (askSynchronize && gameScene !== "reloadScene3") {
       conn.invoke("Synchronize", battleRecord);
     }
   }, [askSynchronize]);
-  // 將怪物、人物的初始狀態複製到當前回合狀態
 
+  // 重新加入玩家，更新狀態
   useEffect(() => {
     if (gameScene === "reloadScene3" && myStateLocal) {
       updateBattleRecord({
         ...battleRecord,
         myState: myStateLocal,
       });
-      sendAreaData(battleRecord.nextTurnState.openArea)
+      sendAreaData(battleRecord.nextTurnState.openArea);
     }
   }, [myStateLocal]);
 
+  // 非重新加入玩家，將怪物、人物的初始狀態複製到當前回合狀態
   useEffect(() => {
     if (gameScene === "reloadScene3") return;
     const tempRecrod = { ...battleRecord };
@@ -526,6 +530,7 @@ const Battle = () => {
                   value={inputMonHp[mon.index]}
                   onChange={(e) => handleMonHpChange(mon.index, e.value)}
                   showButtons
+                  inputMode="none"
                   buttonLayout="horizontal"
                   step={1}
                   incrementButtonIcon="pi pi-plus"
@@ -698,6 +703,7 @@ const Battle = () => {
                           showButtons
                           buttonLayout="horizontal"
                           step={1}
+                          inputMode="none"
                           incrementButtonIcon="pi pi-plus"
                           decrementButtonIcon="pi pi-minus"
                           size={1}
@@ -756,7 +762,9 @@ const Battle = () => {
         <div className="flex flex-1">
           <Button
             label={`${
-              !!nextTurnSpeed ? "下一張卡 " + nextTurnSpeed.value || "" : "下一張卡"
+              !!nextTurnSpeed
+                ? "下一張卡 " + nextTurnSpeed.value || ""
+                : "下一張卡"
             }`}
             onClick={() => {
               setSkillModalPosition("bottom");
@@ -837,6 +845,14 @@ const Battle = () => {
                 setNextTurnSpeed({ id: "", value: e.value, Lv: "" })
               }
               useGrouping={false}
+              pt={{
+                input: {
+                  root: {
+                    className:
+                      "border-none focus:ring-none focus:border:none w-12 h-8",
+                  },
+                },
+              }}
             />
           </div>
           <div className="flex">

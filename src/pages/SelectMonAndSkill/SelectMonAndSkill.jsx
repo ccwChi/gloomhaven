@@ -170,24 +170,24 @@ const SelectMonAndSkill = ({}) => {
     <>
       <TabView
         scrollable
-        className="bg-transparent w-full flex flex-col flex-1 overflow-y-hidden "
+        className="bg-transparent flex flex-col flex-1 overflow-y-hidden "
         pt={{
-          nav: { className: "bg-transparent w-full" },
-          header: { className: "w-full" },
+          nav: { className: "bg-transparent " },
+          header: { className: "w-fit p-0 w-0" },
           panelContainer: {
             className:
-              "bg-transparent flex flex-col w-full overflow-y-hidden flex-1",
+              "bg-transparent flex flex-col w-full overflow-y-hidden flex-1 p-0",
           },
         }}
       >
         <TabPanel
           header="怪物輸入"
-          className="w-full px-0 flex flex-1 overflow-y-hidden "
+          className="flex h-full overflow-y-hidden "
           pt={{
             headerAction: {
               className: "bg-transparent justify-center border-none",
             },
-            headertitle: { className: "text-xl" },
+            headertitle: { className: "text-base" },
           }}
         >
           <MonstSelectTab
@@ -205,25 +205,13 @@ const SelectMonAndSkill = ({}) => {
           />
         </TabPanel>
         <TabPanel
-          header="怪物資訊"
-          className="w-full px-0 flex flex-1 overflow-y-hidden"
-          pt={{
-            headerAction: {
-              className: "bg-transparent justify-center border-none",
-            },
-            headertitle: { className: "text-xl" },
-          }}
-        >
-          <MonDetailTab monsterDetailList={monsterDetailList} />
-        </TabPanel>
-        <TabPanel
           header="角色狀態"
-          className="w-full px-0 flex flex-1 overflow-y-hidden"
+          className="flex h-full overflow-y-hidden"
           pt={{
             headerAction: {
               className: "bg-transparent justify-center border-none",
             },
-            headertitle: { className: "text-xl" },
+            headertitle: { className: "text-base" },
           }}
         >
           <PlayerStateTab
@@ -592,10 +580,10 @@ const PlayerStateTab = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-2 items-center flex-1">
+    <div className="w-full flex flex-col gap-2 items-center flex-1 mt-3">
       <div className="w-full  flex flex-col text-white items-center bg-slate-600 gap-y-3 flex-1 overflow-y-auto bg-opacity-60 rounded-lg">
         <div className="w-full overflow-y-auto flex flex-col ">
-          <div className="flex flex-col flex-wrap justify-content-center gap-3 p-3">
+          <div className="flex flex-col flex-wrap justify-content-center gap-3 p-3 ">
             <h3>
               角色 LV2 只能選擇 1 張 LV2 技能卡，LV 3總共可以選 2 張 LV2 及 LV3
               的卡。
