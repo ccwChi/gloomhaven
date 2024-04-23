@@ -2,8 +2,8 @@ import { Button } from "primereact/button";
 import { Checkbox } from "primereact/checkbox";
 import { Fieldset } from "primereact/fieldset";
 import { InputText } from "primereact/inputtext";
-import { useEffect, useState } from "react";
-import { connStore, myStateStore, playerStore } from "../../utils/useStore";
+import { useState } from "react";
+import { myStateStore, playerStore } from "../../utils/useStore";
 import { record } from "../../asset/data";
 import { useLocalStorage } from "primereact/hooks";
 // import { useSessionStorage } from "primereact/hooks";
@@ -29,17 +29,23 @@ const Home = ({ joinRoom, isLoading, setIsLoading }) => {
     }
   };
 
+  const playerList = [
+    { name: "胖虎" },
+    { name: "小夫" },
+    { name: "靜香" },
+    { name: "大雄" },
+  ];
   return (
     <>
-      {/* <div className="bg-black text-white bg-opacity-80 rounded-lg p-4 font-bold text-center text-2xl mt-6 focus:shadow-none"> */}
-      <div className="w-80 h-24 bg-[length:20rem_6rem] bg-no-repeat bg-transparent border-none flex justify-center items-center
-               bg-[url('/src/asset/img/title.webp')]">
-        <img className="w-40 -translate-y-1" src={require(`../../asset/img/titletext.webp`)} alt="幽港迷城"/>
-        {/* src={
-            showPicId
-              ? require(`../../asset/img/titletext.webp`)
-              : require(`../../asset/monSkill/396.webp`)
-          } */}
+      <div
+        className="w-80 h-24 bg-[length:20rem_6rem] bg-no-repeat bg-transparent border-none flex justify-center items-center
+               bg-[url('/src/asset/img/title.webp')]"
+      >
+        <img
+          className="w-40 -translate-y-1"
+          src={require(`../../asset/img/titletext.webp`)}
+          alt="幽港迷城"
+        />
       </div>
       <div className="px-4 w-full flex flex-col flex-1 gap-y-4 p-1 overflow-y-auto">
         {record.map((record, i) => (
@@ -66,6 +72,7 @@ const Home = ({ joinRoom, isLoading, setIsLoading }) => {
               </div>
             </Fieldset>
             <Checkbox
+              disabled
               onChange={(e) => {
                 setLoginData((prev) => ({ ...prev, record: e.target.name }));
               }}
@@ -80,58 +87,26 @@ const Home = ({ joinRoom, isLoading, setIsLoading }) => {
         <div className="flex flex-col gap-2">
           <p className="text-white ps-4 ">* 請跟夥伴們取不同名稱</p>
           <div className="inline-flex flex-wrap justify-content-center gap-3 bg-black rounded-xl text-white  p-3 w-full ">
-            <div className="flex align-items-center flex-1">
-              <Checkbox
-                name="胖虎"
-                value="胖虎"
-                onChange={() => {
-                  setLoginData((prev) => ({ ...prev, playerName: "胖虎" }));
-                }}
-                checked={logingData.playerName === "胖虎"}
-              />
-              <label htmlFor="ingredient1" className="ml-2">
-                胖虎
-              </label>
-            </div>
-            <div className="flex align-items-center flex-1">
-              <Checkbox
-                name="小夫"
-                value="小夫"
-                onChange={() => {
-                  setLoginData((prev) => ({ ...prev, playerName: "小夫" }));
-                }}
-                checked={logingData.playerName === "小夫"}
-              />
-              <label htmlFor="ingredient2" className="ml-2">
-                小夫
-              </label>
-            </div>
-            <div className="flex align-items-center flex-1">
-              <Checkbox
-                name="靜香"
-                value="靜香"
-                onChange={() => {
-                  setLoginData((prev) => ({ ...prev, playerName: "靜香" }));
-                }}
-                checked={logingData.playerName === "靜香"}
-              />
-              <label htmlFor="ingredient3" className="ml-2">
-                靜香
-              </label>
-            </div>
-            <div className="flex align-items-center flex-1">
-              <Checkbox
-                name="大雄"
-                value="大雄"
-                onChange={() => {
-                  setLoginData((prev) => ({ ...prev, playerName: "大雄" }));
-                }}
-                checked={logingData.playerName === "大雄"}
-              />
-              <label htmlFor="ingredient4" className="ml-2">
-                大雄
-              </label>
-            </div>
+            {playerList.map((player) => (
+              <>
+                <div className="flex align-items-center flex-1">
+                  <Checkbox
+                    name={player.name}
+                    value={player.name}
+                    onChange={() => {
+                      setLoginData((prev) => ({
+                        ...prev,
+                        playerName: player.name,
+                      }));
+                    }}
+                    checked={logingData.playerName === player.name}
+                  />
+                  <label htmlFor="ingredient1" className="ml-2">
+                    {player.name}
+                  </label>
+                </div>
+              </>
+            ))}
           </div>
         </div>
         <div className="p-inputgroup flex-1">
