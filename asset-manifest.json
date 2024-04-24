@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/gloomhaven/static/css/main.2ff6f3b9.css",
-    "main.js": "/gloomhaven/static/js/main.b9bd5d07.js",
+    "main.css": "/gloomhaven/static/css/main.a951137e.css",
+    "main.js": "/gloomhaven/static/js/main.ab42796b.js",
     "static/js/453.2ba13ced.chunk.js": "/gloomhaven/static/js/453.2ba13ced.chunk.js",
     "static/media/primeicons.svg": "/gloomhaven/static/media/primeicons.e1441b135b3ca9ad643c.svg",
     "static/media/Inter-italic.var.woff2?v=3.19": "/gloomhaven/static/media/Inter-italic.var.30807be7abc48ba8c73c.woff2",
@@ -48,12 +48,12 @@
     "static/media/421.webp": "/gloomhaven/static/media/421.d15691ebfc7acf2fcbc0.webp",
     "static/media/402.webp": "/gloomhaven/static/media/402.e3b1920f216b315266a6.webp",
     "index.html": "/gloomhaven/index.html",
-    "main.2ff6f3b9.css.map": "/gloomhaven/static/css/main.2ff6f3b9.css.map",
-    "main.b9bd5d07.js.map": "/gloomhaven/static/js/main.b9bd5d07.js.map",
+    "main.a951137e.css.map": "/gloomhaven/static/css/main.a951137e.css.map",
+    "main.ab42796b.js.map": "/gloomhaven/static/js/main.ab42796b.js.map",
     "453.2ba13ced.chunk.js.map": "/gloomhaven/static/js/453.2ba13ced.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.2ff6f3b9.css",
-    "static/js/main.b9bd5d07.js"
+    "static/css/main.a951137e.css",
+    "static/js/main.ab42796b.js"
   ]
 }
